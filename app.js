@@ -2,8 +2,9 @@
 (() => {
   // Elements
   const tabButtons = Array.from(document.querySelectorAll('.tab'));
-  const navTriggers = Array.from(document.querySelectorAll('.tab, .go')); // buttons that navigate
+  const navTriggers = Array.from(document.querySelectorAll('[data-target]')); // now covers .tab, .go, back buttons
   const panels = Array.from(document.querySelectorAll('.panel'));
+  const startButtons = Array.from(document.querySelectorAll('[id^="start-"]')); // start-... buttons
 
   // showPanel: set visibility, aria attributes and tab active state
   function showPanel(id, opts = {}) {
@@ -12,7 +13,6 @@
       const isTarget = p.id === id;
       p.classList.toggle('hidden', !isTarget);
       p.setAttribute('aria-hidden', (!isTarget).toString());
-      // keep role=tabpanel in HTML; nothing else needed here
     });
 
     // Tabs: update active class + aria-selected + tabindex
@@ -44,16 +44,65 @@
     }
   }
 
-  // Attach nav listeners
+  // Attach nav listeners (for elements that have data-target)
   navTriggers.forEach(btn => {
     btn.addEventListener('click', (ev) => {
       const target = btn.dataset && btn.dataset.target;
       if (!target) return;
       // If clicking a tab, focus it; if clicking a .go, focus corresponding tab if exists
-      const tabToFocus = Array.from(tabButtons).find(t => t.dataset && t.dataset.target === target);
+      const tabToFocus = tabButtons.find(t => t.dataset && t.dataset.target === target);
       showPanel(target, { focus: !!tabToFocus });
-      // If there is a corresponding tab, move focus to it for accessibility
       if (tabToFocus) tabToFocus.focus();
+    });
+  });
+
+  // Attach start-button listeners (id starts with start-)
+  startButtons.forEach(btn => {
+    btn.addEventListener('click', async (ev) => {
+      const id = btn.id; // e.g. "start-prime"
+      const gameKey = id.replace(/^start-/, ''); // "prime"
+      let called = false;
+
+      // helper to camel-case the key for trying startGame names like startPrime
+      function toPascal(s) {
+        return s.split(/[^a-zA-Z0-9]/).map(part => part ? part[0].toUpperCase() + part.slice(1) : '').join('');
+      }
+      const pascal = toPascal(gameKey); // "Prime", "Frac6" etc.
+
+      const candidates = [
+        window[id], // window['start-prime'] (works via bracket)
+        window['start_' + gameKey], // start_prime
+        window['start' + pascal], // startPrime
+        window['start' + pascal.toLowerCase()] // startprime (less likely, but harmless)
+      ];
+
+      for (const fn of candidates) {
+        if (typeof fn === 'function') {
+          try {
+            // call; allow async functions
+            const maybePromise = fn.call(window, ev);
+            if (maybePromise && typeof maybePromise.then === 'function') {
+              await maybePromise;
+            }
+            called = true;
+            break;
+          } catch (e) {
+            console.error('start handler threw', e);
+            // continue to next candidate
+          }
+        }
+      }
+
+      if (!called) {
+        // Fallback: if there's a panel with same id as gameKey, show it
+        const panelExists = panels.some(p => p.id === gameKey);
+        if (panelExists) {
+          showPanel(gameKey, { focus: true });
+        } else {
+          // Final fallback: inform user so they can wire a start function
+          alert('Oyun başlatılamadı — oyun kodu bulunamadı. Geliştirici: start fonksiyonu ekleyin (ör. window.startPrime veya window["start-prime"]) veya panel id="' + gameKey + '" oluşturun.');
+        }
+      }
     });
   });
 
@@ -93,9 +142,7 @@
   // ----- Firebase optional init -----
   let firestore = null;
   async function initFirebaseIfConfigured() {
-    // The developer/user can add a firebase-config.js file that sets window.FIREBASE_CONFIG
     if (!window.FIREBASE_CONFIG) return false;
-    // dynamic load Firebase scripts if not loaded
     if (!window.firebase) {
       try {
         await loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js');
@@ -129,7 +176,6 @@
 
   // ----- Global leaderboard functions -----
   async function fetchGlobalTop(game, limit = 10) {
-    // If firestore available, query; otherwise return local
     if (firestore) {
       try {
         const q = await firestore.collection('scores')
@@ -150,7 +196,6 @@
   }
 
   async function submitScoreToBackend(game, name, score) {
-    // prefer firestore if available
     if (firestore) {
       try {
         await firestore.collection('scores').add({ game, name, score, date: new Date().toISOString() });
@@ -180,7 +225,6 @@
     titleEl.textContent = `${String(game).toUpperCase()} — Top 10`;
     listEl.innerHTML = '<div class="muted">Yükleniyor...</div>';
 
-    // init firebase if window.FIREBASE_CONFIG exists (only once)
     if (window.FIREBASE_CONFIG && !firestore) {
       await initFirebaseIfConfigured();
     }
@@ -202,12 +246,10 @@
 
   // submitScoreUI: prompt for name and send last local best score if available.
   window.submitScoreUI = async function(game) {
-    // find best local score for this game
     const localTop = getLocalTop(game, 1);
     const candidateScore = localTop && localTop.length ? localTop[0].score : null;
     let scoreToSend = candidateScore;
     if (scoreToSend === null) {
-      // ask user to enter their score manually
       const s = prompt('Göndermek istediğin skoru gir (sayı):');
       if (!s) return;
       const n = parseInt(s.trim(), 10);
@@ -220,7 +262,6 @@
     const name = prompt('Takma ad gir (en fazla 18 karakter):', 'Anon');
     if (name === null) return;
     const nickname = name.trim().slice(0, 18) || 'Anon';
-    // init firebase if necessary
     if (window.FIREBASE_CONFIG && !firestore) await initFirebaseIfConfigured();
     const res = await submitScoreToBackend(game, nickname, scoreToSend);
     if (res.ok) {
@@ -228,7 +269,6 @@
     } else {
       alert('Skor local olarak kaydedildi (offline veya hata).');
     }
-    // refresh leaderboard
     if (window.renderLeaderboardForGame) window.renderLeaderboardForGame(game, true);
   };
 
@@ -237,20 +277,16 @@
     return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
-  // Initialize a small demo: attach saveLocalScore to some global events in your game logic.
-  // Note: Existing game code should call saveLocalScore(game,score, name?) when ending a game.
-  // We expose the function globally so older code can call it:
+  // Expose save/get functions for game code
   window._saveLocalScore = saveLocalScore;
   window._getLocalTop = getLocalTop;
 
-  // optional: auto-init firebase if config exists (non-blocking)
   if (window.FIREBASE_CONFIG) {
     initFirebaseIfConfigured().then(ok => { if (ok) console.log('Firebase ready'); else console.log('Firebase failed to init'); });
   }
 
   // Start panel based on hash (if present) or fall back to home
   const initial = (location.hash && location.hash.slice(1)) || 'home';
-  // ensure the id exists; otherwise default to 'home'
   const validIds = panels.map(p => p.id);
   showPanel(validIds.includes(initial) ? initial : 'home');
 
