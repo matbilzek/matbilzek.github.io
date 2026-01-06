@@ -284,6 +284,228 @@
       </div>
     </section>
 
+    <section id="addition" class="panel hidden">
+  <h2>Toplama Oyunu</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="add-score">0</span></span>
+      <span>Kalan Soru: <span id="add-remaining">10</span></span>
+    </div>
+    <div class="question" id="add-question"></div>
+    <div class="answers" id="add-answers"></div>
+  </div>
+  <button class="btn back" data-target="ilkokul">Geri</button>
+  <script>
+    (function() {
+      let score = 0;
+      let remaining = 10;
+      function generateQuestion() {
+        const a = Math.floor(Math.random() * 20) + 1;
+        const b = Math.floor(Math.random() * 20) + 1;
+        const correct = a + b;
+        const options = [correct];
+        while (options.length < 4) {
+          const wrong = correct + Math.floor(Math.random() * 10 - 5);
+          if (wrong !== correct && !options.includes(wrong)) options.push(wrong);
+        }
+        options.sort(() => Math.random() - 0.5);
+        document.getElementById('add-question').textContent = `${a} + ${b} = ?`;
+        const answers = document.getElementById('add-answers');
+        answers.innerHTML = '';
+        options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'answer-btn';
+          btn.textContent = opt;
+          btn.onclick = () => checkAnswer(opt === correct, btn);
+          answers.appendChild(btn);
+        });
+      }
+      function checkAnswer(isCorrect, btn) {
+        btn.classList.add(isCorrect ? 'correct' : 'wrong');
+        if (isCorrect) score++;
+        remaining--;
+        document.getElementById('add-score').textContent = score;
+        document.getElementById('add-remaining').textContent = remaining;
+        setTimeout(() => {
+          if (remaining > 0) generateQuestion();
+          else {
+            alert(`Oyun bitti! Skor: ${score}`);
+            window._saveLocalScore('addition', score);
+          }
+        }, 1000);
+      }
+      generateQuestion();
+    })();
+  </script>
+</section>
+
+    <section id="subtraction" class="panel hidden">
+  <h2>Çıkarma Oyunu</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="sub-score">0</span></span>
+      <span>Kalan Soru: <span id="sub-remaining">10</span></span>
+    </div>
+    <div class="question" id="sub-question"></div>
+    <div class="answers" id="sub-answers"></div>
+  </div>
+  <button class="btn back" data-target="ilkokul">Geri</button>
+  <script>
+    (function() {
+      let score = 0;
+      let remaining = 10;
+      function generateQuestion() {
+        const a = Math.floor(Math.random() * 30) + 10;
+        const b = Math.floor(Math.random() * (a - 1)) + 1;
+        const correct = a - b;
+        const options = [correct];
+        while (options.length < 4) {
+          const wrong = correct + Math.floor(Math.random() * 10 - 5);
+          if (wrong !== correct && !options.includes(wrong)) options.push(wrong);
+        }
+        options.sort(() => Math.random() - 0.5);
+        document.getElementById('sub-question').textContent = `${a} - ${b} = ?`;
+        const answers = document.getElementById('sub-answers');
+        answers.innerHTML = '';
+        options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'answer-btn';
+          btn.textContent = opt;
+          btn.onclick = () => checkAnswer(opt === correct, btn);
+          answers.appendChild(btn);
+        });
+      }
+      function checkAnswer(isCorrect, btn) {
+        btn.classList.add(isCorrect ? 'correct' : 'wrong');
+        if (isCorrect) score++;
+        remaining--;
+        document.getElementById('sub-score').textContent = score;
+        document.getElementById('sub-remaining').textContent = remaining;
+        setTimeout(() => {
+          if (remaining > 0) generateQuestion();
+          else {
+            alert(`Oyun bitti! Skor: ${score}`);
+            window._saveLocalScore('subtraction', score);
+          }
+        }, 1000);
+      }
+      generateQuestion();
+    })();
+  </script>
+</section>
+
+    <section id="multiplication" class="panel hidden">
+  <h2>Çarpma Oyunu</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="mul-score">0</span></span>
+      <span>Kalan Soru: <span id="mul-remaining">10</span></span>
+    </div>
+    <div class="question" id="mul-question"></div>
+    <div class="answers" id="mul-answers"></div>
+  </div>
+  <button class="btn back" data-target="ilkokul">Geri</button>
+  <script>
+    (function() {
+      let score = 0;
+      let remaining = 10;
+      function generateQuestion() {
+        const a = Math.floor(Math.random() * 10) + 1;
+        const b = Math.floor(Math.random() * 10) + 1;
+        const correct = a * b;
+        const options = [correct];
+        while (options.length < 4) {
+          const wrong = correct + Math.floor(Math.random() * 20 - 10);
+          if (wrong !== correct && !options.includes(wrong)) options.push(wrong);
+        }
+        options.sort(() => Math.random() - 0.5);
+        document.getElementById('mul-question').textContent = `${a} × ${b} = ?`;
+        const answers = document.getElementById('mul-answers');
+        answers.innerHTML = '';
+        options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'answer-btn';
+          btn.textContent = opt;
+          btn.onclick = () => checkAnswer(opt === correct, btn);
+          answers.appendChild(btn);
+        });
+      }
+      function checkAnswer(isCorrect, btn) {
+        btn.classList.add(isCorrect ? 'correct' : 'wrong');
+        if (isCorrect) score++;
+        remaining--;
+        document.getElementById('mul-score').textContent = score;
+        document.getElementById('mul-remaining').textContent = remaining;
+        setTimeout(() => {
+          if (remaining > 0) generateQuestion();
+          else {
+            alert(`Oyun bitti! Skor: ${score}`);
+            window._saveLocalScore('multiplication', score);
+          }
+        }, 1000);
+      }
+      generateQuestion();
+    })();
+  </script>
+</section>
+
+    <section id="division" class="panel hidden">
+  <h2>Bölme Oyunu</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="div-score">0</span></span>
+      <span>Kalan Soru: <span id="div-remaining">10</span></span>
+    </div>
+    <div class="question" id="div-question"></div>
+    <div class="answers" id="div-answers"></div>
+  </div>
+  <button class="btn back" data-target="ilkokul">Geri</button>
+  <script>
+    (function() {
+      let score = 0;
+      let remaining = 10;
+      function generateQuestion() {
+        const b = Math.floor(Math.random() * 9) + 2;
+        const correct = Math.floor(Math.random() * 10) + 1;
+        const a = b * correct;
+        const options = [correct];
+        while (options.length < 4) {
+          const wrong = correct + Math.floor(Math.random() * 4 - 2);
+          if (wrong !== correct && !options.includes(wrong) && wrong > 0) options.push(wrong);
+        }
+        options.sort(() => Math.random() - 0.5);
+        document.getElementById('div-question').textContent = `${a} ÷ ${b} = ?`;
+        const answers = document.getElementById('div-answers');
+        answers.innerHTML = '';
+        options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'answer-btn';
+          btn.textContent = opt;
+          btn.onclick = () => checkAnswer(opt === correct, btn);
+          answers.appendChild(btn);
+        });
+      }
+      function checkAnswer(isCorrect, btn) {
+        btn.classList.add(isCorrect ? 'correct' : 'wrong');
+        if (isCorrect) score++;
+        remaining--;
+        document.getElementById('div-score').textContent = score;
+        document.getElementById('div-remaining').textContent = remaining;
+        setTimeout(() => {
+          if (remaining > 0) generateQuestion();
+          else {
+            alert(`Oyun bitti! Skor: ${score}`);
+            window._saveLocalScore('division', score);
+          }
+        }, 1000);
+      }
+      generateQuestion();
+    })();
+  </script>
+</section>
+
+    
+
     <!-- Leaderboard panel (singleton used by app.js) -->
     <section id="leaderboard" class="panel hidden">
       <h2 id="lb-title">Leaderboard</h2>
