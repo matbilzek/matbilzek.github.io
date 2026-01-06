@@ -72,7 +72,7 @@
       <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
     </section>
 
-    <!-- OYUN BİTTİ MODAL -->
+    <!-- Oyun Bitti Modal -->
     <div id="game-over-modal" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:1000;">
       <div class="card" style="padding:2rem;max-width:90%;text-align:center;border-radius:16px;">
         <h2 style="margin:0 0 1rem 0;color:var(--accent-3);">Oyun Bitti!</h2>
@@ -80,8 +80,6 @@
         <button class="btn" onclick="closeGameOverModal()" style="padding:0.8rem 1.6rem;font-size:1.1rem;">Tamam</button>
       </div>
     </div>
-
-    <!-- OYUN PANELLERİ -->
 
     <!-- 1. Toplama -->
     <section id="addition" class="panel hidden">
@@ -100,12 +98,12 @@
         <button class="btn tab" data-target="ilkokul">Geri</button>
       </div>
       <script>
-        // Sadece bu panel görünüyorsa çalışsın
         if (document.getElementById('addition').classList.contains('hidden')) return;
 
         let score = 0, time = 60, combo = 0, timer;
         const scoreEl = document.getElementById('add-score');
         const timeEl = document.getElementById('add-time');
+
         timer = setInterval(() => {
           time--;
           timeEl.textContent = time;
@@ -121,21 +119,32 @@
           const b = Math.floor(Math.random() * 20) + 1;
           const correct = a + b;
           let opts = [correct];
-          while (opts.length < 4) { let w = correct + Math.floor(Math.random() * 11 - 5); if (w > 0 && !opts.includes(w)) opts.push(w); }
+          while (opts.length < 4) {
+            let w = correct + Math.floor(Math.random() * 11 - 5);
+            if (w > 0 && !opts.includes(w)) opts.push(w);
+          }
           opts.sort(() => Math.random() - 0.5);
           document.getElementById('add-question').textContent = `${a} + ${b} = ?`;
           const ans = document.getElementById('add-answers'); ans.innerHTML = '';
           opts.forEach(o => {
-            const btn = document.createElement('button'); btn.className = 'answer-btn'; btn.textContent = o;
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.textContent = o;
             btn.onclick = () => {
               if (btn.disabled) return;
               document.querySelectorAll('#add-answers button').forEach(b => b.disabled = true);
               btn.classList.add(o === correct ? 'correct' : 'wrong');
-              if (o === correct) { score += 10; combo++; if (combo % 3 === 0) score += 15; }
-              else combo = 0;
+              if (o === correct) {
+                score += 10;
+                combo++;
+                if (combo % 3 === 0) score += 15;
+              } else combo = 0;
               scoreEl.textContent = score;
               setTimeout(() => {
-                document.querySelectorAll('#add-answers button').forEach(b => { b.disabled = false; b.classList.remove('correct','wrong'); });
+                document.querySelectorAll('#add-answers button').forEach(b => {
+                  b.disabled = false;
+                  b.classList.remove('correct', 'wrong');
+                });
                 gen();
               }, 800);
             };
@@ -163,37 +172,60 @@
         <button class="btn tab" data-target="ilkokul">Geri</button>
       </div>
       <script>
-        (function() {
-          let score = 0, time = 60, combo = 0, timer;
-          const scoreEl = document.getElementById('sub-score');
-          const timeEl = document.getElementById('sub-time');
-          timer = setInterval(() => { time--; timeEl.textContent = time; if (time <= 0) { clearInterval(timer); alershowGameOverModal(score); window._saveLocalScore('subtraction', score); } }, 1000);
+        if (document.getElementById('subtraction').classList.contains('hidden')) return;
 
-          function gen() {
-            const a = Math.floor(Math.random() * 30) + 10;
-            const b = Math.floor(Math.random() * a);
-            const correct = a - b;
-            let opts = [correct];
-            while (opts.length < 4) { let w = correct + Math.floor(Math.random() * 11 - 5); if (w >= 0 && !opts.includes(w)) opts.push(w); }
-            opts.sort(() => Math.random() - 0.5);
-            document.getElementById('sub-question').textContent = `${a} - ${b} = ?`;
-            const ans = document.getElementById('sub-answers'); ans.innerHTML = '';
-            opts.forEach(o => {
-              const btn = document.createElement('button'); btn.className = 'answer-btn'; btn.textContent = o;
-              btn.onclick = () => {
-                if (btn.disabled) return;
-                document.querySelectorAll('#sub-answers button').forEach(b => b.disabled = true);
-                btn.classList.add(o === correct ? 'correct' : 'wrong');
-                if (o === correct) { score += 10; combo++; if (combo % 3 === 0) { score += 15; } }
-                else combo = 0;
-                scoreEl.textContent = score;
-                setTimeout(() => { document.querySelectorAll('#sub-answers button').forEach(b => { b.disabled = false; b.classList.remove('correct','wrong'); }); gen(); }, 800);
-              };
-              ans.appendChild(btn);
-            });
+        let score = 0, time = 60, combo = 0, timer;
+        const scoreEl = document.getElementById('sub-score');
+        const timeEl = document.getElementById('sub-time');
+
+        timer = setInterval(() => {
+          time--;
+          timeEl.textContent = time;
+          if (time <= 0) {
+            clearInterval(timer);
+            showGameOverModal(score);
+            window._saveLocalScore('subtraction', score);
           }
-          gen();
-        })();
+        }, 1000);
+
+        function gen() {
+          const a = Math.floor(Math.random() * 30) + 10;
+          const b = Math.floor(Math.random() * a);
+          const correct = a - b;
+          let opts = [correct];
+          while (opts.length < 4) {
+            let w = correct + Math.floor(Math.random() * 11 - 5);
+            if (w >= 0 && !opts.includes(w)) opts.push(w);
+          }
+          opts.sort(() => Math.random() - 0.5);
+          document.getElementById('sub-question').textContent = `${a} - ${b} = ?`;
+          const ans = document.getElementById('sub-answers'); ans.innerHTML = '';
+          opts.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.textContent = o;
+            btn.onclick = () => {
+              if (btn.disabled) return;
+              document.querySelectorAll('#sub-answers button').forEach(b => b.disabled = true);
+              btn.classList.add(o === correct ? 'correct' : 'wrong');
+              if (o === correct) {
+                score += 10;
+                combo++;
+                if (combo % 3 === 0) score += 15;
+              } else combo = 0;
+              scoreEl.textContent = score;
+              setTimeout(() => {
+                document.querySelectorAll('#sub-answers button').forEach(b => {
+                  b.disabled = false;
+                  b.classList.remove('correct', 'wrong');
+                });
+                gen();
+              }, 800);
+            };
+            ans.appendChild(btn);
+          });
+        }
+        gen();
       </script>
     </section>
 
@@ -214,37 +246,60 @@
         <button class="btn tab" data-target="ilkokul">Geri</button>
       </div>
       <script>
-        (function() {
-          let score = 0, time = 60, combo = 0, timer;
-          const scoreEl = document.getElementById('mul-score');
-          const timeEl = document.getElementById('mul-time');
-          timer = setInterval(() => { time--; timeEl.textContent = time; if (time <= 0) { clearInterval(timer); showGameOverModal(score); window._saveLocalScore('multiplication', score); } }, 1000);
+        if (document.getElementById('multiplication').classList.contains('hidden')) return;
 
-          function gen() {
-            const a = Math.floor(Math.random() * 10) + 1;
-            const b = Math.floor(Math.random() * 10) + 1;
-            const correct = a * b;
-            let opts = [correct];
-            while (opts.length < 4) { let w = correct + Math.floor(Math.random() * 21 - 10); if (!opts.includes(w)) opts.push(w); }
-            opts.sort(() => Math.random() - 0.5);
-            document.getElementById('mul-question').textContent = `${a} × ${b} = ?`;
-            const ans = document.getElementById('mul-answers'); ans.innerHTML = '';
-            opts.forEach(o => {
-              const btn = document.createElement('button'); btn.className = 'answer-btn'; btn.textContent = o;
-              btn.onclick = () => {
-                if (btn.disabled) return;
-                document.querySelectorAll('#mul-answers button').forEach(b => b.disabled = true);
-                btn.classList.add(o === correct ? 'correct' : 'wrong');
-                if (o === correct) { score += 10; combo++; if (combo % 3 === 0) { score += 15; } }
-                else combo = 0;
-                scoreEl.textContent = score;
-                setTimeout(() => { document.querySelectorAll('#mul-answers button').forEach(b => { b.disabled = false; b.classList.remove('correct','wrong'); }); gen(); }, 800);
-              };
-              ans.appendChild(btn);
-            });
+        let score = 0, time = 60, combo = 0, timer;
+        const scoreEl = document.getElementById('mul-score');
+        const timeEl = document.getElementById('mul-time');
+
+        timer = setInterval(() => {
+          time--;
+          timeEl.textContent = time;
+          if (time <= 0) {
+            clearInterval(timer);
+            showGameOverModal(score);
+            window._saveLocalScore('multiplication', score);
           }
-          gen();
-        })();
+        }, 1000);
+
+        function gen() {
+          const a = Math.floor(Math.random() * 10) + 1;
+          const b = Math.floor(Math.random() * 10) + 1;
+          const correct = a * b;
+          let opts = [correct];
+          while (opts.length < 4) {
+            let w = correct + Math.floor(Math.random() * 21 - 10);
+            if (!opts.includes(w)) opts.push(w);
+          }
+          opts.sort(() => Math.random() - 0.5);
+          document.getElementById('mul-question').textContent = `${a} × ${b} = ?`;
+          const ans = document.getElementById('mul-answers'); ans.innerHTML = '';
+          opts.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.textContent = o;
+            btn.onclick = () => {
+              if (btn.disabled) return;
+              document.querySelectorAll('#mul-answers button').forEach(b => b.disabled = true);
+              btn.classList.add(o === correct ? 'correct' : 'wrong');
+              if (o === correct) {
+                score += 10;
+                combo++;
+                if (combo % 3 === 0) score += 15;
+              } else combo = 0;
+              scoreEl.textContent = score;
+              setTimeout(() => {
+                document.querySelectorAll('#mul-answers button').forEach(b => {
+                  b.disabled = false;
+                  b.classList.remove('correct', 'wrong');
+                });
+                gen();
+              }, 800);
+            };
+            ans.appendChild(btn);
+          });
+        }
+        gen();
       </script>
     </section>
 
@@ -265,38 +320,61 @@
         <button class="btn tab" data-target="ilkokul">Geri</button>
       </div>
       <script>
-        (function() {
-          let score = 0, time = 60, combo = 0, timer;
-          const scoreEl = document.getElementById('div-score');
-          const timeEl = document.getElementById('div-time');
-          timer = setInterval(() => { time--; timeEl.textContent = time; if (time <= 0) { clearInterval(timer); showGameOverModal(score); window._saveLocalScore('division', score); } }, 1000);
+        if (document.getElementById('division').classList.contains('hidden')) return;
 
-          function gen() {
-            const divisor = Math.floor(Math.random() * 9) + 2;
-            const quotient = Math.floor(Math.random() * 10) + 1;
-            const dividend = divisor * quotient;
-            const correct = quotient;
-            let opts = [correct];
-            while (opts.length < 4) { let w = correct + Math.floor(Math.random() * 5 - 2); if (w > 0 && !opts.includes(w)) opts.push(w); }
-            opts.sort(() => Math.random() - 0.5);
-            document.getElementById('div-question').textContent = `${dividend} ÷ ${divisor} = ?`;
-            const ans = document.getElementById('div-answers'); ans.innerHTML = '';
-            opts.forEach(o => {
-              const btn = document.createElement('button'); btn.className = 'answer-btn'; btn.textContent = o;
-              btn.onclick = () => {
-                if (btn.disabled) return;
-                document.querySelectorAll('#div-answers button').forEach(b => b.disabled = true);
-                btn.classList.add(o === correct ? 'correct' : 'wrong');
-                if (o === correct) { score += 10; combo++; if (combo % 3 === 0) { score += 15; } }
-                else combo = 0;
-                scoreEl.textContent = score;
-                setTimeout(() => { document.querySelectorAll('#div-answers button').forEach(b => { b.disabled = false; b.classList.remove('correct','wrong'); }); gen(); }, 800);
-              };
-              ans.appendChild(btn);
-            });
+        let score = 0, time = 60, combo = 0, timer;
+        const scoreEl = document.getElementById('div-score');
+        const timeEl = document.getElementById('div-time');
+
+        timer = setInterval(() => {
+          time--;
+          timeEl.textContent = time;
+          if (time <= 0) {
+            clearInterval(timer);
+            showGameOverModal(score);
+            window._saveLocalScore('division', score);
           }
-          gen();
-        })();
+        }, 1000);
+
+        function gen() {
+          const divisor = Math.floor(Math.random() * 9) + 2;
+          const quotient = Math.floor(Math.random() * 10) + 1;
+          const dividend = divisor * quotient;
+          const correct = quotient;
+          let opts = [correct];
+          while (opts.length < 4) {
+            let w = correct + Math.floor(Math.random() * 5 - 2);
+            if (w > 0 && !opts.includes(w)) opts.push(w);
+          }
+          opts.sort(() => Math.random() - 0.5);
+          document.getElementById('div-question').textContent = `${dividend} ÷ ${divisor} = ?`;
+          const ans = document.getElementById('div-answers'); ans.innerHTML = '';
+          opts.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.textContent = o;
+            btn.onclick = () => {
+              if (btn.disabled) return;
+              document.querySelectorAll('#div-answers button').forEach(b => b.disabled = true);
+              btn.classList.add(o === correct ? 'correct' : 'wrong');
+              if (o === correct) {
+                score += 10;
+                combo++;
+                if (combo % 3 === 0) score += 15;
+              } else combo = 0;
+              scoreEl.textContent = score;
+              setTimeout(() => {
+                document.querySelectorAll('#div-answers button').forEach(b => {
+                  b.disabled = false;
+                  b.classList.remove('correct', 'wrong');
+                });
+                gen();
+              }, 800);
+            };
+            ans.appendChild(btn);
+          });
+        }
+        gen();
       </script>
     </section>
 
@@ -317,39 +395,63 @@
         <button class="btn tab" data-target="ortaokul">Geri</button>
       </div>
       <script>
-        (function() {
-          let score = 0, time = 60, combo = 0, timer;
-          const scoreEl = document.getElementById('prime-score');
-          const timeEl = document.getElementById('prime-time');
-          timer = setInterval(() => { time--; timeEl.textContent = time; if (time <= 0) { clearInterval(timer); showGameOverModal(score); window._saveLocalScore('primes', score); } }, 1000);
+        if (document.getElementById('primes').classList.contains('hidden')) return;
 
-          const isPrime = n => { if (n <= 1) return false; for (let i = 2; i <= Math.sqrt(n); i++) if (n % i === 0) return false; return true; };
+        let score = 0, time = 60, combo = 0, timer;
+        const scoreEl = document.getElementById('prime-score');
+        const timeEl = document.getElementById('prime-time');
 
-          function gen() {
-            const num = Math.floor(Math.random() * 99) + 2;
-            const correct = isPrime(num) ? 'Evet' : 'Hayır';
-            document.getElementById('prime-question').textContent = `${num} asal sayı mı?`;
-            const ans = document.getElementById('prime-answers'); ans.innerHTML = '';
-            ['Evet', 'Hayır'].forEach(o => {
-              const btn = document.createElement('button'); btn.className = 'answer-btn'; btn.textContent = o;
-              btn.onclick = () => {
-                if (btn.disabled) return;
-                document.querySelectorAll('#prime-answers button').forEach(b => b.disabled = true);
-                btn.classList.add(o === correct ? 'correct' : 'wrong');
-                if (o === correct) { score += 10; combo++; if (combo % 3 === 0) { score += 15; } }
-                else combo = 0;
-                scoreEl.textContent = score;
-                setTimeout(() => { document.querySelectorAll('#prime-answers button').forEach(b => { b.disabled = false; b.classList.remove('correct','wrong'); }); gen(); }, 800);
-              };
-              ans.appendChild(btn);
-            });
+        timer = setInterval(() => {
+          time--;
+          timeEl.textContent = time;
+          if (time <= 0) {
+            clearInterval(timer);
+            showGameOverModal(score);
+            window._saveLocalScore('primes', score);
           }
-          gen();
-        })();
+        }, 1000);
+
+        const isPrime = n => {
+          if (n <= 1) return false;
+          for (let i = 2; i <= Math.sqrt(n); i++) if (n % i === 0) return false;
+          return true;
+        };
+
+        function gen() {
+          const num = Math.floor(Math.random() * 99) + 2;
+          const correct = isPrime(num) ? 'Evet' : 'Hayır';
+          document.getElementById('prime-question').textContent = `${num} asal sayı mı?`;
+          const ans = document.getElementById('prime-answers'); ans.innerHTML = '';
+          ['Evet', 'Hayır'].forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.textContent = o;
+            btn.onclick = () => {
+              if (btn.disabled) return;
+              document.querySelectorAll('#prime-answers button').forEach(b => b.disabled = true);
+              btn.classList.add(o === correct ? 'correct' : 'wrong');
+              if (o === correct) {
+                score += 10;
+                combo++;
+                if (combo % 3 === 0) score += 15;
+              } else combo = 0;
+              scoreEl.textContent = score;
+              setTimeout(() => {
+                document.querySelectorAll('#prime-answers button').forEach(b => {
+                  b.disabled = false;
+                  b.classList.remove('correct', 'wrong');
+                });
+                gen();
+              }, 800);
+            };
+            ans.appendChild(btn);
+          });
+        }
+        gen();
       </script>
     </section>
 
-   <!-- 6. Çarpanlar -->
+    <!-- 6. Çarpanlar -->
     <section id="factors" class="panel hidden">
       <h2>Çarpanlar Oyunu</h2>
       <div class="game-area">
@@ -366,44 +468,70 @@
         <button class="btn tab" data-target="ortaokul">Geri</button>
       </div>
       <script>
-        (function() {
-          let score = 0, time = 60, combo = 0, timer;
-          const scoreEl = document.getElementById('fac-score');
-          const timeEl = document.getElementById('fac-time');
-          timer = setInterval(() => { time--; timeEl.textContent = time; if (time <= 0) { clearInterval(timer); showGameOverModal(score); window._saveLocalScore('factors', score); } }, 1000);
-          const getFactors = n => { let f = []; for (let i = 1; i <= n; i++) if (n % i === 0) f.push(i); return f.join(', '); };
-          function gen() {
-            const num = Math.floor(Math.random() * 50) + 10;
-            const correct = getFactors(num);
-            let opts = [correct];
-            while (opts.length < 4) {
-              const wrongNum = num + Math.floor(Math.random() * 10 - 5);
-              const w = wrongNum > 1 ? getFactors(wrongNum) : '1';
-              if (!opts.includes(w)) opts.push(w);
-            }
-            opts.sort(() => Math.random() - 0.5);
-            document.getElementById('fac-question').textContent = `${num} sayısının çarpanları?`;
-            const ans = document.getElementById('fac-answers'); ans.innerHTML = '';
-            opts.forEach(o => {
-              const btn = document.createElement('button'); btn.className = 'answer-btn'; btn.textContent = o;
-              btn.onclick = () => {
-                if (btn.disabled) return;
-                document.querySelectorAll('#fac-answers button').forEach(b => b.disabled = true);
-                btn.classList.add(o === correct ? 'correct' : 'wrong');
-                if (o === correct) { score += 10; combo++; if (combo % 3 === 0) { score += 15; } }
-                else combo = 0;
-                scoreEl.textContent = score;
-                setTimeout(() => { document.querySelectorAll('#fac-answers button').forEach(b => { b.disabled = false; b.classList.remove('correct','wrong'); }); gen(); }, 800);
-              };
-              ans.appendChild(btn);
-            });
+        if (document.getElementById('factors').classList.contains('hidden')) return;
+
+        let score = 0, time = 60, combo = 0, timer;
+        const scoreEl = document.getElementById('fac-score');
+        const timeEl = document.getElementById('fac-time');
+
+        timer = setInterval(() => {
+          time--;
+          timeEl.textContent = time;
+          if (time <= 0) {
+            clearInterval(timer);
+            showGameOverModal(score);
+            window._saveLocalScore('factors', score);
           }
-          gen();
-        })();
+        }, 1000);
+
+        const getFactorsStr = n => {
+          let f = [];
+          for (let i = 1; i <= n; i++) if (n % i === 0) f.push(i);
+          return f.join(', ');
+        };
+
+        function gen() {
+          const num = Math.floor(Math.random() * 50) + 10;
+          const correct = getFactorsStr(num);
+          let opts = [correct];
+          while (opts.length < 4) {
+            const wrongNum = num + Math.floor(Math.random() * 10 - 5);
+            const w = wrongNum > 1 ? getFactorsStr(wrongNum) : '1';
+            if (!opts.includes(w)) opts.push(w);
+          }
+          opts.sort(() => Math.random() - 0.5);
+          document.getElementById('fac-question').textContent = `${num} sayısının çarpanları?`;
+          const ans = document.getElementById('fac-answers'); ans.innerHTML = '';
+          opts.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.textContent = o;
+            btn.onclick = () => {
+              if (btn.disabled) return;
+              document.querySelectorAll('#fac-answers button').forEach(b => b.disabled = true);
+              btn.classList.add(o === correct ? 'correct' : 'wrong');
+              if (o === correct) {
+                score += 10;
+                combo++;
+                if (combo % 3 === 0) score += 15;
+              } else combo = 0;
+              scoreEl.textContent = score;
+              setTimeout(() => {
+                document.querySelectorAll('#fac-answers button').forEach(b => {
+                  b.disabled = false;
+                  b.classList.remove('correct', 'wrong');
+                });
+                gen();
+              }, 800);
+            };
+            ans.appendChild(btn);
+          });
+        }
+        gen();
       </script>
     </section>
 
-    <!-- 7. EBOB/EKOK -->
+    <!-- 7. EBOB / EKOK -->
     <section id="gcdlcm" class="panel hidden">
       <h2>EBOB / EKOK Oyunu</h2>
       <div class="game-area">
@@ -420,39 +548,64 @@
         <button class="btn tab" data-target="ortaokul">Geri</button>
       </div>
       <script>
-        (function() {
-          let score = 0, time = 60, combo = 0, timer;
-          const scoreEl = document.getElementById('gcd-score');
-          const timeEl = document.getElementById('gcd-time');
-          timer = setInterval(() => { time--; timeEl.textContent = time; if (time <= 0) { clearInterval(timer); showGameOverModal(score); window._saveLocalScore('gcdlcm', score); } }, 1000);
-          const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
-          const lcm = (a, b) => (a * b) / gcd(a, b);
-          function gen() {
-            const a = Math.floor(Math.random() * 30) + 5;
-            const b = Math.floor(Math.random() * 30) + 5;
-            const isGcd = Math.random() > 0.5;
-            const correct = isGcd ? gcd(a, b) : lcm(a, b);
-            let opts = [correct];
-            while (opts.length < 4) { let w = correct + Math.floor(Math.random() * 11 - 5); if (w > 0 && !opts.includes(w)) opts.push(w); }
-            opts.sort(() => Math.random() - 0.5);
-            document.getElementById('gcd-question').textContent = `${a} ve ${b}'nin ${isGcd ? 'EBOB' : 'EKOK'}'u?`;
-            const ans = document.getElementById('gcd-answers'); ans.innerHTML = '';
-            opts.forEach(o => {
-              const btn = document.createElement('button'); btn.className = 'answer-btn'; btn.textContent = o;
-              btn.onclick = () => {
-                if (btn.disabled) return;
-                document.querySelectorAll('#gcd-answers button').forEach(b => b.disabled = true);
-                btn.classList.add(o === correct ? 'correct' : 'wrong');
-                if (o === correct) { score += 10; combo++; if (combo % 3 === 0) { score += 15; } }
-                else combo = 0;
-                scoreEl.textContent = score;
-                setTimeout(() => { document.querySelectorAll('#gcd-answers button').forEach(b => { b.disabled = false; b.classList.remove('correct','wrong'); }); gen(); }, 800);
-              };
-              ans.appendChild(btn);
-            });
+        if (document.getElementById('gcdlcm').classList.contains('hidden')) return;
+
+        let score = 0, time = 60, combo = 0, timer;
+        const scoreEl = document.getElementById('gcd-score');
+        const timeEl = document.getElementById('gcd-time');
+
+        timer = setInterval(() => {
+          time--;
+          timeEl.textContent = time;
+          if (time <= 0) {
+            clearInterval(timer);
+            showGameOverModal(score);
+            window._saveLocalScore('gcdlcm', score);
           }
-          gen();
-        })();
+        }, 1000);
+
+        const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+        const lcm = (a, b) => (a * b) / gcd(a, b);
+
+        function gen() {
+          const a = Math.floor(Math.random() * 30) + 5;
+          const b = Math.floor(Math.random() * 30) + 5;
+          const isGcd = Math.random() > 0.5;
+          const correct = isGcd ? gcd(a, b) : lcm(a, b);
+          let opts = [correct];
+          while (opts.length < 4) {
+            let w = correct + Math.floor(Math.random() * 11 - 5);
+            if (w > 0 && !opts.includes(w)) opts.push(w);
+          }
+          opts.sort(() => Math.random() - 0.5);
+          document.getElementById('gcd-question').textContent = `${a} ve ${b}'nin ${isGcd ? 'EBOB' : 'EKOK'}'u?`;
+          const ans = document.getElementById('gcd-answers'); ans.innerHTML = '';
+          opts.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.textContent = o;
+            btn.onclick = () => {
+              if (btn.disabled) return;
+              document.querySelectorAll('#gcd-answers button').forEach(b => b.disabled = true);
+              btn.classList.add(o === correct ? 'correct' : 'wrong');
+              if (o === correct) {
+                score += 10;
+                combo++;
+                if (combo % 3 === 0) score += 15;
+              } else combo = 0;
+              scoreEl.textContent = score;
+              setTimeout(() => {
+                document.querySelectorAll('#gcd-answers button').forEach(b => {
+                  b.disabled = false;
+                  b.classList.remove('correct', 'wrong');
+                });
+                gen();
+              }, 800);
+            };
+            ans.appendChild(btn);
+          });
+        }
+        gen();
       </script>
     </section>
 
@@ -473,41 +626,62 @@
         <button class="btn tab" data-target="ortaokul">Geri</button>
       </div>
       <script>
-        (function() {
-          let score = 0, time = 60, combo = 0, timer;
-          const scoreEl = document.getElementById('frac-score');
-          const timeEl = document.getElementById('frac-time');
-          timer = setInterval(() => { time--; timeEl.textContent = time; if (time <= 0) { clearInterval(timer); showGameOverModal(score); window._saveLocalScore('frac6', score); } }, 1000);
-          function gen() {
-            const pay = Math.floor(Math.random() * 10) + 1;
-            const payda = Math.floor(Math.random() * 9) + 2;
-            const carp = Math.floor(Math.random() * 5) + 2;
-            const correct = `${pay * carp}/${payda * carp}`;
-            let opts = [correct];
-            while (opts.length < 4) {
-              const wrongPay = pay * carp + Math.floor(Math.random() * 5 - 2);
-              const w = `${wrongPay}/${payda * carp}`;
-              if (!opts.includes(w)) opts.push(w);
-            }
-            opts.sort(() => Math.random() - 0.5);
-            document.getElementById('frac-question').textContent = `${pay}/${payda} ile denk kesir?`;
-            const ans = document.getElementById('frac-answers'); ans.innerHTML = '';
-            opts.forEach(o => {
-              const btn = document.createElement('button'); btn.className = 'answer-btn'; btn.textContent = o;
-              btn.onclick = () => {
-                if (btn.disabled) return;
-                document.querySelectorAll('#frac-answers button').forEach(b => b.disabled = true);
-                btn.classList.add(o === correct ? 'correct' : 'wrong');
-                if (o === correct) { score += 10; combo++; if (combo % 3 === 0) { score += 15; } }
-                else combo = 0;
-                scoreEl.textContent = score;
-                setTimeout(() => { document.querySelectorAll('#frac-answers button').forEach(b => { b.disabled = false; b.classList.remove('correct','wrong'); }); gen(); }, 800);
-              };
-              ans.appendChild(btn);
-            });
+        if (document.getElementById('frac6').classList.contains('hidden')) return;
+
+        let score = 0, time = 60, combo = 0, timer;
+        const scoreEl = document.getElementById('frac-score');
+        const timeEl = document.getElementById('frac-time');
+
+        timer = setInterval(() => {
+          time--;
+          timeEl.textContent = time;
+          if (time <= 0) {
+            clearInterval(timer);
+            showGameOverModal(score);
+            window._saveLocalScore('frac6', score);
           }
-          gen();
-        })();
+        }, 1000);
+
+        function gen() {
+          const pay = Math.floor(Math.random() * 10) + 1;
+          const payda = Math.floor(Math.random() * 9) + 2;
+          const carp = Math.floor(Math.random() * 5) + 2;
+          const correct = `${pay * carp}/${payda * carp}`;
+          let opts = [correct];
+          while (opts.length < 4) {
+            const wrongPay = pay * carp + Math.floor(Math.random() * 5 - 2);
+            const w = `${wrongPay}/${payda * carp}`;
+            if (!opts.includes(w)) opts.push(w);
+          }
+          opts.sort(() => Math.random() - 0.5);
+          document.getElementById('frac-question').textContent = `${pay}/${payda} ile denk kesir?`;
+          const ans = document.getElementById('frac-answers'); ans.innerHTML = '';
+          opts.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.textContent = o;
+            btn.onclick = () => {
+              if (btn.disabled) return;
+              document.querySelectorAll('#frac-answers button').forEach(b => b.disabled = true);
+              btn.classList.add(o === correct ? 'correct' : 'wrong');
+              if (o === correct) {
+                score += 10;
+                combo++;
+                if (combo % 3 === 0) score += 15;
+              } else combo = 0;
+              scoreEl.textContent = score;
+              setTimeout(() => {
+                document.querySelectorAll('#frac-answers button').forEach(b => {
+                  b.disabled = false;
+                  b.classList.remove('correct', 'wrong');
+                });
+                gen();
+              }, 800);
+            };
+            ans.appendChild(btn);
+          });
+        }
+        gen();
       </script>
     </section>
 
@@ -528,41 +702,62 @@
         <button class="btn tab" data-target="ortaokul">Geri</button>
       </div>
       <script>
-        (function() {
-          let score = 0, time = 60, combo = 0, timer;
-          const scoreEl = document.getElementById('mix-score');
-          const timeEl = document.getElementById('mix-time');
-          timer = setInterval(() => { time--; timeEl.textContent = time; if (time <= 0) { clearInterval(timer); showGameOverModal(score); window._saveLocalScore('mixed', score); } }, 1000);
-          function gen() {
-            const tam = Math.floor(Math.random() * 6) + 1;
-            const pay = Math.floor(Math.random() * 8) + 1;
-            const payda = Math.floor(Math.random() * 7) + 3;
-            const correct = `${tam * payda + pay}/${payda}`;
-            let opts = [correct];
-            while (opts.length < 4) {
-              const wrongPay = tam * payda + pay + Math.floor(Math.random() * 9 - 4);
-              const w = `${wrongPay}/${payda}`;
-              if (!opts.includes(w)) opts.push(w);
-            }
-            opts.sort(() => Math.random() - 0.5);
-            document.getElementById('mix-question').innerHTML = `<strong>${tam} ${pay}/${payda}</strong> bileşik kesir hali?`;
-            const ans = document.getElementById('mix-answers'); ans.innerHTML = '';
-            opts.forEach(o => {
-              const btn = document.createElement('button'); btn.className = 'answer-btn'; btn.textContent = o;
-              btn.onclick = () => {
-                if (btn.disabled) return;
-                document.querySelectorAll('#mix-answers button').forEach(b => b.disabled = true);
-                btn.classList.add(o === correct ? 'correct' : 'wrong');
-                if (o === correct) { score += 10; combo++; if (combo % 3 === 0) { score += 15; } }
-                else combo = 0;
-                scoreEl.textContent = score;
-                setTimeout(() => { document.querySelectorAll('#mix-answers button').forEach(b => { b.disabled = false; b.classList.remove('correct','wrong'); }); gen(); }, 800);
-              };
-              ans.appendChild(btn);
-            });
+        if (document.getElementById('mixed').classList.contains('hidden')) return;
+
+        let score = 0, time = 60, combo = 0, timer;
+        const scoreEl = document.getElementById('mix-score');
+        const timeEl = document.getElementById('mix-time');
+
+        timer = setInterval(() => {
+          time--;
+          timeEl.textContent = time;
+          if (time <= 0) {
+            clearInterval(timer);
+            showGameOverModal(score);
+            window._saveLocalScore('mixed', score);
           }
-          gen();
-        })();
+        }, 1000);
+
+        function gen() {
+          const tam = Math.floor(Math.random() * 6) + 1;
+          const pay = Math.floor(Math.random() * 8) + 1;
+          const payda = Math.floor(Math.random() * 7) + 3;
+          const correct = `${tam * payda + pay}/${payda}`;
+          let opts = [correct];
+          while (opts.length < 4) {
+            const wrongPay = tam * payda + pay + Math.floor(Math.random() * 9 - 4);
+            const w = `${wrongPay}/${payda}`;
+            if (!opts.includes(w)) opts.push(w);
+          }
+          opts.sort(() => Math.random() - 0.5);
+          document.getElementById('mix-question').innerHTML = `<strong>${tam} ${pay}/${payda}</strong> bileşik kesir hali?`;
+          const ans = document.getElementById('mix-answers'); ans.innerHTML = '';
+          opts.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.textContent = o;
+            btn.onclick = () => {
+              if (btn.disabled) return;
+              document.querySelectorAll('#mix-answers button').forEach(b => b.disabled = true);
+              btn.classList.add(o === correct ? 'correct' : 'wrong');
+              if (o === correct) {
+                score += 10;
+                combo++;
+                if (combo % 3 === 0) score += 15;
+              } else combo = 0;
+              scoreEl.textContent = score;
+              setTimeout(() => {
+                document.querySelectorAll('#mix-answers button').forEach(b => {
+                  b.disabled = false;
+                  b.classList.remove('correct', 'wrong');
+                });
+                gen();
+              }, 800);
+            };
+            ans.appendChild(btn);
+          });
+        }
+        gen();
       </script>
     </section>
 
@@ -583,42 +778,75 @@
         <button class="btn tab" data-target="ortaokul">Geri</button>
       </div>
       <script>
-        (function() {
-          let score = 0, time = 60, combo = 0, timer;
-          const scoreEl = document.getElementById('stat-score');
-          const timeEl = document.getElementById('stat-time');
-          timer = setInterval(() => { time--; timeEl.textContent = time; if (time <= 0) { clearInterval(timer); showGameOverModal(score); window._saveLocalScore('stats', score); } }, 1000);
-          const mean = arr => (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1);
-          const median = arr => { const s = [...arr].sort((a,b)=>a-b); const m = Math.floor(s.length/2); return s.length%2===0 ? ((s[m-1]+s[m])/2).toFixed(1) : s[m]; };
-          const mode = arr => { const f = {}; arr.forEach(n=>f[n]=(f[n]||0)+1); return Object.keys(f).reduce((a,b)=>f[b]>f[a]?b:a); };
-          function gen() {
-            const nums = Array.from({length: Math.floor(Math.random()*3)+5}, () => Math.floor(Math.random()*15)+1);
-            const type = Math.floor(Math.random()*3);
-            let correct, qType;
-            if (type===0) { correct = mean(nums); qType = 'Aritmetik Ortalama'; }
-            else if (type===1) { correct = median(nums); qType = 'Ortanca'; }
-            else { correct = mode(nums); qType = 'Tepe Değer'; }
-            let opts = [correct];
-            while (opts.length < 4) { let w = (parseFloat(correct) + Math.random()*4 - 2).toFixed(1); if (!opts.includes(w)) opts.push(w); }
-            opts.sort(() => Math.random() - 0.5);
-            document.getElementById('stat-question').textContent = `${nums.join(', ')} sayılarının ${qType}'si?`;
-            const ans = document.getElementById('stat-answers'); ans.innerHTML = '';
-            opts.forEach(o => {
-              const btn = document.createElement('button'); btn.className = 'answer-btn'; btn.textContent = o;
-              btn.onclick = () => {
-                if (btn.disabled) return;
-                document.querySelectorAll('#stat-answers button').forEach(b => b.disabled = true);
-                btn.classList.add(o == correct ? 'correct' : 'wrong');
-                if (o == correct) { score += 10; combo++; if (combo % 3 === 0) { score += 15; } }
-                else combo = 0;
-                scoreEl.textContent = score;
-                setTimeout(() => { document.querySelectorAll('#stat-answers button').forEach(b => { b.disabled = false; b.classList.remove('correct','wrong'); }); gen(); }, 800);
-              };
-              ans.appendChild(btn);
-            });
+        if (document.getElementById('stats').classList.contains('hidden')) return;
+
+        let score = 0, time = 60, combo = 0, timer;
+        const scoreEl = document.getElementById('stat-score');
+        const timeEl = document.getElementById('stat-time');
+
+        timer = setInterval(() => {
+          time--;
+          timeEl.textContent = time;
+          if (time <= 0) {
+            clearInterval(timer);
+            showGameOverModal(score);
+            window._saveLocalScore('stats', score);
           }
-          gen();
-        })();
+        }, 1000);
+
+        const mean = arr => (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1);
+        const median = arr => {
+          const s = [...arr].sort((a,b)=>a-b);
+          const m = Math.floor(s.length/2);
+          return s.length%2===0 ? ((s[m-1]+s[m])/2).toFixed(1) : s[m];
+        };
+        const mode = arr => {
+          const f = {};
+          arr.forEach(n=>f[n]=(f[n]||0)+1);
+          return Object.keys(f).reduce((a,b)=>f[b]>f[a]?b:a);
+        };
+
+        function gen() {
+          const nums = Array.from({length: Math.floor(Math.random()*3)+5}, () => Math.floor(Math.random()*15)+1);
+          const type = Math.floor(Math.random()*3);
+          let correct, qType;
+          if (type===0) { correct = mean(nums); qType = 'Aritmetik Ortalama'; }
+          else if (type===1) { correct = median(nums); qType = 'Ortanca'; }
+          else { correct = mode(nums); qType = 'Tepe Değer'; }
+          let opts = [correct];
+          while (opts.length < 4) {
+            let w = (parseFloat(correct) + Math.random()*4 - 2).toFixed(1);
+            if (!opts.includes(w)) opts.push(w);
+          }
+          opts.sort(() => Math.random() - 0.5);
+          document.getElementById('stat-question').textContent = `${nums.join(', ')} sayılarının ${qType}'si?`;
+          const ans = document.getElementById('stat-answers'); ans.innerHTML = '';
+          opts.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.textContent = o;
+            btn.onclick = () => {
+              if (btn.disabled) return;
+              document.querySelectorAll('#stat-answers button').forEach(b => b.disabled = true);
+              btn.classList.add(o == correct ? 'correct' : 'wrong');
+              if (o == correct) {
+                score += 10;
+                combo++;
+                if (combo % 3 === 0) score += 15;
+              } else combo = 0;
+              scoreEl.textContent = score;
+              setTimeout(() => {
+                document.querySelectorAll('#stat-answers button').forEach(b => {
+                  b.disabled = false;
+                  b.classList.remove('correct', 'wrong');
+                });
+                gen();
+              }, 800);
+            };
+            ans.appendChild(btn);
+          });
+        }
+        gen();
       </script>
     </section>
 
@@ -639,34 +867,54 @@
         <button class="btn tab" data-target="hafiza">Geri</button>
       </div>
       <script>
-        (function() {
-          let score = 0, time = 60, combo = 0, timer;
-          const scoreEl = document.getElementById('shape-score');
-          const timeEl = document.getElementById('shape-time');
-          timer = setInterval(() => { time--; timeEl.textContent = time; if (time <= 0) { clearInterval(timer); showGameOverModal(score); window._saveLocalScore('shapes', score); } }, 1000);
-          const shapes = ['circle','square','triangle','star'];
-          function gen() {
-            const target = shapes[Math.floor(Math.random()*4)];
-            document.getElementById('target-shape-display').className = `shape ${target}`;
-            const board = document.getElementById('shape-board'); board.innerHTML = '';
-            let cards = [target, target];
-            while (cards.length < 8) { cards.push(shapes.filter(s=>s!==target)[Math.floor(Math.random()*3)]); }
-            cards.sort(() => Math.random() - 0.5);
-            cards.forEach(sh => {
-              const div = document.createElement('div'); div.className = `shape ${sh}`;
-              div.onclick = () => {
-                if (div.dataset.clicked) return;
-                div.dataset.clicked = '1';
-                if (sh === target) { score += 10; combo++; if (combo % 3 === 0) { score += 15; } div.style.background = '#b2ffba'; }
-                else { combo = 0; div.style.background = '#ff9e9e'; }
-                scoreEl.textContent = score;
-                setTimeout(gen, 600);
-              };
-              board.appendChild(div);
-            });
+        if (document.getElementById('shapes').classList.contains('hidden')) return;
+
+        let score = 0, time = 60, combo = 0, timer;
+        const scoreEl = document.getElementById('shape-score');
+        const timeEl = document.getElementById('shape-time');
+
+        timer = setInterval(() => {
+          time--;
+          timeEl.textContent = time;
+          if (time <= 0) {
+            clearInterval(timer);
+            showGameOverModal(score);
+            window._saveLocalScore('shapes', score);
           }
-          gen();
-        })();
+        }, 1000);
+
+        const shapes = ['circle','square','triangle','star'];
+        function gen() {
+          const target = shapes[Math.floor(Math.random()*4)];
+          document.getElementById('target-shape-display').className = `shape ${target}`;
+          const board = document.getElementById('shape-board'); board.innerHTML = '';
+          let cards = [target, target];
+          while (cards.length < 8) {
+            cards.push(shapes.filter(s=>s!==target)[Math.floor(Math.random()*3)]);
+          }
+          cards.sort(() => Math.random() - 0.5);
+          cards.forEach(sh => {
+            const div = document.createElement('div');
+            div.className = `shape ${sh}`;
+            div.onclick = () => {
+              if (div.dataset.clicked) return;
+              div.dataset.clicked = '1';
+              if (sh === target) {
+                score += 10;
+                combo++;
+                if (combo % 3 === 0) score += 15;
+                div.style.background = '#b2ffba';
+              } else {
+                combo = 0;
+                div.style.background = '#ff9e9e';
+              }
+              scoreEl.textContent = score;
+              setTimeout(gen, 600);
+            };
+            board.appendChild(div);
+          });
+        }
+        gen();
       </script>
     </section>
 
@@ -687,57 +935,64 @@
         <button class="btn tab" data-target="hafiza">Geri</button>
       </div>
       <script>
-        (function() {
-          let score = 0, time = 60, combo = 0, pairsFound = 0, flipped = [], lock = false, timer;
-          const scoreEl = document.getElementById('mem-score');
-          const pairsEl = document.getElementById('mem-pairs');
-          const timeEl = document.getElementById('mem-time');
-          timer = setInterval(() => { time--; timeEl.textContent = time; if (time <= 0) { clearInterval(timer); showGameOverModal(score); window._saveLocalScore('memory', score); } }, 1000);
-          const symbols = ['🍎','🍌','🍇','🍊','🍉','🍓','🥝','🍍','🍎','🍌','🍇','🍊','🍉','🍓','🥝','🍍'].sort(() => Math.random() - 0.5);
-          const board = document.getElementById('mem-board');
-          symbols.forEach(sym => {
-            const card = document.createElement('div'); card.className = 'mem-card'; card.dataset.symbol = sym;
-            card.onclick = () => {
-              if (lock || flipped.length === 2 || card.classList.contains('flipped')) return;
-              card.classList.add('flipped'); card.textContent = sym; flipped.push(card);
-              if (flipped.length === 2) {
-                lock = true;
-                setTimeout(() => {
-                  if (flipped[0].dataset.symbol === flipped[1].dataset.symbol) {
-                    flipped.forEach(c => c.classList.add('matched'));
-                    pairsFound++;
-                    score += 10;
-                    combo++;
-                    if (combo % 3 === 0) { score += 15; }
-                    pairsEl.textContent = pairsFound;
-                    if (pairsFound === 8) { clearInterval(timer); alert(`Tebrikler! Tüm çiftler bulundu! Skor: ${score}`); window._saveLocalScore('memory', score); }
-                  } else {
-                    flipped.forEach(c => { c.classList.remove('flipped'); c.textContent = ''; });
-                    combo = 0;
+        if (document.getElementById('memory').classList.contains('hidden')) return;
+
+        let score = 0, time = 60, combo = 0, pairsFound = 0, flipped = [], lock = false, timer;
+        const scoreEl = document.getElementById('mem-score');
+        const pairsEl = document.getElementById('mem-pairs');
+        const timeEl = document.getElementById('mem-time');
+
+        timer = setInterval(() => {
+          time--;
+          timeEl.textContent = time;
+          if (time <= 0) {
+            clearInterval(timer);
+            showGameOverModal(score);
+            window._saveLocalScore('memory', score);
+          }
+        }, 1000);
+
+        const symbols = ['🍎','🍌','🍇','🍊','🍉','🍓','🥝','🍍','🍎','🍌','🍇','🍊','🍉','🍓','🥝','🍍'].sort(() => Math.random() - 0.5);
+        const board = document.getElementById('mem-board');
+        symbols.forEach(sym => {
+          const card = document.createElement('div');
+          card.className = 'mem-card';
+          card.dataset.symbol = sym;
+          card.onclick = () => {
+            if (lock || flipped.length === 2 || card.classList.contains('flipped')) return;
+            card.classList.add('flipped');
+            card.textContent = sym;
+            flipped.push(card);
+            if (flipped.length === 2) {
+              lock = true;
+              setTimeout(() => {
+                if (flipped[0].dataset.symbol === flipped[1].dataset.symbol) {
+                  flipped.forEach(c => c.classList.add('matched'));
+                  pairsFound++;
+                  score += 10;
+                  combo++;
+                  if (combo % 3 === 0) score += 15;
+                  pairsEl.textContent = pairsFound;
+                  if (pairsFound === 8) {
+                    clearInterval(timer);
+                    showGameOverModal(score);
+                    window._saveLocalScore('memory', score);
                   }
-                  scoreEl.textContent = score;
-                  flipped = []; lock = false;
-                }, 1000);
-              }
-            };
-            board.appendChild(card);
-          });
-        })();
+                } else {
+                  flipped.forEach(c => { c.classList.remove('flipped'); c.textContent = ''; });
+                  combo = 0;
+                }
+                scoreEl.textContent = score;
+                flipped = [];
+                lock = false;
+              }, 1000);
+            }
+          };
+          board.appendChild(card);
+        });
       </script>
     </section>
 
-
-<script>
-  function showGameOverModal(finalScore) {
-    document.getElementById('final-score-display').textContent = finalScore;
-    document.getElementById('game-over-modal').classList.remove('hidden');
-  }
-
-  function closeGameOverModal() {
-    document.getElementById('game-over-modal').classList.add('hidden');
-  }
-</script>
-    
     <!-- Leaderboard -->
     <section id="leaderboard" class="panel hidden">
       <h2 id="lb-title">Leaderboard</h2>
@@ -751,14 +1006,26 @@
   <footer class="site-footer">
     <div class="container">
       <p>© <span id="year"></span> matbilzek — Eğitsel matematik oyunları</p>
-      <p class="muted small">Tüm oyunlar tamamlandı ve çalışır durumda!</p>
+      <p class="muted small">Site açıldığında modal çıkmaz • 60 sn • 10 puan • 3 doğru = +15 bonus</p>
     </div>
   </footer>
 
-  <script src="app.js"></script>
   <script>
+    function showGameOverModal(finalScore) {
+      document.getElementById('final-score-display').textContent = finalScore;
+      document.getElementById('game-over-modal').classList.remove('hidden');
+    }
+
+    function closeGameOverModal() {
+      document.getElementById('game-over-modal').classList.add('hidden');
+    }
+
     document.getElementById('year').textContent = new Date().getFullYear();
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
   </script>
+
+  <script src="app.js"></script>
 </body>
 </html>
