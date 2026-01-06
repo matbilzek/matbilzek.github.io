@@ -7,166 +7,180 @@
   <meta name="description" content="Eğitsel matematik oyunları — İlkokul, Ortaokul(6. sınıf) ve Hafıza oyunları. Mobil uyumlu." />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&display=swap" rel="stylesheet">
   <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="site-header">
     <div class="bar">
-      <a class="logo" href="/">Matematik Oyunları</a>
+      <a class="logo" href="#home">Matematik Oyunları</a>
       <nav class="nav">
-        <button id="open-menu" aria-label="Menu">☰</button>
+        <button id="open-menu" aria-label="Menüyü Aç">☰</button>
       </nav>
     </div>
     <div class="subbar">
-      <div class="tabs">
+      <div class="tabs" id="main-tabs">
         <button class="tab active" data-target="home">Ana Sayfa</button>
         <button class="tab" data-target="ilkokul">İLKOKUL</button>
-        <button class="tab" data-target="ortaokul">ORTAOKUL (6. Sınıf)</button>
-        <button class="tab" data-target="hafiza">HAFIZA OYUNLARI</button>
+        <button class="tab" data-target="ortaokul">ORTAOKUL</button>
+        <button class="tab" data-target="hafiza">HAFIZA</button>
+        <button class="tab" data-target="leaderboard">LİDER TABLOSU</button>
       </div>
     </div>
   </header>
 
   <main class="container">
+    <!-- Ana Sayfa -->
     <section id="home" class="panel">
       <h1>Hoş geldin! Bir seviye seç ve oyna.</h1>
-      <p>İLKOKUL: Toplama, Çıkarma, Çarpma, Bölme. ORTAOKUL (6. sınıf): asal sayılar, çarpanlar, EBOB/EKOK, denk kesirler, kesir dönüşümleri, ortalama/ortanca/tepe-değer. HAFIZA: şekiller ve hafıza kartları.</p>
+      <p>İLKOKUL: temel dört işlem. ORTAOKUL: 6. sınıf konuları. HAFIZA: görsel hafıza oyunları.</p>
 
       <div class="cards">
         <article class="card">
           <h3>İLKOKUL</h3>
-          <p>Toplama, Çıkarma, Çarpma, Bölme — temel hesaplama oyunları.</p>
+          <p>Toplama, Çıkarma, Çarpma, Bölme</p>
           <div class="card-actions">
-            <button class="btn go" data-target="ilkokul">Git</button>
+            <button class="btn go" data-target="ilkokul" aria-label="İlkokul oyunlarına git">Oyna</button>
           </div>
         </article>
 
         <article class="card">
           <h3>ORTAOKUL (6. Sınıf)</h3>
-          <p>Asal sayılar, çarpanlar, EBOB/EKOK, denk kesirler, kesir dönüşümleri, ortalama/ortanca/tepe.</p>
+          <p>Asal sayılar, EBOB/EKOK, kesirler, istatistik</p>
           <div class="card-actions">
-            <button class="btn go" data-target="ortaokul">Git</button>
+            <button class="btn go" data-target="ortaokul" aria-label="Ortaokul oyunlarına git">Oyna</button>
           </div>
         </article>
 
         <article class="card">
           <h3>HAFIZA OYUNLARI</h3>
-          <p>Şekiller & Hafıza Kartları — geliştirilmiş oyun deneyimi.</p>
+          <p>Şekiller ve kart eşleştirme</p>
           <div class="card-actions">
-            <button class="btn go" data-target="hafiza">Git</button>
+            <button class="btn go" data-target="hafiza" aria-label="Hafıza oyunlarına git">Oyna</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3>Lider Tablosu</h3>
+          <p>En yüksek skorları gör ve kendi skorunu gönder!</p>
+          <div class="card-actions">
+            <button class="btn go" data-target="leaderboard" aria-label="Lider tablosuna git">Gör</button>
           </div>
         </article>
       </div>
     </section>
 
-    <!-- ILKOKUL -->
+    <!-- İLKOKUL -->
     <section id="ilkokul" class="panel hidden">
       <h2>İLKOKUL OYUNLARI</h2>
       <div class="cards">
         <article class="card">
-          <h3>Toplama</h3>
-          <p>Kısa süreli yarış: hızlı ve doğru cevapla puan topla.</p>
+          <h3>Toplama</h3><p>Hızlı toplama yarışması</p>
           <div class="card-actions"><button class="btn go" data-target="addition">Oyna</button></div>
         </article>
         <article class="card">
-          <h3>Çıkarma</h3>
-          <p>Negatif olmadan rahat alıştırma.</p>
+          <h3>Çıkarma</h3><p>Rahat çıkarma alıştırması</p>
           <div class="card-actions"><button class="btn go" data-target="subtraction">Oyna</button></div>
         </article>
         <article class="card">
-          <h3>Çarpma</h3>
-          <p>Çarpım tablosu alıştırması.</p>
+          <h3>Çarpma</h3><p>Çarpım tablosu</p>
           <div class="card-actions"><button class="btn go" data-target="multiplication">Oyna</button></div>
         </article>
         <article class="card">
-          <h3>Bölme</h3>
-          <p>Tam bölünen sorularla kolay bölme.</p>
+          <h3>Bölme</h3><p>Tam bölme soruları</p>
           <div class="card-actions"><button class="btn go" data-target="division">Oyna</button></div>
         </article>
       </div>
-      <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
+      <div class="back"><button class="btn tab" data-target="home">← Geri</button></div>
     </section>
 
     <!-- ORTAOKUL -->
     <section id="ortaokul" class="panel hidden">
       <h2>ORTAOKUL (6. SINIF) OYUNLARI</h2>
       <div class="cards">
-        <article class="card">
-          <h3>Asal Sayılar</h3>
-          <p>Verilen sayı asal mı? yada hangileri asal?</p>
-          <div class="card-actions"><button class="btn" id="start-prime">Oyna</button></div>
-        </article>
-
-        <article class="card">
-          <h3>Çarpanlar</h3>
-          <p>Sayıyı çarpanlarına ayır veya doğru çarpanı seç.</p>
-          <div class="card-actions"><button class="btn" id="start-factors">Oyna</button></div>
-        </article>
-
-        <article class="card">
-          <h3>Ortak Bölen / Ortak Kat (EBOB / EKOK)</h3>
-          <p>İki sayı için en büyük ortak bölen veya en küçük ortak katı seç.</p>
-          <div class="card-actions"><button class="btn" id="start-gcdlcm">Oyna</button></div>
-        </article>
-
-        <article class="card">
-          <h3>Denk Kesirler</h3>
-          <p>Eşdeğer kesirleri bul veya hangi kesir daha büyük?</p>
-          <div class="card-actions"><button class="btn" id="start-frac6">Oyna</button></div>
-        </article>
-
-        <article class="card">
-          <h3>Tam Sayılı Kesri → Bileşik Kesre Çevirme</h3>
-          <p>Miks kesri bileşik (improper) kesre çevir.</p>
-          <div class="card-actions"><button class="btn" id="start-mixed">Oyna</button></div>
-        </article>
-
-        <article class="card">
-          <h3>Aritmetik Ortalama / Ortanca / Tepe Değer</h3>
-          <p>Küçük veri setleriyle ortalama, ortanca (median) ve mod (tepe değeri) hesapla.</p>
-          <div class="card-actions"><button class="btn" id="start-stats">Oyna</button></div>
-        </article>
+        <article class="card"><h3>Asal Sayılar</h3><p>Asal mı değil mi?</p><div class="card-actions"><button class="btn" id="start-prime">Oyna</button></div></article>
+        <article class="card"><h3>Çarpanlar</h3><p>Çarpanlara ayırma</p><div class="card-actions"><button class="btn" id="start-factors">Oyna</button></div></article>
+        <article class="card"><h3>EBOB / EKOK</h3><p>Ortak bölen ve kat</p><div class="card-actions"><button class="btn" id="start-gcdlcm">Oyna</button></div></article>
+        <article class="card"><h3>Denk Kesirler</h3><p>Eşdeğer kesirler</p><div class="card-actions"><button class="btn" id="start-frac6">Oyna</button></div></article>
+        <article class="card"><h3>Tam Sayılı → Bileşik Kesir</h3><p>Miks kesir dönüşümü</p><div class="card-actions"><button class="btn" id="start-mixed">Oyna</button></div></article>
+        <article class="card"><h3>Ortalama / Ortanca / Tepe</h3><p>İstatistik temelleri</p><div class="card-actions"><button class="btn" id="start-stats">Oyna</button></div></article>
       </div>
-      <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
+      <div class="back"><button class="btn tab" data-target="home">← Geri</button></div>
     </section>
 
     <!-- HAFIZA -->
     <section id="hafiza" class="panel hidden">
       <h2>HAFIZA OYUNLARI</h2>
       <div class="cards">
-        <article class="card">
-          <h3>Şekiller</h3>
-          <p>Hedef şekli bul — renkli, büyük görsellerle.</p>
-          <div class="card-actions"><button class="btn go" data-target="shapes">Oyna</button></div>
-        </article>
-
-        <article class="card">
-          <h3>Hafıza Kartları</h3>
-          <p>Seviye tabanlı: kolay/orta/zor; süre & puanlama; görsel kartlar.</p>
-          <div class="card-actions"><button class="btn go" data-target="memory">Oyna</button></div>
-        </article>
+        <article class="card"><h3>Şekiller</h3><p>Hedef şekli bul</p><div class="card-actions"><button class="btn go" data-target="shapes">Oyna</button></div></article>
+        <article class="card"><h3>Hafıza Kartları</h3><p>Seviyeli eşleştirme</p><div class="card-actions"><button class="btn go" data-target="memory">Oyna</button></div></article>
       </div>
-      <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
+      <div class="back"><button class="btn tab" data-target="home">← Geri</button></div>
     </section>
 
-    <!-- Oyun paneller (eklentiler) — mevcut paneller index.html'deki id'lerle uyumlu -->
-    <!-- (İlkokul oyun panelleri ve hafıza/paneller mevcut app.js'ye göre çalışır) -->
+    <!-- LİDER TABLOSU PANELİ -->
+    <section id="leaderboard" class="panel hidden">
+      <h2 id="lb-title" style="text-align:center;margin-bottom:1rem;">Lider Tablosu</h2>
+      <div id="lb-list">
+        <div class="muted">Yükleniyor...</div>
+      </div>
+      <p id="lb-source-note" class="muted" style="text-align:center;margin-top:1rem;"></p>
+      <div class="back" style="margin-top:1.5rem;text-align:center;">
+        <button class="btn tab" data-target="home">← Ana Sayfaya Dön</button>
+      </div>
+    </section>
 
+    <!-- Oyun panelleri (addition, subtraction, multiplication, division, shapes, memory vb.) 
+         ayrı JS dosyaları tarafından doldurulur veya inline script ile çalışır -->
   </main>
 
-  <footer class="site-footer">
+  <footer class="site-footer" style="margin-top:3rem;padding:2rem 0;background:var(--card);border-top:1px solid rgba(0,0,0,0.06);">
     <div class="container">
-      <p>© <span id="year"></span> matbilzek — Eğitsel matematik oyunları</p>
-      <p class="muted small">Geliştirmek istersen global leaderboard, kullanıcı hesabı veya ekstra görseller ekleyebilirim.</p>
+      <p style="margin:0;text-align:center;">© <span id="year"></span> matbilzek — Eğitsel matematik oyunları</p>
+      <p class="muted small" style="text-align:center;margin-top:0.5rem;">
+        Skorunu global lider tablosuna göndermek için oyun sonunda "Skoru Gönder" butonunu kullanabilirsin.
+      </p>
     </div>
   </footer>
 
   <script src="app.js"></script>
   <script>
+    // Yıl güncelleme
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Mobil menü (basit toggle)
+    const menuBtn = document.getElementById('open-menu');
+    const tabs = document.getElementById('main-tabs');
+    menuBtn.addEventListener('click', () => {
+      tabs.classList.toggle('mobile-open');
+    });
+
+    // PWA Service Worker
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(()=>console.log('SW register failed'));
+      navigator.serviceWorker.register('/sw.js').catch(err => {
+        console.warn('SW kayıt hatası:', err);
+      });
     }
   </script>
+
+  <!-- Mobil menü için küçük CSS ekleme (styles.css'e de eklenebilir) -->
+  <style>
+    @media (max-width: 719px) {
+      #main-tabs.mobile-open {
+        display: block !important;
+        background: var(--card);
+        padding: 1rem;
+        border-radius: 12px;
+        margin: 0.5rem 1rem;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      }
+      #main-tabs {
+        display: flex;
+      }
+      #main-tabs:not(.mobile-open) {
+        display: none;
+      }
+    }
+  </style>
 </body>
 </html>
