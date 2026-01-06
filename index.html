@@ -29,28 +29,16 @@
   <main class="container">
     <section id="home" class="panel">
       <h1>Hoş geldin! Bir seviye seç ve oyna.</h1>
-      <p>İLKOKUL: Toplama, Çıkarma, Çarpma, Bölme. ORTAOKUL (6. sınıf): asal sayılar, çarpanlar, EBOB/EKOK, denk kesirler, kesir dönüşümleri, ortalama/ortanca/tepe-değer. HAFIZA: şekiller ve hafıza kartları.</p>
+      <p><strong>Kurallar:</strong> Her oyun 60 saniye sürer. Her doğru cevap <strong>10 puan</strong>, arka arkaya <strong>3 doğru</strong> yapınca <strong>+15 bonus puan</strong>!</p>
 
       <div class="cards">
-        <article class="card">
-          <h3>İLKOKUL</h3>
-          <p>Toplama, Çıkarma, Çarpma, Bölme — temel hesaplama oyunları.</p>
-          <div class="card-actions"><button class="btn go" data-target="ilkokul">Git</button></div>
-        </article>
-        <article class="card">
-          <h3>ORTAOKUL (6. Sınıf)</h3>
-          <p>Asal sayılar, çarpanlar, EBOB/EKOK, denk kesirler, kesir dönüşümleri, ortalama/ortanca/tepe.</p>
-          <div class="card-actions"><button class="btn go" data-target="ortaokul">Git</button></div>
-        </article>
-        <article class="card">
-          <h3>HAFIZA OYUNLARI</h3>
-          <p>Şekiller & Hafıza Kartları — geliştirilmiş oyun deneyimi.</p>
-          <div class="card-actions"><button class="btn go" data-target="hafiza">Git</button></div>
-        </article>
+        <article class="card"><h3>İLKOKUL</h3><div class="card-actions"><button class="btn go" data-target="ilkokul">Git</button></div></article>
+        <article class="card"><h3>ORTAOKUL (6. Sınıf)</h3><div class="card-actions"><button class="btn go" data-target="ortaokul">Git</button></div></article>
+        <article class="card"><h3>HAFIZA OYUNLARI</h3><div class="card-actions"><button class="btn go" data-target="hafiza">Git</button></div></article>
       </div>
     </section>
 
-    <!-- İLKOKUL SEÇİM -->
+    <!-- Kategori Panelleri -->
     <section id="ilkokul" class="panel hidden">
       <h2>İLKOKUL OYUNLARI</h2>
       <div class="cards">
@@ -62,21 +50,19 @@
       <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
     </section>
 
-    <!-- ORTAOKUL SEÇİM -->
     <section id="ortaokul" class="panel hidden">
       <h2>ORTAOKUL (6. SINIF) OYUNLARI</h2>
       <div class="cards">
         <article class="card"><h3>Asal Sayılar</h3><div class="card-actions"><button class="btn go" data-target="primes">Oyna</button></div></article>
         <article class="card"><h3>Çarpanlar</h3><div class="card-actions"><button class="btn go" data-target="factors">Oyna</button></div></article>
-        <article class="card"><h3>Ortak Bölen / Ortak Kat (EBOB / EKOK)</h3><div class="card-actions"><button class="btn go" data-target="gcdlcm">Oyna</button></div></article>
+        <article class="card"><h3>EBOB / EKOK</h3><div class="card-actions"><button class="btn go" data-target="gcdlcm">Oyna</button></div></article>
         <article class="card"><h3>Denk Kesirler</h3><div class="card-actions"><button class="btn go" data-target="frac6">Oyna</button></div></article>
-        <article class="card"><h3>Tam Sayılı Kesri → Bileşik Kesre Çevirme</h3><div class="card-actions"><button class="btn go" data-target="mixed">Oyna</button></div></article>
-        <article class="card"><h3>Aritmetik Ortalama / Ortanca / Tepe Değer</h3><div class="card-actions"><button class="btn go" data-target="stats">Oyna</button></div></article>
+        <article class="card"><h3>Tam Sayılı → Bileşik</h3><div class="card-actions"><button class="btn go" data-target="mixed">Oyna</button></div></article>
+        <article class="card"><h3>Ortalama / Ortanca / Tepe</h3><div class="card-actions"><button class="btn go" data-target="stats">Oyna</button></div></article>
       </div>
       <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
     </section>
 
-    <!-- HAFIZA SEÇİM -->
     <section id="hafiza" class="panel hidden">
       <h2>HAFIZA OYUNLARI</h2>
       <div class="cards">
@@ -86,7 +72,16 @@
       <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
     </section>
 
-    <!-- TÜM OYUN PANELLERİ -->
+    <!-- OYUN BİTTİ MODAL -->
+    <div id="game-over-modal" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:1000;">
+      <div class="card" style="padding:2rem;max-width:90%;text-align:center;border-radius:16px;">
+        <h2 style="margin:0 0 1rem 0;color:var(--accent-3);">Oyun Bitti!</h2>
+        <p style="font-size:1.4rem;margin:1rem 0;">Skorun: <strong id="final-score-display">0</strong></p>
+        <button class="btn" onclick="closeGameOverModal()" style="padding:0.8rem 1.6rem;font-size:1.1rem;">Tamam</button>
+      </div>
+    </div>
+
+    <!-- OYUN PANELLERİ -->
 
     <!-- 1. Toplama -->
     <section id="addition" class="panel hidden">
@@ -105,37 +100,49 @@
         <button class="btn tab" data-target="ilkokul">Geri</button>
       </div>
       <script>
-        (function() {
-          let score = 0, time = 60, combo = 0, timer;
-          const scoreEl = document.getElementById('add-score');
-          const timeEl = document.getElementById('add-time');
-          timer = setInterval(() => { time--; timeEl.textContent = time; if (time <= 0) { clearInterval(timer); showGameOverModal(score); window._saveLocalScore('addition', score); } }, 1000);
+        // Sadece bu panel görünüyorsa çalışsın
+        if (document.getElementById('addition').classList.contains('hidden')) return;
 
-          function gen() {
-            const a = Math.floor(Math.random() * 20) + 1;
-            const b = Math.floor(Math.random() * 20) + 1;
-            const correct = a + b;
-            let opts = [correct];
-            while (opts.length < 4) { let w = correct + Math.floor(Math.random() * 11 - 5); if (w > 0 && !opts.includes(w)) opts.push(w); }
-            opts.sort(() => Math.random() - 0.5);
-            document.getElementById('add-question').textContent = `${a} + ${b} = ?`;
-            const ans = document.getElementById('add-answers'); ans.innerHTML = '';
-            opts.forEach(o => {
-              const btn = document.createElement('button'); btn.className = 'answer-btn'; btn.textContent = o;
-              btn.onclick = () => {
-                if (btn.disabled) return;
-                document.querySelectorAll('#add-answers button').forEach(b => b.disabled = true);
-                btn.classList.add(o === correct ? 'correct' : 'wrong');
-                if (o === correct) { score += 10; combo++; if (combo % 3 === 0) { score += 15; showGameOverModal(score); } }
-                else combo = 0;
-                scoreEl.textContent = score;
-                setTimeout(() => { document.querySelectorAll('#add-answers button').forEach(b => { b.disabled = false; b.classList.remove('correct','wrong'); }); gen(); }, 800);
-              };
-              ans.appendChild(btn);
-            });
+        let score = 0, time = 60, combo = 0, timer;
+        const scoreEl = document.getElementById('add-score');
+        const timeEl = document.getElementById('add-time');
+        timer = setInterval(() => {
+          time--;
+          timeEl.textContent = time;
+          if (time <= 0) {
+            clearInterval(timer);
+            showGameOverModal(score);
+            window._saveLocalScore('addition', score);
           }
-          gen();
-        })();
+        }, 1000);
+
+        function gen() {
+          const a = Math.floor(Math.random() * 20) + 1;
+          const b = Math.floor(Math.random() * 20) + 1;
+          const correct = a + b;
+          let opts = [correct];
+          while (opts.length < 4) { let w = correct + Math.floor(Math.random() * 11 - 5); if (w > 0 && !opts.includes(w)) opts.push(w); }
+          opts.sort(() => Math.random() - 0.5);
+          document.getElementById('add-question').textContent = `${a} + ${b} = ?`;
+          const ans = document.getElementById('add-answers'); ans.innerHTML = '';
+          opts.forEach(o => {
+            const btn = document.createElement('button'); btn.className = 'answer-btn'; btn.textContent = o;
+            btn.onclick = () => {
+              if (btn.disabled) return;
+              document.querySelectorAll('#add-answers button').forEach(b => b.disabled = true);
+              btn.classList.add(o === correct ? 'correct' : 'wrong');
+              if (o === correct) { score += 10; combo++; if (combo % 3 === 0) score += 15; }
+              else combo = 0;
+              scoreEl.textContent = score;
+              setTimeout(() => {
+                document.querySelectorAll('#add-answers button').forEach(b => { b.disabled = false; b.classList.remove('correct','wrong'); });
+                gen();
+              }, 800);
+            };
+            ans.appendChild(btn);
+          });
+        }
+        gen();
       </script>
     </section>
 
