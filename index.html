@@ -2,159 +2,297 @@
 <html lang="tr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Matematik Oyunları — matbilzek</title>
-  <meta name="description" content="Eğitsel matematik oyunları — İlkokul, Ortaokul (6. sınıf) ve Hafıza oyunları. Mobil uyumlu." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta name="description" content="Eğitsel matematik oyunları — İlkokul, Ortaokul(6. sınıf) ve Hafıza oyunları. Mobil uyumlu." />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&display=swap" rel="stylesheet">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="styles.css" />
+  <!-- Eğer firebase-config.js eklerseniz uncomment edin: -->
+  <!-- <script src="firebase-config.js"></script> -->
 </head>
 <body>
-  <a class="skip-link" href="#main">Ana içeriğe atla</a>
-
   <header class="site-header">
     <div class="bar">
       <a class="logo" href="/">Matematik Oyunları</a>
-      <nav id="main-nav" class="nav" role="navigation" aria-label="Ana menü">
-        <button id="open-menu" type="button" aria-label="Menüyü aç/kapat" aria-controls="main-nav" aria-expanded="false">☰</button>
+      <nav class="nav">
+        <button id="open-menu" aria-label="Menu">☰</button>
       </nav>
     </div>
     <div class="subbar">
-      <div class="tabs" role="tablist" aria-label="Bölümler">
-        <button id="tab-home" class="tab active" role="tab" type="button" aria-controls="home" aria-selected="true" data-target="home">Ana Sayfa</button>
-        <button id="tab-ilkokul" class="tab" role="tab" type="button" aria-controls="ilkokul" aria-selected="false" data-target="ilkokul">İlkokul</button>
-        <button id="tab-ortaokul" class="tab" role="tab" type="button" aria-controls="ortaokul" aria-selected="false" data-target="ortaokul">Ortaokul (6. Sınıf)</button>
-        <button id="tab-hafiza" class="tab" role="tab" type="button" aria-controls="hafiza" aria-selected="false" data-target="hafiza">Hafıza Oyunları</button>
+      <div class="tabs">
+        <button class="tab active" data-target="home">Ana Sayfa</button>
+        <button class="tab" data-target="ilkokul">İLKOKUL</button>
+        <button class="tab" data-target="ortaokul">ORTAOKUL (6. Sınıf)</button>
+        <button class="tab" data-target="hafiza">HAFIZA OYUNLARI</button>
       </div>
     </div>
   </header>
 
-  <main id="main" class="container">
-    <section id="home" class="panel" role="tabpanel" aria-labelledby="tab-home" aria-hidden="false">
+  <main class="container">
+    <section id="home" class="panel">
       <h1>Hoş geldin! Bir seviye seç ve oyna.</h1>
-      <p>İlkokul: Toplama, Çıkarma, Çarpma, Bölme. Ortaokul (6. sınıf): asal sayılar, çarpanlar, EBOB/EKOK, denk kesirler, kesir dönüşümleri, ortalama/ortanca/tepe-değer. Hafıza: şekiller ve hafıza kartları.</p>
+      <p>İLKOKUL: Toplama, Çıkarma, Çarpma, Bölme. ORTAOKUL (6. sınıf): asal sayılar, çarpanlar, EBOB/EKOK, denk kesirler, kesir dönüşümleri, ortalama/ortanca/tepe-değer. HAFIZA: şekiller ve hafıza kartları.</p>
 
       <div class="cards">
         <article class="card">
-          <h3>İlkokul</h3>
+          <h3>İLKOKUL</h3>
           <p>Toplama, Çıkarma, Çarpma, Bölme — temel hesaplama oyunları.</p>
           <div class="card-actions">
-            <button class="btn go" type="button" data-target="ilkokul">Git</button>
+            <button class="btn go" data-target="ilkokul">Git</button>
           </div>
         </article>
 
         <article class="card">
-          <h3>Ortaokul (6. Sınıf)</h3>
+          <h3>ORTAOKUL (6. SınıF)</h3>
           <p>Asal sayılar, çarpanlar, EBOB/EKOK, denk kesirler, kesir dönüşümleri, ortalama/ortanca/tepe.</p>
-          <div class="card-actions">
-            <button class="btn go" type="button" data-target="ortaokul">Git</button>
-          </div>
+          <div class="card-actions"><button class="btn go" data-target="ortaokul">Git</button></div>
         </article>
 
         <article class="card">
-          <h3>Hafıza Oyunları</h3>
+          <h3>HAFIZA OYUNLARI</h3>
           <p>Şekiller & Hafıza Kartları — geliştirilmiş oyun deneyimi.</p>
-          <div class="card-actions">
-            <button class="btn go" type="button" data-target="hafiza">Git</button>
-          </div>
+          <div class="card-actions"><button class="btn go" data-target="hafiza">Git</button></div>
         </article>
       </div>
     </section>
 
     <!-- ILKOKUL -->
-    <section id="ilkokul" class="panel hidden" role="tabpanel" aria-labelledby="tab-ilkokul" aria-hidden="true">
-      <h2>İlkokul Oyunları</h2>
+    <section id="ilkokul" class="panel hidden">
+      <h2>İLKOKUL OYUNLARI</h2>
       <div class="cards">
         <article class="card">
           <h3>Toplama</h3>
           <p>Kısa süreli yarış: hızlı ve doğru cevapla puan topla.</p>
-          <div class="card-actions"><button class="btn go" type="button" data-target="addition">Oyna</button></div>
+          <div class="card-actions"><button class="btn go" data-target="addition">Oyna</button></div>
         </article>
         <article class="card">
           <h3>Çıkarma</h3>
           <p>Negatif olmadan rahat alıştırma.</p>
-          <div class="card-actions"><button class="btn go" type="button" data-target="subtraction">Oyna</button></div>
+          <div class="card-actions"><button class="btn go" data-target="subtraction">Oyna</button></div>
         </article>
         <article class="card">
           <h3>Çarpma</h3>
           <p>Çarpım tablosu alıştırması.</p>
-          <div class="card-actions"><button class="btn go" type="button" data-target="multiplication">Oyna</button></div>
+          <div class="card-actions"><button class="btn go" data-target="multiplication">Oyna</button></div>
         </article>
         <article class="card">
           <h3>Bölme</h3>
           <p>Tam bölünen sorularla kolay bölme.</p>
-          <div class="card-actions"><button class="btn go" type="button" data-target="division">Oyna</button></div>
+          <div class="card-actions"><button class="btn go" data-target="division">Oyna</button></div>
         </article>
       </div>
-      <div class="back"><button class="btn tab" type="button" data-target="home">Geri</button></div>
+      <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
     </section>
 
     <!-- ORTAOKUL -->
-    <section id="ortaokul" class="panel hidden" role="tabpanel" aria-labelledby="tab-ortaokul" aria-hidden="true">
-      <h2>Ortaokul (6. Sınıf) Oyunları</h2>
+    <section id="ortaokul" class="panel hidden">
+      <h2>ORTAOKUL (6. SINIF) OYUNLARI</h2>
       <div class="cards">
         <article class="card">
           <h3>Asal Sayılar</h3>
-          <p>Verilen sayı asal mı, ya da hangileri asal?</p>
-          <div class="card-actions"><button class="btn" id="start-prime" type="button">Oyna</button></div>
+          <p>Verilen sayı asal mı? yada hangileri asal?</p>
+          <div class="card-actions"><button class="btn go" data-target="prime">Oyna</button></div>
         </article>
 
         <article class="card">
           <h3>Çarpanlar</h3>
           <p>Sayıyı çarpanlarına ayır veya doğru çarpanı seç.</p>
-          <div class="card-actions"><button class="btn" id="start-factors" type="button">Oyna</button></div>
+          <div class="card-actions"><button class="btn go" data-target="factors">Oyna</button></div>
         </article>
 
         <article class="card">
           <h3>Ortak Bölen / Ortak Kat (EBOB / EKOK)</h3>
           <p>İki sayı için en büyük ortak bölen veya en küçük ortak katı seç.</p>
-          <div class="card-actions"><button class="btn" id="start-gcdlcm" type="button">Oyna</button></div>
+          <div class="card-actions"><button class="btn go" data-target="gcdlcm">Oyna</button></div>
         </article>
 
         <article class="card">
           <h3>Denk Kesirler</h3>
           <p>Eşdeğer kesirleri bul veya hangi kesir daha büyük?</p>
-          <div class="card-actions"><button class="btn" id="start-frac6" type="button">Oyna</button></div>
+          <div class="card-actions"><button class="btn go" data-target="frac6">Oyna</button></div>
         </article>
 
         <article class="card">
           <h3>Tam Sayılı Kesri → Bileşik Kesre Çevirme</h3>
           <p>Miks kesri bileşik (improper) kesre çevir.</p>
-          <div class="card-actions"><button class="btn" id="start-mixed" type="button">Oyna</button></div>
+          <div class="card-actions"><button class="btn go" data-target="mixed">Oyna</button></div>
         </article>
 
         <article class="card">
           <h3>Aritmetik Ortalama / Ortanca / Tepe Değer</h3>
           <p>Küçük veri setleriyle ortalama, ortanca (median) ve mod (tepe değeri) hesapla.</p>
-          <div class="card-actions"><button class="btn" id="start-stats" type="button">Oyna</button></div>
+          <div class="card-actions"><button class="btn go" data-target="stats">Oyna</button></div>
         </article>
       </div>
-      <div class="back"><button class="btn tab" type="button" data-target="home">Geri</button></div>
+      <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
     </section>
 
     <!-- HAFIZA -->
-    <section id="hafiza" class="panel hidden" role="tabpanel" aria-labelledby="tab-hafiza" aria-hidden="true">
-      <h2>Hafıza Oyunları</h2>
+    <section id="hafiza" class="panel hidden">
+      <h2>HAFIZA OYUNLARI</h2>
       <div class="cards">
         <article class="card">
           <h3>Şekiller</h3>
           <p>Hedef şekli bul — renkli, büyük görsellerle.</p>
-          <div class="card-actions"><button class="btn go" type="button" data-target="shapes">Oyna</button></div>
+          <div class="card-actions"><button class="btn go" data-target="shapes">Oyna</button></div>
         </article>
 
         <article class="card">
           <h3>Hafıza Kartları</h3>
           <p>Seviye tabanlı: kolay/orta/zor; süre & puanlama; görsel kartlar.</p>
-          <div class="card-actions"><button class="btn go" type="button" data-target="memory">Oyna</button></div>
+          <div class="card-actions"><button class="btn go" data-target="memory">Oyna</button></div>
         </article>
       </div>
-      <div class="back"><button class="btn tab" type="button" data-target="home">Geri</button></div>
+      <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
     </section>
 
-    <!-- Oyun paneller (eklentiler) — mevcut paneller index.html'deki id'lerle uyumlu -->
-    <!-- (İlkokul oyun panelleri ve hafıza/paneller mevcut app.js'ye göre çalışır) -->
+    <!-- Oyun paneller (basit demo paneller) -->
+    <section id="addition" class="panel hidden">
+      <h2>Toplama</h2>
+      <div class="game-area">
+        <div class="muted">Oyun burada başlar. Başlamak için "Başla"ya basın.</div>
+      </div>
+      <div style="margin-top:0.6rem" class="game-header controls">
+        <button class="btn" onclick="startGame('addition')">Başla</button>
+        <button class="btn" onclick="renderLeaderboardForGame('addition')">Global Top 10</button>
+        <button class="btn" onclick="submitScoreUI('addition')">Skor Gönder</button>
+        <button class="btn tab" data-target="ilkokul">Geri</button>
+      </div>
+    </section>
+
+    <section id="subtraction" class="panel hidden">
+      <h2>Çıkarma</h2>
+      <div class="game-area"><div class="muted">Oyun burada başlar. Başlamak için "Başla"ya basın.</div></div>
+      <div style="margin-top:0.6rem" class="game-header controls">
+        <button class="btn" onclick="startGame('subtraction')">Başla</button>
+        <button class="btn" onclick="renderLeaderboardForGame('subtraction')">Global Top 10</button>
+        <button class="btn" onclick="submitScoreUI('subtraction')">Skor Gönder</button>
+        <button class="btn tab" data-target="ilkokul">Geri</button>
+      </div>
+    </section>
+
+    <section id="multiplication" class="panel hidden">
+      <h2>Çarpma</h2>
+      <div class="game-area"><div class="muted">Oyun burada başlar. Başlamak için "Başla"ya basın.</div></div>
+      <div style="margin-top:0.6rem" class="game-header controls">
+        <button class="btn" onclick="startGame('multiplication')">Başla</button>
+        <button class="btn" onclick="renderLeaderboardForGame('multiplication')">Global Top 10</button>
+        <button class="btn" onclick="submitScoreUI('multiplication')">Skor Gönder</button>
+        <button class="btn tab" data-target="ilkokul">Geri</button>
+      </div>
+    </section>
+
+    <section id="division" class="panel hidden">
+      <h2>Bölme</h2>
+      <div class="game-area"><div class="muted">Oyun burada başlar. Başlamak için "Başla"ya basın.</div></div>
+      <div style="margin-top:0.6rem" class="game-header controls">
+        <button class="btn" onclick="startGame('division')">Başla</button>
+        <button class="btn" onclick="renderLeaderboardForGame('division')">Global Top 10</button>
+        <button class="btn" onclick="submitScoreUI('division')">Skor Gönder</button>
+        <button class="btn tab" data-target="ilkokul">Geri</button>
+      </div>
+    </section>
+
+    <!-- Ortaokul oyun paneller -->
+    <section id="prime" class="panel hidden">
+      <h2>Asal Sayılar</h2>
+      <div class="game-area"><div class="muted">Asal sayı oyunu demo.</div></div>
+      <div style="margin-top:0.6rem" class="game-header controls">
+        <button class="btn" onclick="startGame('prime')">Başla</button>
+        <button class="btn" onclick="renderLeaderboardForGame('prime')">Global Top 10</button>
+        <button class="btn" onclick="submitScoreUI('prime')">Skor Gönder</button>
+        <button class="btn tab" data-target="ortaokul">Geri</button>
+      </div>
+    </section>
+
+    <section id="factors" class="panel hidden">
+      <h2>Çarpanlar</h2>
+      <div class="game-area"><div class="muted">Çarpanlar oyunu demo.</div></div>
+      <div style="margin-top:0.6rem" class="game-header controls">
+        <button class="btn" onclick="startGame('factors')">Başla</button>
+        <button class="btn" onclick="renderLeaderboardForGame('factors')">Global Top 10</button>
+        <button class="btn" onclick="submitScoreUI('factors')">Skor Gönder</button>
+        <button class="btn tab" data-target="ortaokul">Geri</button>
+      </div>
+    </section>
+
+    <section id="gcdlcm" class="panel hidden">
+      <h2>EBOB / EKOK</h2>
+      <div class="game-area"><div class="muted">EBOB/EKOK oyunu demo.</div></div>
+      <div style="margin-top:0.6rem" class="game-header controls">
+        <button class="btn" onclick="startGame('gcdlcm')">Başla</button>
+        <button class="btn" onclick="renderLeaderboardForGame('gcdlcm')">Global Top 10</button>
+        <button class="btn" onclick="submitScoreUI('gcdlcm')">Skor Gönder</button>
+        <button class="btn tab" data-target="ortaokul">Geri</button>
+      </div>
+    </section>
+
+    <section id="frac6" class="panel hidden">
+      <h2>Denk Kesirler</h2>
+      <div class="game-area"><div class="muted">Denk kesirler demo.</div></div>
+      <div style="margin-top:0.6rem" class="game-header controls">
+        <button class="btn" onclick="startGame('frac6')">Başla</button>
+        <button class="btn" onclick="renderLeaderboardForGame('frac6')">Global Top 10</button>
+        <button class="btn" onclick="submitScoreUI('frac6')">Skor Gönder</button>
+        <button class="btn tab" data-target="ortaokul">Geri</button>
+      </div>
+    </section>
+
+    <section id="mixed" class="panel hidden">
+      <h2>Miks → Bileşik Kesir</h2>
+      <div class="game-area"><div class="muted">Miks/bileşik kesir demo.</div></div>
+      <div style="margin-top:0.6rem" class="game-header controls">
+        <button class="btn" onclick="startGame('mixed')">Başla</button>
+        <button class="btn" onclick="renderLeaderboardForGame('mixed')">Global Top 10</button>
+        <button class="btn" onclick="submitScoreUI('mixed')">Skor Gönder</button>
+        <button class="btn tab" data-target="ortaokul">Geri</button>
+      </div>
+    </section>
+
+    <section id="stats" class="panel hidden">
+      <h2>Ortalama / Ortanca / Tepe Değer</h2>
+      <div class="game-area"><div class="muted">İstatistik oyunu demo.</div></div>
+      <div style="margin-top:0.6rem" class="game-header controls">
+        <button class="btn" onclick="startGame('stats')">Başla</button>
+        <button class="btn" onclick="renderLeaderboardForGame('stats')">Global Top 10</button>
+        <button class="btn" onclick="submitScoreUI('stats')">Skor Gönder</button>
+        <button class="btn tab" data-target="ortaokul">Geri</button>
+      </div>
+    </section>
+
+    <!-- Hafıza paneller -->
+    <section id="shapes" class="panel hidden">
+      <h2>Şekiller</h2>
+      <div class="game-area"><div class="muted">Şekiller oyunu demo.</div></div>
+      <div style="margin-top:0.6rem" class="game-header controls">
+        <button class="btn" onclick="startGame('shapes')">Başla</button>
+        <button class="btn" onclick="renderLeaderboardForGame('shapes')">Global Top 10</button>
+        <button class="btn" onclick="submitScoreUI('shapes')">Skor Gönder</button>
+        <button class="btn tab" data-target="hafiza">Geri</button>
+      </div>
+    </section>
+
+    <section id="memory" class="panel hidden">
+      <h2>Hafıza Kartları</h2>
+      <div class="game-area"><div class="muted">Hafıza kartları demo.</div></div>
+      <div style="margin-top:0.6rem" class="game-header controls">
+        <button class="btn" onclick="startGame('memory')">Başla</button>
+        <button class="btn" onclick="renderLeaderboardForGame('memory')">Global Top 10</button>
+        <button class="btn" onclick="submitScoreUI('memory')">Skor Gönder</button>
+        <button class="btn tab" data-target="hafiza">Geri</button>
+      </div>
+    </section>
+
+    <!-- Leaderboard panel (singleton used by app.js) -->
+    <section id="leaderboard" class="panel hidden">
+      <h2 id="lb-title">Leaderboard</h2>
+      <div id="lb-list" class="card" style="padding:0.6rem">Yükleniyor...</div>
+      <div class="small muted" id="lb-source-note" style="margin-top:0.6rem">Kaynak:</div>
+      <div style="margin-top:0.6rem">
+        <button class="btn tab" data-target="home">Kapat</button>
+      </div>
+    </section>
 
   </main>
 
