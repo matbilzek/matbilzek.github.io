@@ -8,7 +8,10 @@
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.target === id));
     window.scrollTo({top:0, behavior:'smooth'});
   }
-  tabs.forEach(t => t.addEventListener('click', () => { const target = t.dataset.target; if (target) showPanel(target); }));
+  tabs.forEach(t => t.addEventListener('click', () => { 
+    const target = t.dataset.target; 
+    if (target) showPanel(target); 
+  }));
 
   // local storage key
   const LS_KEY = 'mathgames_scores_v1';
@@ -35,24 +38,30 @@
       const raw = localStorage.getItem(LS_KEY);
       const data = raw ? JSON.parse(raw) : {};
       const arr = data[game] || [];
-      return arr.slice().sort((a,b)=>b.score-a.score).slice(0,n);
+      return arr.slice().sort((a,b) => b.score - a.score).slice(0, n);
     } catch (e) {
+      console.warn('LS parse fail', e);
       return [];
     }
   }
 
   // ----- Firebase optional init -----
   let firestore = null;
+
   async function initFirebaseIfConfigured() {
-    // The developer/user can add a firebase-config.js file that sets window.FIREBASE_CONFIG
     if (!window.FIREBASE_CONFIG) return false;
-    // dynamic load Firebase scripts if not loaded
     if (!window.firebase) {
-      await loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js');
-      await loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js');
+      try {
+        await loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js');
+        await loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js');
+      } catch (e) {
+        console.warn('Firebase script load failed', e);
+        return false;
+      }
     }
+
     try {
-      if (!firebase.apps || !firebase.apps.length) {
+      if (!firebase.apps?.length) {
         firebase.initializeApp(window.FIREBASE_CONFIG);
       }
       firestore = firebase.firestore();
@@ -62,128 +71,144 @@
       return false;
     }
   }
+
   function loadScript(src) {
     return new Promise((resolve, reject) => {
       const s = document.createElement('script');
-      s.src = src; s.onload = resolve; s.onerror = reject;
+      s.src = src;
+      s.onload = resolve;
+      s.onerror = () => reject(new Error(`Script load error: ${src}`));
       document.head.appendChild(s);
     });
   }
 
   // ----- Global leaderboard functions -----
   async function fetchGlobalTop(game, limit = 10) {
-    // If firestore available, query; otherwise return local
     if (firestore) {
       try {
         const q = await firestore.collection('scores')
-                 .where('game','==',game)
-                 .orderBy('score','desc')
-                 .limit(limit)
-                 .get();
+          .where('game', '==', game)
+          .orderBy('score', 'desc')
+          .limit(limit)
+          .get();
         const items = [];
         q.forEach(doc => items.push(doc.data()));
         return { source: 'firebase', items };
       } catch (e) {
         console.warn('Firestore read failed', e);
-        return { source: 'local', items: getLocalTop(game, limit) };
       }
-    } else {
-      return { source: 'local', items: getLocalTop(game, limit) };
     }
+    // Fallback to local
+    return { source: 'local', items: getLocalTop(game, limit) };
   }
 
   async function submitScoreToBackend(game, name, score) {
-    // prefer firestore if available
     if (firestore) {
       try {
-        await firestore.collection('scores').add({ game, name, score, date: new Date().toISOString() });
-        return { ok:true, source:'firebase' };
+        await firestore.collection('scores').add({
+          game,
+          name,
+          score,
+          date: new Date().toISOString()
+        });
+        return { ok: true, source: 'firebase' };
       } catch (e) {
         console.warn('Firestore write failed', e);
-        saveLocalScore(game, score, name);
-        return { ok:false, source:'local' };
       }
-    } else {
-      saveLocalScore(game, score, name);
-      return { ok:true, source:'local' };
     }
+    // Fallback: save locally
+    saveLocalScore(game, score, name);
+    return { ok: true, source: 'local' };
   }
 
-  // Expose rendering function to index.html inline call
+  // Expose rendering function
   window.renderLeaderboardForGame = async function(game, forceRefresh = false) {
     const listEl = document.getElementById('lb-list');
     const titleEl = document.getElementById('lb-title');
     const sourceNote = document.getElementById('lb-source-note');
+
     titleEl.textContent = `${game.toUpperCase()} — Top 10`;
     listEl.innerHTML = '<div class="muted">Yükleniyor...</div>';
-    // init firebase if window.FIREBASE_CONFIG exists (only once)
+
     if (window.FIREBASE_CONFIG && !firestore) {
       await initFirebaseIfConfigured();
     }
+
     const res = await fetchGlobalTop(game, 10);
+
     listEl.innerHTML = '';
-    if (!res.items || res.items.length===0) {
+    if (!res.items || res.items.length === 0) {
       listEl.innerHTML = '<div class="muted">Henüz skor yok.</div>';
     } else {
       res.items.forEach((it, idx) => {
         const row = document.createElement('div');
         row.className = 'lb-item';
-        row.innerHTML = `<div style="display:flex;align-items:center;gap:8px"><div class="lb-rank">${idx+1}</div><div class="lb-name">${escapeHtml(it.name||'Anon')}</div></div><div class="lb-score">${escapeHtml(String(it.score))}</div>`;
+        row.innerHTML = `
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="lb-rank">${idx + 1}</div>
+            <div class="lb-name">${escapeHtml(it.name || 'Anon')}</div>
+          </div>
+          <div class="lb-score">${escapeHtml(String(it.score))}</div>
+        `;
         listEl.appendChild(row);
       });
     }
-    sourceNote.textContent = res.source === 'firebase' ? 'Kaynak: Global (Firebase)' : 'Kaynak: Local (Tarayıcı)';
+
+    sourceNote.textContent = res.source === 'firebase' 
+      ? 'Kaynak: Global (Firebase)' 
+      : 'Kaynak: Local (Tarayıcı)';
   };
 
-  // submitScoreUI: prompt for name and send last local best score if available.
+  // Submit score UI — SADECE yerel skor varsa gönderilebilir
   window.submitScoreUI = async function(game) {
-    // find best local score for this game
-    const localTop = getLocalTop(game,1);
-    const candidateScore = localTop && localTop.length ? localTop[0].score : null;
-    let scoreToSend = candidateScore;
-    if (scoreToSend === null) {
-      // ask user to enter their score manually
-      const s = prompt('Göndermek istediğin skoru gir (sayı):');
-      if (!s) return;
-      const n = parseInt(s.trim(),10);
-      if (isNaN(n)) { alert('Geçersiz skor'); return; }
-      scoreToSend = n;
-    } else {
-      const ok = confirm(`En iyi yerel skorunuz ${scoreToSend}. Bunu global gönderiyorsunuz. Devam edilsin mi?`);
-      if (!ok) return;
+    const localTop = getLocalTop(game, 1);
+    if (!localTop || localTop.length === 0) {
+      alert('Gönderecek yerel skor bulunamadı. Önce oyunu oynayıp skoru yerel olarak kaydetmelisiniz.');
+      return;
     }
-    const name = prompt('Takma ad gir (en fazla 18 karakter):', 'Anon');
+
+    const bestScore = localTop[0].score;
+    const confirmMsg = `En iyi yerel skorunuz: ${bestScore}\nBu skoru global leaderboard'a göndermek istiyor musunuz?`;
+    if (!confirm(confirmMsg)) return;
+
+    let name = prompt('Takma ad gir (en fazla 18 karakter):', 'Anon');
     if (name === null) return;
-    const nickname = name.trim().slice(0,18) || 'Anon';
-    // init firebase if necessary
-    if (window.FIREBASE_CONFIG && !firestore) await initFirebaseIfConfigured();
-    const res = await submitScoreToBackend(game, nickname, scoreToSend);
-    if (res.ok) {
-      alert(`Skor gönderildi (${res.source}). Teşekkürler!`);
-    } else {
-      alert('Skor local olarak kaydedildi (offline veya hata).');
+    const nickname = (name.trim().slice(0, 18) || 'Anon');
+
+    if (window.FIREBASE_CONFIG && !firestore) {
+      await initFirebaseIfConfigured();
     }
-    // refresh leaderboard
-    if (window.renderLeaderboardForGame) window.renderLeaderboardForGame(game, true);
+
+    const res = await submitScoreToBackend(game, nickname, bestScore);
+
+    if (res.source === 'firebase') {
+      alert('Skor global leaderboard\'a gönderildi! Teşekkürler!');
+    } else {
+      alert('Skor yerel olarak kaydedildi (çevrimdışı veya hata).');
+    }
+
+    // Refresh leaderboard
+    await window.renderLeaderboardForGame(game, true);
   };
 
-  // helper escape
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;'}[c]));
+  // Güvenli HTML escape
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
 
-  // Initialize a small demo: attach saveLocalScore to some global events in your game logic.
-  // Note: Existing game code should call saveLocalScore(game,score, name?) when ending a game.
-  // We expose the function globally so older code can call it:
+  // Expose for game code
   window._saveLocalScore = saveLocalScore;
   window._getLocalTop = getLocalTop;
 
-  // optional: auto-init firebase if config exists (non-blocking)
+  // Auto-init Firebase if config exists
   if (window.FIREBASE_CONFIG) {
-    initFirebaseIfConfigured().then(ok=> { if(ok) console.log('Firebase ready'); else console.log('Firebase failed to init'); });
+    initFirebaseIfConfigured().then(ok => {
+      console.log(ok ? 'Firebase ready' : 'Firebase init failed');
+    });
   }
 
-  // start at home
+  // Start at home
   showPanel('home');
-
 })();
