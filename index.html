@@ -771,8 +771,11 @@ const gameInitFunctions = {
         if (!opts.includes(w)) opts.push(w);
       }
       opts.sort(() => Math.random() - 0.5);
-      document.getElementById('mix-question').innerHTML = `<strong>${tam} ${pay}/${payda}</strong> bileşik kesir hali?`;
+      
+      document.getElementById('mix-question').innerHTML = `<strong>${tam}</strong> tam <strong>${pay}bölü${payda}</strong> bileşik kesire çevir`;
+      
       const ans = document.getElementById('mix-answers'); ans.innerHTML = '';
+      
       opts.forEach(o => {
         const btn = document.createElement('button');
         btn.className = 'answer-btn';
