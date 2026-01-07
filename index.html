@@ -23,12 +23,10 @@
 </div>
 </div>
 </header>
-
 <main class="container">
 <section id="home" class="panel">
 <h1>Hoş geldin! Bir seviye seç ve oyna.</h1>
 <p><strong>Kurallar:</strong> Her oyun 60 saniye sürer. Her doğru cevap <strong>10 puan</strong>, arka arkaya <strong>3 doğru</strong> yapınca <strong>+15 bonus puan</strong>!</p>
-
 <div class="cards">
 <article class="card"><h3>İLKOKUL</h3><div class="card-actions"><button class="btn go" data-target="ilkokul">Git</button></div></article>
 <article class="card"><h3>ORTAOKUL (6. Sınıf)</h3><div class="card-actions"><button class="btn go" data-target="ortaokul">Git</button></div></article>
@@ -78,7 +76,7 @@
 </div>
 </div>
 
-<!-- Tüm Oyun Panelleri (script'siz) -->
+<!-- Tüm Oyun Panelleri -->
 <section id="addition" class="panel hidden">
 <h2>Toplama Oyunu</h2>
 <div class="game-area">
@@ -299,23 +297,35 @@
 </footer>
 
 <script>
+// Modal fonksiyonları - BURASI DÜZELTİLDİ
 function showGameOverModal(finalScore) {
-document.getElementById('final-score-display').textContent = finalScore;
-document.getElementById('game-over-modal').classList.remove('hidden');
+  if (currentTimer) {
+    clearInterval(currentTimer);
+    currentTimer = null;
+  }
+  document.getElementById('final-score-display').textContent = finalScore;
+  document.getElementById('game-over-modal').classList.remove('hidden');
 }
 
 function closeGameOverModal() {
-document.getElementById('game-over-modal').classList.add('hidden');
+  document.getElementById('game-over-modal').classList.add('hidden');
+
+  // Otomatik olarak ana sayfaya dön
+  document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
+  document.getElementById('home').classList.remove('hidden');
+
+  // Üstteki tab'ları güncelle
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.tab[data-target="home"]').classList.add('active');
 }
 
 document.getElementById('year').textContent = new Date().getFullYear();
 
 if ('serviceWorker' in navigator) {
-navigator.serviceWorker.register('/sw.js').catch(() => {});
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
 }
 </script>
 
-<!-- Tüm Oyun Mantığı Burada -->
 <script>
 let currentTimer = null;
 
@@ -326,7 +336,6 @@ const scoreEl = document.getElementById('add-score');
 const timeEl = document.getElementById('add-time');
 scoreEl.textContent = score;
 timeEl.textContent = time;
-
 currentTimer = setInterval(() => {
 time--;
 timeEl.textContent = time;
@@ -336,7 +345,6 @@ showGameOverModal(score);
 window._saveLocalScore('addition', score);
 }
 }, 1000);
-
 function gen() {
 const a = Math.floor(Math.random() * 20) + 1;
 const b = Math.floor(Math.random() * 20) + 1;
@@ -381,7 +389,6 @@ const scoreEl = document.getElementById('sub-score');
 const timeEl = document.getElementById('sub-time');
 scoreEl.textContent = score;
 timeEl.textContent = time;
-
 currentTimer = setInterval(() => {
 time--;
 timeEl.textContent = time;
@@ -391,7 +398,6 @@ showGameOverModal(score);
 window._saveLocalScore('subtraction', score);
 }
 }, 1000);
-
 function gen() {
 const a = Math.floor(Math.random() * 30) + 10;
 const b = Math.floor(Math.random() * a);
@@ -436,7 +442,6 @@ const scoreEl = document.getElementById('mul-score');
 const timeEl = document.getElementById('mul-time');
 scoreEl.textContent = score;
 timeEl.textContent = time;
-
 currentTimer = setInterval(() => {
 time--;
 timeEl.textContent = time;
@@ -446,7 +451,6 @@ showGameOverModal(score);
 window._saveLocalScore('multiplication', score);
 }
 }, 1000);
-
 function gen() {
 const a = Math.floor(Math.random() * 10) + 1;
 const b = Math.floor(Math.random() * 10) + 1;
@@ -491,7 +495,6 @@ const scoreEl = document.getElementById('div-score');
 const timeEl = document.getElementById('div-time');
 scoreEl.textContent = score;
 timeEl.textContent = time;
-
 currentTimer = setInterval(() => {
 time--;
 timeEl.textContent = time;
@@ -501,7 +504,6 @@ showGameOverModal(score);
 window._saveLocalScore('division', score);
 }
 }, 1000);
-
 function gen() {
 const divisor = Math.floor(Math.random() * 9) + 2;
 const quotient = Math.floor(Math.random() * 10) + 1;
@@ -547,7 +549,6 @@ const scoreEl = document.getElementById('prime-score');
 const timeEl = document.getElementById('prime-time');
 scoreEl.textContent = score;
 timeEl.textContent = time;
-
 currentTimer = setInterval(() => {
 time--;
 timeEl.textContent = time;
@@ -557,13 +558,11 @@ showGameOverModal(score);
 window._saveLocalScore('primes', score);
 }
 }, 1000);
-
 const isPrime = n => {
 if (n <= 1) return false;
 for (let i = 2; i <= Math.sqrt(n); i++) if (n % i === 0) return false;
 return true;
 };
-
 function gen() {
 const num = Math.floor(Math.random() * 99) + 2;
 const correct = isPrime(num) ? 'Evet' : 'Hayır';
@@ -601,7 +600,6 @@ const scoreEl = document.getElementById('fac-score');
 const timeEl = document.getElementById('fac-time');
 scoreEl.textContent = score;
 timeEl.textContent = time;
-
 currentTimer = setInterval(() => {
 time--;
 timeEl.textContent = time;
@@ -611,13 +609,11 @@ showGameOverModal(score);
 window._saveLocalScore('factors', score);
 }
 }, 1000);
-
 const getFactorsStr = n => {
 let f = [];
 for (let i = 1; i <= n; i++) if (n % i === 0) f.push(i);
 return f.join(', ');
 };
-
 function gen() {
 const num = Math.floor(Math.random() * 50) + 10;
 const correct = getFactorsStr(num);
@@ -662,7 +658,6 @@ const scoreEl = document.getElementById('gcd-score');
 const timeEl = document.getElementById('gcd-time');
 scoreEl.textContent = score;
 timeEl.textContent = time;
-
 currentTimer = setInterval(() => {
 time--;
 timeEl.textContent = time;
@@ -672,10 +667,8 @@ showGameOverModal(score);
 window._saveLocalScore('gcdlcm', score);
 }
 }, 1000);
-
 const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
 const lcm = (a, b) => (a * b) / gcd(a, b);
-
 function gen() {
 const a = Math.floor(Math.random() * 30) + 5;
 const b = Math.floor(Math.random() * 30) + 5;
@@ -721,7 +714,6 @@ const scoreEl = document.getElementById('frac-score');
 const timeEl = document.getElementById('frac-time');
 scoreEl.textContent = score;
 timeEl.textContent = time;
-
 currentTimer = setInterval(() => {
 time--;
 timeEl.textContent = time;
@@ -731,25 +723,24 @@ showGameOverModal(score);
 window._saveLocalScore('frac6', score);
 }
 }, 1000);
-
 function gen() {
 const pay = Math.floor(Math.random() * 10) + 1;
 const payda = Math.floor(Math.random() * 9) + 2;
 const carp = Math.floor(Math.random() * 5) + 2;
-const correct = `\( {pay * carp}/ \){payda * carp}`;
+const correct = `${pay * carp}/${payda * carp}`;
 let opts = [correct];
 while (opts.length < 4) {
 const wrongPay = pay * carp + Math.floor(Math.random() * 5 - 2);
-const w = `\( {wrongPay}/ \){payda * carp}`;
+const w = `${wrongPay}/${payda * carp}`;
 if (!opts.includes(w)) opts.push(w);
 }
 opts.sort(() => Math.random() - 0.5);
-document.getElementById('frac-question').textContent = `\( {pay}/ \){payda} ile denk kesir?`;
+document.getElementById('frac-question').innerHTML = `${pay}/${payda} ile denk kesir?`;
 const ans = document.getElementById('frac-answers'); ans.innerHTML = '';
 opts.forEach(o => {
 const btn = document.createElement('button');
 btn.className = 'answer-btn';
-btn.textContent = o;
+btn.innerHTML = o;
 btn.onclick = () => {
 if (btn.disabled) return;
 document.querySelectorAll('#frac-answers button').forEach(b => b.disabled = true);
@@ -778,7 +769,6 @@ const scoreEl = document.getElementById('mix-score');
 const timeEl = document.getElementById('mix-time');
 scoreEl.textContent = score;
 timeEl.textContent = time;
-
 currentTimer = setInterval(() => {
 time--;
 timeEl.textContent = time;
@@ -788,25 +778,24 @@ showGameOverModal(score);
 window._saveLocalScore('mixed', score);
 }
 }, 1000);
-
 function gen() {
 const tam = Math.floor(Math.random() * 6) + 1;
 const pay = Math.floor(Math.random() * 8) + 1;
 const payda = Math.floor(Math.random() * 7) + 3;
-const correct = `\( {tam * payda + pay}/ \){payda}`;
+const correct = `${tam * payda + pay}/${payda}`;
 let opts = [correct];
 while (opts.length < 4) {
 const wrongPay = tam * payda + pay + Math.floor(Math.random() * 9 - 4);
-const w = `\( {wrongPay}/ \){payda}`;
+const w = `${wrongPay}/${payda}`;
 if (!opts.includes(w)) opts.push(w);
 }
 opts.sort(() => Math.random() - 0.5);
-document.getElementById('mix-question').innerHTML = `<strong>${tam} \( {pay}/ \){payda}</strong> bileşik kesir hali?`;
+document.getElementById('mix-question').innerHTML = `<strong>${tam} ${pay}/${payda}</strong> bileşik kesir hali?`;
 const ans = document.getElementById('mix-answers'); ans.innerHTML = '';
 opts.forEach(o => {
 const btn = document.createElement('button');
 btn.className = 'answer-btn';
-btn.textContent = o;
+btn.innerHTML = o;
 btn.onclick = () => {
 if (btn.disabled) return;
 document.querySelectorAll('#mix-answers button').forEach(b => b.disabled = true);
@@ -835,7 +824,6 @@ const scoreEl = document.getElementById('stat-score');
 const timeEl = document.getElementById('stat-time');
 scoreEl.textContent = score;
 timeEl.textContent = time;
-
 currentTimer = setInterval(() => {
 time--;
 timeEl.textContent = time;
@@ -845,7 +833,6 @@ showGameOverModal(score);
 window._saveLocalScore('stats', score);
 }
 }, 1000);
-
 const mean = arr => (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1);
 const median = arr => {
 const s = [...arr].sort((a,b)=>a-b);
@@ -857,7 +844,6 @@ const f = {};
 arr.forEach(n=>f[n]=(f[n]||0)+1);
 return Object.keys(f).reduce((a,b)=>f[b]>f[a]?b:a);
 };
-
 function gen() {
 const nums = Array.from({length: Math.floor(Math.random()*3)+5}, () => Math.floor(Math.random()*15)+1);
 const type = Math.floor(Math.random()*3);
@@ -905,7 +891,6 @@ const scoreEl = document.getElementById('shape-score');
 const timeEl = document.getElementById('shape-time');
 scoreEl.textContent = score;
 timeEl.textContent = time;
-
 currentTimer = setInterval(() => {
 time--;
 timeEl.textContent = time;
@@ -915,7 +900,6 @@ showGameOverModal(score);
 window._saveLocalScore('shapes', score);
 }
 }, 1000);
-
 const shapes = ['circle','square','triangle','star'];
 function gen() {
 const target = shapes[Math.floor(Math.random()*4)];
@@ -957,7 +941,6 @@ const timeEl = document.getElementById('mem-time');
 scoreEl.textContent = score;
 pairsEl.textContent = pairsFound;
 timeEl.textContent = time;
-
 currentTimer = setInterval(() => {
 time--;
 timeEl.textContent = time;
@@ -967,7 +950,6 @@ showGameOverModal(score);
 window._saveLocalScore('memory', score);
 }
 }, 1000);
-
 const symbols = ['🍎','🍌','🍇','🍊','🍉','🍓','🥝','🍍','🍎','🍌','🍇','🍊','🍉','🍓','🥝','🍍'].sort(() => Math.random() - 0.5);
 const board = document.getElementById('mem-board');
 board.innerHTML = '';
@@ -1009,21 +991,28 @@ board.appendChild(card);
 }
 };
 
-// Panel geçişlerini ve oyun başlatmayı yönet
+// Panel ve oyun geçiş yönetimi
 document.addEventListener('click', function(e) {
 if (e.target.matches('.tab') || e.target.matches('.go')) {
 const targetId = e.target.dataset.target;
 
 // Tüm panelleri gizle
 document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
+
 // Hedef paneli göster
 const targetPanel = document.getElementById(targetId);
 if (targetPanel) targetPanel.classList.remove('hidden');
 
+// Tab aktifliğini güncelle
+document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+const activeTab = document.querySelector(`.tab[data-target="${targetId}"]`);
+if (activeTab) activeTab.classList.add('active');
+
 // Eğer oyun paneliyse başlat
 if (gameInitFunctions[targetId]) {
 if (currentTimer) clearInterval(currentTimer);
-// Skor ve süre elemanlarını sıfırla (güvenli olsun)
+
+// Skor ve süre sıfırla
 const scoreEls = targetPanel.querySelectorAll('[id$="-score"]');
 scoreEls.forEach(el => el.textContent = '0');
 const timeEls = targetPanel.querySelectorAll('[id$="-time"]');
@@ -1039,4 +1028,3 @@ gameInitFunctions[targetId]();
 <script src="app.js"></script>
 </body>
 </html>
-
