@@ -1,1032 +1,1042 @@
 <!doctype html>
 <html lang="tr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Matematik Oyunları — matbilzek</title>
-  <meta name="description" content="Eğitsel matematik oyunları — İlkokul, Ortaokul(6. sınıf) ve Hafıza oyunları. Mobil uyumlu." />
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="styles.css" />
-  <!-- Firebase kullanıyorsanız uncomment edin -->
-  <!-- <script src="firebase-config.js"></script> -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Matematik Oyunları — matbilzek</title>
+<meta name="description" content="Eğitsel matematik oyunları — İlkokul, Ortaokul(6. sınıf) ve Hafıza oyunları. Mobil uyumlu." />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="site-header">
-    <div class="bar">
-      <a class="logo" href="/">Matematik Oyunları</a>
-    </div>
-    <div class="subbar">
-      <div class="tabs">
-        <button class="tab active" data-target="home">Ana Sayfa</button>
-        <button class="tab" data-target="ilkokul">İLKOKUL</button>
-        <button class="tab" data-target="ortaokul">ORTAOKUL (6. Sınıf)</button>
-        <button class="tab" data-target="hafiza">HAFIZA OYUNLARI</button>
-      </div>
-    </div>
-  </header>
-
-  <main class="container">
-    <section id="home" class="panel">
-      <h1>Hoş geldin! Bir seviye seç ve oyna.</h1>
-      <p><strong>Kurallar:</strong> Her oyun 60 saniye sürer. Her doğru cevap <strong>10 puan</strong>, arka arkaya <strong>3 doğru</strong> yapınca <strong>+15 bonus puan</strong>!</p>
-
-      <div class="cards">
-        <article class="card"><h3>İLKOKUL</h3><div class="card-actions"><button class="btn go" data-target="ilkokul">Git</button></div></article>
-        <article class="card"><h3>ORTAOKUL (6. Sınıf)</h3><div class="card-actions"><button class="btn go" data-target="ortaokul">Git</button></div></article>
-        <article class="card"><h3>HAFIZA OYUNLARI</h3><div class="card-actions"><button class="btn go" data-target="hafiza">Git</button></div></article>
-      </div>
-    </section>
-
-    <!-- Kategori Panelleri -->
-    <section id="ilkokul" class="panel hidden">
-      <h2>İLKOKUL OYUNLARI</h2>
-      <div class="cards">
-        <article class="card"><h3>Toplama</h3><div class="card-actions"><button class="btn go" data-target="addition">Oyna</button></div></article>
-        <article class="card"><h3>Çıkarma</h3><div class="card-actions"><button class="btn go" data-target="subtraction">Oyna</button></div></article>
-        <article class="card"><h3>Çarpma</h3><div class="card-actions"><button class="btn go" data-target="multiplication">Oyna</button></div></article>
-        <article class="card"><h3>Bölme</h3><div class="card-actions"><button class="btn go" data-target="division">Oyna</button></div></article>
-      </div>
-      <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
-    </section>
-
-    <section id="ortaokul" class="panel hidden">
-      <h2>ORTAOKUL (6. SINIF) OYUNLARI</h2>
-      <div class="cards">
-        <article class="card"><h3>Asal Sayılar</h3><div class="card-actions"><button class="btn go" data-target="primes">Oyna</button></div></article>
-        <article class="card"><h3>Çarpanlar</h3><div class="card-actions"><button class="btn go" data-target="factors">Oyna</button></div></article>
-        <article class="card"><h3>EBOB / EKOK</h3><div class="card-actions"><button class="btn go" data-target="gcdlcm">Oyna</button></div></article>
-        <article class="card"><h3>Denk Kesirler</h3><div class="card-actions"><button class="btn go" data-target="frac6">Oyna</button></div></article>
-        <article class="card"><h3>Tam Sayılı → Bileşik</h3><div class="card-actions"><button class="btn go" data-target="mixed">Oyna</button></div></article>
-        <article class="card"><h3>Ortalama / Ortanca / Tepe</h3><div class="card-actions"><button class="btn go" data-target="stats">Oyna</button></div></article>
-      </div>
-      <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
-    </section>
-
-    <section id="hafiza" class="panel hidden">
-      <h2>HAFIZA OYUNLARI</h2>
-      <div class="cards">
-        <article class="card"><h3>Şekiller</h3><div class="card-actions"><button class="btn go" data-target="shapes">Oyna</button></div></article>
-        <article class="card"><h3>Hafıza Kartları</h3><div class="card-actions"><button class="btn go" data-target="memory">Oyna</button></div></article>
-      </div>
-      <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
-    </section>
-
-    <!-- Oyun Bitti Modal -->
-    <div id="game-over-modal" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:1000;">
-      <div class="card" style="padding:2rem;max-width:90%;text-align:center;border-radius:16px;">
-        <h2 style="margin:0 0 1rem 0;color:var(--accent-3);">Oyun Bitti!</h2>
-        <p style="font-size:1.4rem;margin:1rem 0;">Skorun: <strong id="final-score-display">0</strong></p>
-        <button class="btn" onclick="closeGameOverModal()" style="padding:0.8rem 1.6rem;font-size:1.1rem;">Tamam</button>
-      </div>
-    </div>
-
-    <!-- 1. Toplama -->
-    <section id="addition" class="panel hidden">
-      <h2>Toplama Oyunu</h2>
-      <div class="game-area">
-        <div class="status-row">
-          <span>Skor: <span id="add-score">0</span></span>
-          <span>Süre: <span id="add-time">60</span> sn</span>
-        </div>
-        <div class="question" id="add-question"></div>
-        <div class="answers" id="add-answers"></div>
-      </div>
-      <div class="game-header controls" style="margin-top:1rem;">
-        <button class="btn" onclick="window.renderLeaderboardForGame('addition')">Global Top 10</button>
-        <button class="btn" onclick="window.submitScoreUI('addition')">Skor Gönder</button>
-        <button class="btn tab" data-target="ilkokul">Geri</button>
-      </div>
-      <script>
-        if (document.getElementById('addition').classList.contains('hidden')) return;
-
-        let score = 0, time = 60, combo = 0, timer;
-        const scoreEl = document.getElementById('add-score');
-        const timeEl = document.getElementById('add-time');
-
-        timer = setInterval(() => {
-          time--;
-          timeEl.textContent = time;
-          if (time <= 0) {
-            clearInterval(timer);
-            showGameOverModal(score);
-            window._saveLocalScore('addition', score);
-          }
-        }, 1000);
-
-        function gen() {
-          const a = Math.floor(Math.random() * 20) + 1;
-          const b = Math.floor(Math.random() * 20) + 1;
-          const correct = a + b;
-          let opts = [correct];
-          while (opts.length < 4) {
-            let w = correct + Math.floor(Math.random() * 11 - 5);
-            if (w > 0 && !opts.includes(w)) opts.push(w);
-          }
-          opts.sort(() => Math.random() - 0.5);
-          document.getElementById('add-question').textContent = `${a} + ${b} = ?`;
-          const ans = document.getElementById('add-answers'); ans.innerHTML = '';
-          opts.forEach(o => {
-            const btn = document.createElement('button');
-            btn.className = 'answer-btn';
-            btn.textContent = o;
-            btn.onclick = () => {
-              if (btn.disabled) return;
-              document.querySelectorAll('#add-answers button').forEach(b => b.disabled = true);
-              btn.classList.add(o === correct ? 'correct' : 'wrong');
-              if (o === correct) {
-                score += 10;
-                combo++;
-                if (combo % 3 === 0) score += 15;
-              } else combo = 0;
-              scoreEl.textContent = score;
-              setTimeout(() => {
-                document.querySelectorAll('#add-answers button').forEach(b => {
-                  b.disabled = false;
-                  b.classList.remove('correct', 'wrong');
-                });
-                gen();
-              }, 800);
-            };
-            ans.appendChild(btn);
-          });
-        }
-        gen();
-      </script>
-    </section>
-
-    <!-- 2. Çıkarma -->
-    <section id="subtraction" class="panel hidden">
-      <h2>Çıkarma Oyunu</h2>
-      <div class="game-area">
-        <div class="status-row">
-          <span>Skor: <span id="sub-score">0</span></span>
-          <span>Süre: <span id="sub-time">60</span> sn</span>
-        </div>
-        <div class="question" id="sub-question"></div>
-        <div class="answers" id="sub-answers"></div>
-      </div>
-      <div class="game-header controls" style="margin-top:1rem;">
-        <button class="btn" onclick="window.renderLeaderboardForGame('subtraction')">Global Top 10</button>
-        <button class="btn" onclick="window.submitScoreUI('subtraction')">Skor Gönder</button>
-        <button class="btn tab" data-target="ilkokul">Geri</button>
-      </div>
-      <script>
-        if (document.getElementById('subtraction').classList.contains('hidden')) return;
-
-        let score = 0, time = 60, combo = 0, timer;
-        const scoreEl = document.getElementById('sub-score');
-        const timeEl = document.getElementById('sub-time');
-
-        timer = setInterval(() => {
-          time--;
-          timeEl.textContent = time;
-          if (time <= 0) {
-            clearInterval(timer);
-            showGameOverModal(score);
-            window._saveLocalScore('subtraction', score);
-          }
-        }, 1000);
-
-        function gen() {
-          const a = Math.floor(Math.random() * 30) + 10;
-          const b = Math.floor(Math.random() * a);
-          const correct = a - b;
-          let opts = [correct];
-          while (opts.length < 4) {
-            let w = correct + Math.floor(Math.random() * 11 - 5);
-            if (w >= 0 && !opts.includes(w)) opts.push(w);
-          }
-          opts.sort(() => Math.random() - 0.5);
-          document.getElementById('sub-question').textContent = `${a} - ${b} = ?`;
-          const ans = document.getElementById('sub-answers'); ans.innerHTML = '';
-          opts.forEach(o => {
-            const btn = document.createElement('button');
-            btn.className = 'answer-btn';
-            btn.textContent = o;
-            btn.onclick = () => {
-              if (btn.disabled) return;
-              document.querySelectorAll('#sub-answers button').forEach(b => b.disabled = true);
-              btn.classList.add(o === correct ? 'correct' : 'wrong');
-              if (o === correct) {
-                score += 10;
-                combo++;
-                if (combo % 3 === 0) score += 15;
-              } else combo = 0;
-              scoreEl.textContent = score;
-              setTimeout(() => {
-                document.querySelectorAll('#sub-answers button').forEach(b => {
-                  b.disabled = false;
-                  b.classList.remove('correct', 'wrong');
-                });
-                gen();
-              }, 800);
-            };
-            ans.appendChild(btn);
-          });
-        }
-        gen();
-      </script>
-    </section>
-
-    <!-- 3. Çarpma -->
-    <section id="multiplication" class="panel hidden">
-      <h2>Çarpma Oyunu</h2>
-      <div class="game-area">
-        <div class="status-row">
-          <span>Skor: <span id="mul-score">0</span></span>
-          <span>Süre: <span id="mul-time">60</span> sn</span>
-        </div>
-        <div class="question" id="mul-question"></div>
-        <div class="answers" id="mul-answers"></div>
-      </div>
-      <div class="game-header controls" style="margin-top:1rem;">
-        <button class="btn" onclick="window.renderLeaderboardForGame('multiplication')">Global Top 10</button>
-        <button class="btn" onclick="window.submitScoreUI('multiplication')">Skor Gönder</button>
-        <button class="btn tab" data-target="ilkokul">Geri</button>
-      </div>
-      <script>
-        if (document.getElementById('multiplication').classList.contains('hidden')) return;
-
-        let score = 0, time = 60, combo = 0, timer;
-        const scoreEl = document.getElementById('mul-score');
-        const timeEl = document.getElementById('mul-time');
-
-        timer = setInterval(() => {
-          time--;
-          timeEl.textContent = time;
-          if (time <= 0) {
-            clearInterval(timer);
-            showGameOverModal(score);
-            window._saveLocalScore('multiplication', score);
-          }
-        }, 1000);
-
-        function gen() {
-          const a = Math.floor(Math.random() * 10) + 1;
-          const b = Math.floor(Math.random() * 10) + 1;
-          const correct = a * b;
-          let opts = [correct];
-          while (opts.length < 4) {
-            let w = correct + Math.floor(Math.random() * 21 - 10);
-            if (!opts.includes(w)) opts.push(w);
-          }
-          opts.sort(() => Math.random() - 0.5);
-          document.getElementById('mul-question').textContent = `${a} × ${b} = ?`;
-          const ans = document.getElementById('mul-answers'); ans.innerHTML = '';
-          opts.forEach(o => {
-            const btn = document.createElement('button');
-            btn.className = 'answer-btn';
-            btn.textContent = o;
-            btn.onclick = () => {
-              if (btn.disabled) return;
-              document.querySelectorAll('#mul-answers button').forEach(b => b.disabled = true);
-              btn.classList.add(o === correct ? 'correct' : 'wrong');
-              if (o === correct) {
-                score += 10;
-                combo++;
-                if (combo % 3 === 0) score += 15;
-              } else combo = 0;
-              scoreEl.textContent = score;
-              setTimeout(() => {
-                document.querySelectorAll('#mul-answers button').forEach(b => {
-                  b.disabled = false;
-                  b.classList.remove('correct', 'wrong');
-                });
-                gen();
-              }, 800);
-            };
-            ans.appendChild(btn);
-          });
-        }
-        gen();
-      </script>
-    </section>
-
-    <!-- 4. Bölme -->
-    <section id="division" class="panel hidden">
-      <h2>Bölme Oyunu</h2>
-      <div class="game-area">
-        <div class="status-row">
-          <span>Skor: <span id="div-score">0</span></span>
-          <span>Süre: <span id="div-time">60</span> sn</span>
-        </div>
-        <div class="question" id="div-question"></div>
-        <div class="answers" id="div-answers"></div>
-      </div>
-      <div class="game-header controls" style="margin-top:1rem;">
-        <button class="btn" onclick="window.renderLeaderboardForGame('division')">Global Top 10</button>
-        <button class="btn" onclick="window.submitScoreUI('division')">Skor Gönder</button>
-        <button class="btn tab" data-target="ilkokul">Geri</button>
-      </div>
-      <script>
-        if (document.getElementById('division').classList.contains('hidden')) return;
-
-        let score = 0, time = 60, combo = 0, timer;
-        const scoreEl = document.getElementById('div-score');
-        const timeEl = document.getElementById('div-time');
-
-        timer = setInterval(() => {
-          time--;
-          timeEl.textContent = time;
-          if (time <= 0) {
-            clearInterval(timer);
-            showGameOverModal(score);
-            window._saveLocalScore('division', score);
-          }
-        }, 1000);
-
-        function gen() {
-          const divisor = Math.floor(Math.random() * 9) + 2;
-          const quotient = Math.floor(Math.random() * 10) + 1;
-          const dividend = divisor * quotient;
-          const correct = quotient;
-          let opts = [correct];
-          while (opts.length < 4) {
-            let w = correct + Math.floor(Math.random() * 5 - 2);
-            if (w > 0 && !opts.includes(w)) opts.push(w);
-          }
-          opts.sort(() => Math.random() - 0.5);
-          document.getElementById('div-question').textContent = `${dividend} ÷ ${divisor} = ?`;
-          const ans = document.getElementById('div-answers'); ans.innerHTML = '';
-          opts.forEach(o => {
-            const btn = document.createElement('button');
-            btn.className = 'answer-btn';
-            btn.textContent = o;
-            btn.onclick = () => {
-              if (btn.disabled) return;
-              document.querySelectorAll('#div-answers button').forEach(b => b.disabled = true);
-              btn.classList.add(o === correct ? 'correct' : 'wrong');
-              if (o === correct) {
-                score += 10;
-                combo++;
-                if (combo % 3 === 0) score += 15;
-              } else combo = 0;
-              scoreEl.textContent = score;
-              setTimeout(() => {
-                document.querySelectorAll('#div-answers button').forEach(b => {
-                  b.disabled = false;
-                  b.classList.remove('correct', 'wrong');
-                });
-                gen();
-              }, 800);
-            };
-            ans.appendChild(btn);
-          });
-        }
-        gen();
-      </script>
-    </section>
-
-    <!-- 5. Asal Sayılar -->
-    <section id="primes" class="panel hidden">
-      <h2>Asal Sayılar Oyunu</h2>
-      <div class="game-area">
-        <div class="status-row">
-          <span>Skor: <span id="prime-score">0</span></span>
-          <span>Süre: <span id="prime-time">60</span> sn</span>
-        </div>
-        <div class="question" id="prime-question"></div>
-        <div class="answers" id="prime-answers"></div>
-      </div>
-      <div class="game-header controls" style="margin-top:1rem;">
-        <button class="btn" onclick="window.renderLeaderboardForGame('primes')">Global Top 10</button>
-        <button class="btn" onclick="window.submitScoreUI('primes')">Skor Gönder</button>
-        <button class="btn tab" data-target="ortaokul">Geri</button>
-      </div>
-      <script>
-        if (document.getElementById('primes').classList.contains('hidden')) return;
-
-        let score = 0, time = 60, combo = 0, timer;
-        const scoreEl = document.getElementById('prime-score');
-        const timeEl = document.getElementById('prime-time');
-
-        timer = setInterval(() => {
-          time--;
-          timeEl.textContent = time;
-          if (time <= 0) {
-            clearInterval(timer);
-            showGameOverModal(score);
-            window._saveLocalScore('primes', score);
-          }
-        }, 1000);
-
-        const isPrime = n => {
-          if (n <= 1) return false;
-          for (let i = 2; i <= Math.sqrt(n); i++) if (n % i === 0) return false;
-          return true;
-        };
-
-        function gen() {
-          const num = Math.floor(Math.random() * 99) + 2;
-          const correct = isPrime(num) ? 'Evet' : 'Hayır';
-          document.getElementById('prime-question').textContent = `${num} asal sayı mı?`;
-          const ans = document.getElementById('prime-answers'); ans.innerHTML = '';
-          ['Evet', 'Hayır'].forEach(o => {
-            const btn = document.createElement('button');
-            btn.className = 'answer-btn';
-            btn.textContent = o;
-            btn.onclick = () => {
-              if (btn.disabled) return;
-              document.querySelectorAll('#prime-answers button').forEach(b => b.disabled = true);
-              btn.classList.add(o === correct ? 'correct' : 'wrong');
-              if (o === correct) {
-                score += 10;
-                combo++;
-                if (combo % 3 === 0) score += 15;
-              } else combo = 0;
-              scoreEl.textContent = score;
-              setTimeout(() => {
-                document.querySelectorAll('#prime-answers button').forEach(b => {
-                  b.disabled = false;
-                  b.classList.remove('correct', 'wrong');
-                });
-                gen();
-              }, 800);
-            };
-            ans.appendChild(btn);
-          });
-        }
-        gen();
-      </script>
-    </section>
-
-    <!-- 6. Çarpanlar -->
-    <section id="factors" class="panel hidden">
-      <h2>Çarpanlar Oyunu</h2>
-      <div class="game-area">
-        <div class="status-row">
-          <span>Skor: <span id="fac-score">0</span></span>
-          <span>Süre: <span id="fac-time">60</span> sn</span>
-        </div>
-        <div class="question" id="fac-question"></div>
-        <div class="answers" id="fac-answers"></div>
-      </div>
-      <div class="game-header controls" style="margin-top:1rem;">
-        <button class="btn" onclick="window.renderLeaderboardForGame('factors')">Global Top 10</button>
-        <button class="btn" onclick="window.submitScoreUI('factors')">Skor Gönder</button>
-        <button class="btn tab" data-target="ortaokul">Geri</button>
-      </div>
-      <script>
-        if (document.getElementById('factors').classList.contains('hidden')) return;
-
-        let score = 0, time = 60, combo = 0, timer;
-        const scoreEl = document.getElementById('fac-score');
-        const timeEl = document.getElementById('fac-time');
-
-        timer = setInterval(() => {
-          time--;
-          timeEl.textContent = time;
-          if (time <= 0) {
-            clearInterval(timer);
-            showGameOverModal(score);
-            window._saveLocalScore('factors', score);
-          }
-        }, 1000);
-
-        const getFactorsStr = n => {
-          let f = [];
-          for (let i = 1; i <= n; i++) if (n % i === 0) f.push(i);
-          return f.join(', ');
-        };
-
-        function gen() {
-          const num = Math.floor(Math.random() * 50) + 10;
-          const correct = getFactorsStr(num);
-          let opts = [correct];
-          while (opts.length < 4) {
-            const wrongNum = num + Math.floor(Math.random() * 10 - 5);
-            const w = wrongNum > 1 ? getFactorsStr(wrongNum) : '1';
-            if (!opts.includes(w)) opts.push(w);
-          }
-          opts.sort(() => Math.random() - 0.5);
-          document.getElementById('fac-question').textContent = `${num} sayısının çarpanları?`;
-          const ans = document.getElementById('fac-answers'); ans.innerHTML = '';
-          opts.forEach(o => {
-            const btn = document.createElement('button');
-            btn.className = 'answer-btn';
-            btn.textContent = o;
-            btn.onclick = () => {
-              if (btn.disabled) return;
-              document.querySelectorAll('#fac-answers button').forEach(b => b.disabled = true);
-              btn.classList.add(o === correct ? 'correct' : 'wrong');
-              if (o === correct) {
-                score += 10;
-                combo++;
-                if (combo % 3 === 0) score += 15;
-              } else combo = 0;
-              scoreEl.textContent = score;
-              setTimeout(() => {
-                document.querySelectorAll('#fac-answers button').forEach(b => {
-                  b.disabled = false;
-                  b.classList.remove('correct', 'wrong');
-                });
-                gen();
-              }, 800);
-            };
-            ans.appendChild(btn);
-          });
-        }
-        gen();
-      </script>
-    </section>
-
-    <!-- 7. EBOB / EKOK -->
-    <section id="gcdlcm" class="panel hidden">
-      <h2>EBOB / EKOK Oyunu</h2>
-      <div class="game-area">
-        <div class="status-row">
-          <span>Skor: <span id="gcd-score">0</span></span>
-          <span>Süre: <span id="gcd-time">60</span> sn</span>
-        </div>
-        <div class="question" id="gcd-question"></div>
-        <div class="answers" id="gcd-answers"></div>
-      </div>
-      <div class="game-header controls" style="margin-top:1rem;">
-        <button class="btn" onclick="window.renderLeaderboardForGame('gcdlcm')">Global Top 10</button>
-        <button class="btn" onclick="window.submitScoreUI('gcdlcm')">Skor Gönder</button>
-        <button class="btn tab" data-target="ortaokul">Geri</button>
-      </div>
-      <script>
-        if (document.getElementById('gcdlcm').classList.contains('hidden')) return;
-
-        let score = 0, time = 60, combo = 0, timer;
-        const scoreEl = document.getElementById('gcd-score');
-        const timeEl = document.getElementById('gcd-time');
-
-        timer = setInterval(() => {
-          time--;
-          timeEl.textContent = time;
-          if (time <= 0) {
-            clearInterval(timer);
-            showGameOverModal(score);
-            window._saveLocalScore('gcdlcm', score);
-          }
-        }, 1000);
-
-        const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
-        const lcm = (a, b) => (a * b) / gcd(a, b);
-
-        function gen() {
-          const a = Math.floor(Math.random() * 30) + 5;
-          const b = Math.floor(Math.random() * 30) + 5;
-          const isGcd = Math.random() > 0.5;
-          const correct = isGcd ? gcd(a, b) : lcm(a, b);
-          let opts = [correct];
-          while (opts.length < 4) {
-            let w = correct + Math.floor(Math.random() * 11 - 5);
-            if (w > 0 && !opts.includes(w)) opts.push(w);
-          }
-          opts.sort(() => Math.random() - 0.5);
-          document.getElementById('gcd-question').textContent = `${a} ve ${b}'nin ${isGcd ? 'EBOB' : 'EKOK'}'u?`;
-          const ans = document.getElementById('gcd-answers'); ans.innerHTML = '';
-          opts.forEach(o => {
-            const btn = document.createElement('button');
-            btn.className = 'answer-btn';
-            btn.textContent = o;
-            btn.onclick = () => {
-              if (btn.disabled) return;
-              document.querySelectorAll('#gcd-answers button').forEach(b => b.disabled = true);
-              btn.classList.add(o === correct ? 'correct' : 'wrong');
-              if (o === correct) {
-                score += 10;
-                combo++;
-                if (combo % 3 === 0) score += 15;
-              } else combo = 0;
-              scoreEl.textContent = score;
-              setTimeout(() => {
-                document.querySelectorAll('#gcd-answers button').forEach(b => {
-                  b.disabled = false;
-                  b.classList.remove('correct', 'wrong');
-                });
-                gen();
-              }, 800);
-            };
-            ans.appendChild(btn);
-          });
-        }
-        gen();
-      </script>
-    </section>
-
-    <!-- 8. Denk Kesirler -->
-    <section id="frac6" class="panel hidden">
-      <h2>Denk Kesirler Oyunu</h2>
-      <div class="game-area">
-        <div class="status-row">
-          <span>Skor: <span id="frac-score">0</span></span>
-          <span>Süre: <span id="frac-time">60</span> sn</span>
-        </div>
-        <div class="question" id="frac-question"></div>
-        <div class="answers" id="frac-answers"></div>
-      </div>
-      <div class="game-header controls" style="margin-top:1rem;">
-        <button class="btn" onclick="window.renderLeaderboardForGame('frac6')">Global Top 10</button>
-        <button class="btn" onclick="window.submitScoreUI('frac6')">Skor Gönder</button>
-        <button class="btn tab" data-target="ortaokul">Geri</button>
-      </div>
-      <script>
-        if (document.getElementById('frac6').classList.contains('hidden')) return;
-
-        let score = 0, time = 60, combo = 0, timer;
-        const scoreEl = document.getElementById('frac-score');
-        const timeEl = document.getElementById('frac-time');
-
-        timer = setInterval(() => {
-          time--;
-          timeEl.textContent = time;
-          if (time <= 0) {
-            clearInterval(timer);
-            showGameOverModal(score);
-            window._saveLocalScore('frac6', score);
-          }
-        }, 1000);
-
-        function gen() {
-          const pay = Math.floor(Math.random() * 10) + 1;
-          const payda = Math.floor(Math.random() * 9) + 2;
-          const carp = Math.floor(Math.random() * 5) + 2;
-          const correct = `${pay * carp}/${payda * carp}`;
-          let opts = [correct];
-          while (opts.length < 4) {
-            const wrongPay = pay * carp + Math.floor(Math.random() * 5 - 2);
-            const w = `${wrongPay}/${payda * carp}`;
-            if (!opts.includes(w)) opts.push(w);
-          }
-          opts.sort(() => Math.random() - 0.5);
-          document.getElementById('frac-question').textContent = `${pay}/${payda} ile denk kesir?`;
-          const ans = document.getElementById('frac-answers'); ans.innerHTML = '';
-          opts.forEach(o => {
-            const btn = document.createElement('button');
-            btn.className = 'answer-btn';
-            btn.textContent = o;
-            btn.onclick = () => {
-              if (btn.disabled) return;
-              document.querySelectorAll('#frac-answers button').forEach(b => b.disabled = true);
-              btn.classList.add(o === correct ? 'correct' : 'wrong');
-              if (o === correct) {
-                score += 10;
-                combo++;
-                if (combo % 3 === 0) score += 15;
-              } else combo = 0;
-              scoreEl.textContent = score;
-              setTimeout(() => {
-                document.querySelectorAll('#frac-answers button').forEach(b => {
-                  b.disabled = false;
-                  b.classList.remove('correct', 'wrong');
-                });
-                gen();
-              }, 800);
-            };
-            ans.appendChild(btn);
-          });
-        }
-        gen();
-      </script>
-    </section>
-
-    <!-- 9. Mixed to Improper -->
-    <section id="mixed" class="panel hidden">
-      <h2>Tam Sayılı → Bileşik Kesir</h2>
-      <div class="game-area">
-        <div class="status-row">
-          <span>Skor: <span id="mix-score">0</span></span>
-          <span>Süre: <span id="mix-time">60</span> sn</span>
-        </div>
-        <div class="question" id="mix-question"></div>
-        <div class="answers" id="mix-answers"></div>
-      </div>
-      <div class="game-header controls" style="margin-top:1rem;">
-        <button class="btn" onclick="window.renderLeaderboardForGame('mixed')">Global Top 10</button>
-        <button class="btn" onclick="window.submitScoreUI('mixed')">Skor Gönder</button>
-        <button class="btn tab" data-target="ortaokul">Geri</button>
-      </div>
-      <script>
-        if (document.getElementById('mixed').classList.contains('hidden')) return;
-
-        let score = 0, time = 60, combo = 0, timer;
-        const scoreEl = document.getElementById('mix-score');
-        const timeEl = document.getElementById('mix-time');
-
-        timer = setInterval(() => {
-          time--;
-          timeEl.textContent = time;
-          if (time <= 0) {
-            clearInterval(timer);
-            showGameOverModal(score);
-            window._saveLocalScore('mixed', score);
-          }
-        }, 1000);
-
-        function gen() {
-          const tam = Math.floor(Math.random() * 6) + 1;
-          const pay = Math.floor(Math.random() * 8) + 1;
-          const payda = Math.floor(Math.random() * 7) + 3;
-          const correct = `${tam * payda + pay}/${payda}`;
-          let opts = [correct];
-          while (opts.length < 4) {
-            const wrongPay = tam * payda + pay + Math.floor(Math.random() * 9 - 4);
-            const w = `${wrongPay}/${payda}`;
-            if (!opts.includes(w)) opts.push(w);
-          }
-          opts.sort(() => Math.random() - 0.5);
-          document.getElementById('mix-question').innerHTML = `<strong>${tam} ${pay}/${payda}</strong> bileşik kesir hali?`;
-          const ans = document.getElementById('mix-answers'); ans.innerHTML = '';
-          opts.forEach(o => {
-            const btn = document.createElement('button');
-            btn.className = 'answer-btn';
-            btn.textContent = o;
-            btn.onclick = () => {
-              if (btn.disabled) return;
-              document.querySelectorAll('#mix-answers button').forEach(b => b.disabled = true);
-              btn.classList.add(o === correct ? 'correct' : 'wrong');
-              if (o === correct) {
-                score += 10;
-                combo++;
-                if (combo % 3 === 0) score += 15;
-              } else combo = 0;
-              scoreEl.textContent = score;
-              setTimeout(() => {
-                document.querySelectorAll('#mix-answers button').forEach(b => {
-                  b.disabled = false;
-                  b.classList.remove('correct', 'wrong');
-                });
-                gen();
-              }, 800);
-            };
-            ans.appendChild(btn);
-          });
-        }
-        gen();
-      </script>
-    </section>
-
-    <!-- 10. Stats -->
-    <section id="stats" class="panel hidden">
-      <h2>Ortalama / Ortanca / Tepe Değer</h2>
-      <div class="game-area">
-        <div class="status-row">
-          <span>Skor: <span id="stat-score">0</span></span>
-          <span>Süre: <span id="stat-time">60</span> sn</span>
-        </div>
-        <div class="question" id="stat-question"></div>
-        <div class="answers" id="stat-answers"></div>
-      </div>
-      <div class="game-header controls" style="margin-top:1rem;">
-        <button class="btn" onclick="window.renderLeaderboardForGame('stats')">Global Top 10</button>
-        <button class="btn" onclick="window.submitScoreUI('stats')">Skor Gönder</button>
-        <button class="btn tab" data-target="ortaokul">Geri</button>
-      </div>
-      <script>
-        if (document.getElementById('stats').classList.contains('hidden')) return;
-
-        let score = 0, time = 60, combo = 0, timer;
-        const scoreEl = document.getElementById('stat-score');
-        const timeEl = document.getElementById('stat-time');
-
-        timer = setInterval(() => {
-          time--;
-          timeEl.textContent = time;
-          if (time <= 0) {
-            clearInterval(timer);
-            showGameOverModal(score);
-            window._saveLocalScore('stats', score);
-          }
-        }, 1000);
-
-        const mean = arr => (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1);
-        const median = arr => {
-          const s = [...arr].sort((a,b)=>a-b);
-          const m = Math.floor(s.length/2);
-          return s.length%2===0 ? ((s[m-1]+s[m])/2).toFixed(1) : s[m];
-        };
-        const mode = arr => {
-          const f = {};
-          arr.forEach(n=>f[n]=(f[n]||0)+1);
-          return Object.keys(f).reduce((a,b)=>f[b]>f[a]?b:a);
-        };
-
-        function gen() {
-          const nums = Array.from({length: Math.floor(Math.random()*3)+5}, () => Math.floor(Math.random()*15)+1);
-          const type = Math.floor(Math.random()*3);
-          let correct, qType;
-          if (type===0) { correct = mean(nums); qType = 'Aritmetik Ortalama'; }
-          else if (type===1) { correct = median(nums); qType = 'Ortanca'; }
-          else { correct = mode(nums); qType = 'Tepe Değer'; }
-          let opts = [correct];
-          while (opts.length < 4) {
-            let w = (parseFloat(correct) + Math.random()*4 - 2).toFixed(1);
-            if (!opts.includes(w)) opts.push(w);
-          }
-          opts.sort(() => Math.random() - 0.5);
-          document.getElementById('stat-question').textContent = `${nums.join(', ')} sayılarının ${qType}'si?`;
-          const ans = document.getElementById('stat-answers'); ans.innerHTML = '';
-          opts.forEach(o => {
-            const btn = document.createElement('button');
-            btn.className = 'answer-btn';
-            btn.textContent = o;
-            btn.onclick = () => {
-              if (btn.disabled) return;
-              document.querySelectorAll('#stat-answers button').forEach(b => b.disabled = true);
-              btn.classList.add(o == correct ? 'correct' : 'wrong');
-              if (o == correct) {
-                score += 10;
-                combo++;
-                if (combo % 3 === 0) score += 15;
-              } else combo = 0;
-              scoreEl.textContent = score;
-              setTimeout(() => {
-                document.querySelectorAll('#stat-answers button').forEach(b => {
-                  b.disabled = false;
-                  b.classList.remove('correct', 'wrong');
-                });
-                gen();
-              }, 800);
-            };
-            ans.appendChild(btn);
-          });
-        }
-        gen();
-      </script>
-    </section>
-
-    <!-- 11. Şekiller -->
-    <section id="shapes" class="panel hidden">
-      <h2>Şekiller Oyunu</h2>
-      <div class="game-area">
-        <div class="status-row">
-          <span>Skor: <span id="shape-score">0</span></span>
-          <span>Süre: <span id="shape-time">60</span> sn</span>
-        </div>
-        <div class="question" style="font-size:1.4rem;margin-bottom:1rem;">Hedef: <div id="target-shape-display" class="shape" style="display:inline-block;margin-left:1rem;"></div></div>
-        <div class="mem-board" id="shape-board" style="grid-template-columns:repeat(4,1fr);"></div>
-      </div>
-      <div class="game-header controls" style="margin-top:1rem;">
-        <button class="btn" onclick="window.renderLeaderboardForGame('shapes')">Global Top 10</button>
-        <button class="btn" onclick="window.submitScoreUI('shapes')">Skor Gönder</button>
-        <button class="btn tab" data-target="hafiza">Geri</button>
-      </div>
-      <script>
-        if (document.getElementById('shapes').classList.contains('hidden')) return;
-
-        let score = 0, time = 60, combo = 0, timer;
-        const scoreEl = document.getElementById('shape-score');
-        const timeEl = document.getElementById('shape-time');
-
-        timer = setInterval(() => {
-          time--;
-          timeEl.textContent = time;
-          if (time <= 0) {
-            clearInterval(timer);
-            showGameOverModal(score);
-            window._saveLocalScore('shapes', score);
-          }
-        }, 1000);
-
-        const shapes = ['circle','square','triangle','star'];
-        function gen() {
-          const target = shapes[Math.floor(Math.random()*4)];
-          document.getElementById('target-shape-display').className = `shape ${target}`;
-          const board = document.getElementById('shape-board'); board.innerHTML = '';
-          let cards = [target, target];
-          while (cards.length < 8) {
-            cards.push(shapes.filter(s=>s!==target)[Math.floor(Math.random()*3)]);
-          }
-          cards.sort(() => Math.random() - 0.5);
-          cards.forEach(sh => {
-            const div = document.createElement('div');
-            div.className = `shape ${sh}`;
-            div.onclick = () => {
-              if (div.dataset.clicked) return;
-              div.dataset.clicked = '1';
-              if (sh === target) {
-                score += 10;
-                combo++;
-                if (combo % 3 === 0) score += 15;
-                div.style.background = '#b2ffba';
-              } else {
-                combo = 0;
-                div.style.background = '#ff9e9e';
-              }
-              scoreEl.textContent = score;
-              setTimeout(gen, 600);
-            };
-            board.appendChild(div);
-          });
-        }
-        gen();
-      </script>
-    </section>
-
-    <!-- 12. Hafıza Kartları -->
-    <section id="memory" class="panel hidden">
-      <h2>Hafıza Kartları</h2>
-      <div class="game-area">
-        <div class="status-row">
-          <span>Skor: <span id="mem-score">0</span></span>
-          <span>Süre: <span id="mem-time">60</span> sn</span>
-          <span>Çift: <span id="mem-pairs">0</span>/8</span>
-        </div>
-        <div class="mem-board" id="mem-board"></div>
-      </div>
-      <div class="game-header controls" style="margin-top:1rem;">
-        <button class="btn" onclick="window.renderLeaderboardForGame('memory')">Global Top 10</button>
-        <button class="btn" onclick="window.submitScoreUI('memory')">Skor Gönder</button>
-        <button class="btn tab" data-target="hafiza">Geri</button>
-      </div>
-      <script>
-        if (document.getElementById('memory').classList.contains('hidden')) return;
-
-
-        let score = 0, time = 60, combo = 0, pairsFound = 0, flipped = [], lock = false, timer;
-        const scoreEl = document.getElementById('mem-score');
-        const pairsEl = document.getElementById('mem-pairs');
-        const timeEl = document.getElementById('mem-time');
-
-        timer = setInterval(() => {
-          time--;
-          timeEl.textContent = time;
-          if (time <= 0) {
-            clearInterval(timer);
-            showGameOverModal(score);
-            window._saveLocalScore('memory', score);
-          }
-        }, 1000);
-
-        const symbols = ['🍎','🍌','🍇','🍊','🍉','🍓','🥝','🍍','🍎','🍌','🍇','🍊','🍉','🍓','🥝','🍍'].sort(() => Math.random() - 0.5);
-        const board = document.getElementById('mem-board');
-        symbols.forEach(sym => {
-          const card = document.createElement('div');
-          card.className = 'mem-card';
-          card.dataset.symbol = sym;
-          card.onclick = () => {
-            if (lock || flipped.length === 2 || card.classList.contains('flipped')) return;
-            card.classList.add('flipped');
-            card.textContent = sym;
-            flipped.push(card);
-            if (flipped.length === 2) {
-              lock = true;
-              setTimeout(() => {
-                if (flipped[0].dataset.symbol === flipped[1].dataset.symbol) {
-                  flipped.forEach(c => c.classList.add('matched'));
-                  pairsFound++;
-                  score += 10;
-                  combo++;
-                  if (combo % 3 === 0) score += 15;
-                  pairsEl.textContent = pairsFound;
-                  if (pairsFound === 8) {
-                    clearInterval(timer);
-                    showGameOverModal(score);
-                    window._saveLocalScore('memory', score);
-                  }
-                } else {
-                  flipped.forEach(c => { c.classList.remove('flipped'); c.textContent = ''; });
-                  combo = 0;
-                }
-                scoreEl.textContent = score;
-                flipped = [];
-                lock = false;
-              }, 1000);
-            }
-          };
-          board.appendChild(card);
-        });
-      </script>
-    </section>
-
-    <!-- Leaderboard -->
-    <section id="leaderboard" class="panel hidden">
-      <h2 id="lb-title">Leaderboard</h2>
-      <div id="lb-list" class="card" style="padding:0.6rem">Yükleniyor...</div>
-      <div class="small muted" id="lb-source-note" style="margin-top:0.6rem">Kaynak:</div>
-      <div style="margin-top:0.6rem"><button class="btn tab" data-target="home">Kapat</button></div>
-    </section>
-
-  </main>
-
-  <footer class="site-footer">
-    <div class="container">
-      <p>© <span id="year"></span> matbilzek — Eğitsel matematik oyunları</p>
-      <p class="muted small">Site açıldığında modal çıkmaz • 60 sn • 10 puan • 3 doğru = +15 bonus</p>
-    </div>
-  </footer>
-
-  <script>
-    function showGameOverModal(finalScore) {
-      document.getElementById('final-score-display').textContent = finalScore;
-      document.getElementById('game-over-modal').classList.remove('hidden');
-    }
-
-    function closeGameOverModal() {
-      document.getElementById('game-over-modal').classList.add('hidden');
-    }
-
-    document.getElementById('year').textContent = new Date().getFullYear();
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
-    }
-  </script>
-
-  <script src="app.js"></script>
+<header class="site-header">
+<div class="bar">
+<a class="logo" href="/">Matematik Oyunları</a>
+</div>
+<div class="subbar">
+<div class="tabs">
+<button class="tab active" data-target="home">Ana Sayfa</button>
+<button class="tab" data-target="ilkokul">İLKOKUL</button>
+<button class="tab" data-target="ortaokul">ORTAOKUL (6. Sınıf)</button>
+<button class="tab" data-target="hafiza">HAFIZA OYUNLARI</button>
+</div>
+</div>
+</header>
+
+<main class="container">
+<section id="home" class="panel">
+<h1>Hoş geldin! Bir seviye seç ve oyna.</h1>
+<p><strong>Kurallar:</strong> Her oyun 60 saniye sürer. Her doğru cevap <strong>10 puan</strong>, arka arkaya <strong>3 doğru</strong> yapınca <strong>+15 bonus puan</strong>!</p>
+
+<div class="cards">
+<article class="card"><h3>İLKOKUL</h3><div class="card-actions"><button class="btn go" data-target="ilkokul">Git</button></div></article>
+<article class="card"><h3>ORTAOKUL (6. Sınıf)</h3><div class="card-actions"><button class="btn go" data-target="ortaokul">Git</button></div></article>
+<article class="card"><h3>HAFIZA OYUNLARI</h3><div class="card-actions"><button class="btn go" data-target="hafiza">Git</button></div></article>
+</div>
+</section>
+
+<section id="ilkokul" class="panel hidden">
+<h2>İLKOKUL OYUNLARI</h2>
+<div class="cards">
+<article class="card"><h3>Toplama</h3><div class="card-actions"><button class="btn go" data-target="addition">Oyna</button></div></article>
+<article class="card"><h3>Çıkarma</h3><div class="card-actions"><button class="btn go" data-target="subtraction">Oyna</button></div></article>
+<article class="card"><h3>Çarpma</h3><div class="card-actions"><button class="btn go" data-target="multiplication">Oyna</button></div></article>
+<article class="card"><h3>Bölme</h3><div class="card-actions"><button class="btn go" data-target="division">Oyna</button></div></article>
+</div>
+<div class="back"><button class="btn tab" data-target="home">Geri</button></div>
+</section>
+
+<section id="ortaokul" class="panel hidden">
+<h2>ORTAOKUL (6. SINIF) OYUNLARI</h2>
+<div class="cards">
+<article class="card"><h3>Asal Sayılar</h3><div class="card-actions"><button class="btn go" data-target="primes">Oyna</button></div></article>
+<article class="card"><h3>Çarpanlar</h3><div class="card-actions"><button class="btn go" data-target="factors">Oyna</button></div></article>
+<article class="card"><h3>EBOB / EKOK</h3><div class="card-actions"><button class="btn go" data-target="gcdlcm">Oyna</button></div></article>
+<article class="card"><h3>Denk Kesirler</h3><div class="card-actions"><button class="btn go" data-target="frac6">Oyna</button></div></article>
+<article class="card"><h3>Tam Sayılı → Bileşik</h3><div class="card-actions"><button class="btn go" data-target="mixed">Oyna</button></div></article>
+<article class="card"><h3>Ortalama / Ortanca / Tepe</h3><div class="card-actions"><button class="btn go" data-target="stats">Oyna</button></div></article>
+</div>
+<div class="back"><button class="btn tab" data-target="home">Geri</button></div>
+</section>
+
+<section id="hafiza" class="panel hidden">
+<h2>HAFIZA OYUNLARI</h2>
+<div class="cards">
+<article class="card"><h3>Şekiller</h3><div class="card-actions"><button class="btn go" data-target="shapes">Oyna</button></div></article>
+<article class="card"><h3>Hafıza Kartları</h3><div class="card-actions"><button class="btn go" data-target="memory">Oyna</button></div></article>
+</div>
+<div class="back"><button class="btn tab" data-target="home">Geri</button></div>
+</section>
+
+<!-- Oyun Bitti Modal -->
+<div id="game-over-modal" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:1000;">
+<div class="card" style="padding:2rem;max-width:90%;text-align:center;border-radius:16px;">
+<h2 style="margin:0 0 1rem 0;color:var(--accent-3);">Oyun Bitti!</h2>
+<p style="font-size:1.4rem;margin:1rem 0;">Skorun: <strong id="final-score-display">0</strong></p>
+<button class="btn" onclick="closeGameOverModal()" style="padding:0.8rem 1.6rem;font-size:1.1rem;">Tamam</button>
+</div>
+</div>
+
+<!-- Tüm Oyun Panelleri (script'siz) -->
+<section id="addition" class="panel hidden">
+<h2>Toplama Oyunu</h2>
+<div class="game-area">
+<div class="status-row">
+<span>Skor: <span id="add-score">0</span></span>
+<span>Süre: <span id="add-time">60</span> sn</span>
+</div>
+<div class="question" id="add-question"></div>
+<div class="answers" id="add-answers"></div>
+</div>
+<div class="game-header controls" style="margin-top:1rem;">
+<button class="btn" onclick="window.renderLeaderboardForGame('addition')">Global Top 10</button>
+<button class="btn" onclick="window.submitScoreUI('addition')">Skor Gönder</button>
+<button class="btn tab" data-target="ilkokul">Geri</button>
+</div>
+</section>
+
+<section id="subtraction" class="panel hidden">
+<h2>Çıkarma Oyunu</h2>
+<div class="game-area">
+<div class="status-row">
+<span>Skor: <span id="sub-score">0</span></span>
+<span>Süre: <span id="sub-time">60</span> sn</span>
+</div>
+<div class="question" id="sub-question"></div>
+<div class="answers" id="sub-answers"></div>
+</div>
+<div class="game-header controls" style="margin-top:1rem;">
+<button class="btn" onclick="window.renderLeaderboardForGame('subtraction')">Global Top 10</button>
+<button class="btn" onclick="window.submitScoreUI('subtraction')">Skor Gönder</button>
+<button class="btn tab" data-target="ilkokul">Geri</button>
+</div>
+</section>
+
+<section id="multiplication" class="panel hidden">
+<h2>Çarpma Oyunu</h2>
+<div class="game-area">
+<div class="status-row">
+<span>Skor: <span id="mul-score">0</span></span>
+<span>Süre: <span id="mul-time">60</span> sn</span>
+</div>
+<div class="question" id="mul-question"></div>
+<div class="answers" id="mul-answers"></div>
+</div>
+<div class="game-header controls" style="margin-top:1rem;">
+<button class="btn" onclick="window.renderLeaderboardForGame('multiplication')">Global Top 10</button>
+<button class="btn" onclick="window.submitScoreUI('multiplication')">Skor Gönder</button>
+<button class="btn tab" data-target="ilkokul">Geri</button>
+</div>
+</section>
+
+<section id="division" class="panel hidden">
+<h2>Bölme Oyunu</h2>
+<div class="game-area">
+<div class="status-row">
+<span>Skor: <span id="div-score">0</span></span>
+<span>Süre: <span id="div-time">60</span> sn</span>
+</div>
+<div class="question" id="div-question"></div>
+<div class="answers" id="div-answers"></div>
+</div>
+<div class="game-header controls" style="margin-top:1rem;">
+<button class="btn" onclick="window.renderLeaderboardForGame('division')">Global Top 10</button>
+<button class="btn" onclick="window.submitScoreUI('division')">Skor Gönder</button>
+<button class="btn tab" data-target="ilkokul">Geri</button>
+</div>
+</section>
+
+<section id="primes" class="panel hidden">
+<h2>Asal Sayılar Oyunu</h2>
+<div class="game-area">
+<div class="status-row">
+<span>Skor: <span id="prime-score">0</span></span>
+<span>Süre: <span id="prime-time">60</span> sn</span>
+</div>
+<div class="question" id="prime-question"></div>
+<div class="answers" id="prime-answers"></div>
+</div>
+<div class="game-header controls" style="margin-top:1rem;">
+<button class="btn" onclick="window.renderLeaderboardForGame('primes')">Global Top 10</button>
+<button class="btn" onclick="window.submitScoreUI('primes')">Skor Gönder</button>
+<button class="btn tab" data-target="ortaokul">Geri</button>
+</div>
+</section>
+
+<section id="factors" class="panel hidden">
+<h2>Çarpanlar Oyunu</h2>
+<div class="game-area">
+<div class="status-row">
+<span>Skor: <span id="fac-score">0</span></span>
+<span>Süre: <span id="fac-time">60</span> sn</span>
+</div>
+<div class="question" id="fac-question"></div>
+<div class="answers" id="fac-answers"></div>
+</div>
+<div class="game-header controls" style="margin-top:1rem;">
+<button class="btn" onclick="window.renderLeaderboardForGame('factors')">Global Top 10</button>
+<button class="btn" onclick="window.submitScoreUI('factors')">Skor Gönder</button>
+<button class="btn tab" data-target="ortaokul">Geri</button>
+</div>
+</section>
+
+<section id="gcdlcm" class="panel hidden">
+<h2>EBOB / EKOK Oyunu</h2>
+<div class="game-area">
+<div class="status-row">
+<span>Skor: <span id="gcd-score">0</span></span>
+<span>Süre: <span id="gcd-time">60</span> sn</span>
+</div>
+<div class="question" id="gcd-question"></div>
+<div class="answers" id="gcd-answers"></div>
+</div>
+<div class="game-header controls" style="margin-top:1rem;">
+<button class="btn" onclick="window.renderLeaderboardForGame('gcdlcm')">Global Top 10</button>
+<button class="btn" onclick="window.submitScoreUI('gcdlcm')">Skor Gönder</button>
+<button class="btn tab" data-target="ortaokul">Geri</button>
+</div>
+</section>
+
+<section id="frac6" class="panel hidden">
+<h2>Denk Kesirler Oyunu</h2>
+<div class="game-area">
+<div class="status-row">
+<span>Skor: <span id="frac-score">0</span></span>
+<span>Süre: <span id="frac-time">60</span> sn</span>
+</div>
+<div class="question" id="frac-question"></div>
+<div class="answers" id="frac-answers"></div>
+</div>
+<div class="game-header controls" style="margin-top:1rem;">
+<button class="btn" onclick="window.renderLeaderboardForGame('frac6')">Global Top 10</button>
+<button class="btn" onclick="window.submitScoreUI('frac6')">Skor Gönder</button>
+<button class="btn tab" data-target="ortaokul">Geri</button>
+</div>
+</section>
+
+<section id="mixed" class="panel hidden">
+<h2>Tam Sayılı → Bileşik Kesir</h2>
+<div class="game-area">
+<div class="status-row">
+<span>Skor: <span id="mix-score">0</span></span>
+<span>Süre: <span id="mix-time">60</span> sn</span>
+</div>
+<div class="question" id="mix-question"></div>
+<div class="answers" id="mix-answers"></div>
+</div>
+<div class="game-header controls" style="margin-top:1rem;">
+<button class="btn" onclick="window.renderLeaderboardForGame('mixed')">Global Top 10</button>
+<button class="btn" onclick="window.submitScoreUI('mixed')">Skor Gönder</button>
+<button class="btn tab" data-target="ortaokul">Geri</button>
+</div>
+</section>
+
+<section id="stats" class="panel hidden">
+<h2>Ortalama / Ortanca / Tepe Değer</h2>
+<div class="game-area">
+<div class="status-row">
+<span>Skor: <span id="stat-score">0</span></span>
+<span>Süre: <span id="stat-time">60</span> sn</span>
+</div>
+<div class="question" id="stat-question"></div>
+<div class="answers" id="stat-answers"></div>
+</div>
+<div class="game-header controls" style="margin-top:1rem;">
+<button class="btn" onclick="window.renderLeaderboardForGame('stats')">Global Top 10</button>
+<button class="btn" onclick="window.submitScoreUI('stats')">Skor Gönder</button>
+<button class="btn tab" data-target="ortaokul">Geri</button>
+</div>
+</section>
+
+<section id="shapes" class="panel hidden">
+<h2>Şekiller Oyunu</h2>
+<div class="game-area">
+<div class="status-row">
+<span>Skor: <span id="shape-score">0</span></span>
+<span>Süre: <span id="shape-time">60</span> sn</span>
+</div>
+<div class="question" style="font-size:1.4rem;margin-bottom:1rem;">Hedef: <div id="target-shape-display" class="shape" style="display:inline-block;margin-left:1rem;"></div></div>
+<div class="mem-board" id="shape-board" style="grid-template-columns:repeat(4,1fr);"></div>
+</div>
+<div class="game-header controls" style="margin-top:1rem;">
+<button class="btn" onclick="window.renderLeaderboardForGame('shapes')">Global Top 10</button>
+<button class="btn" onclick="window.submitScoreUI('shapes')">Skor Gönder</button>
+<button class="btn tab" data-target="hafiza">Geri</button>
+</div>
+</section>
+
+<section id="memory" class="panel hidden">
+<h2>Hafıza Kartları</h2>
+<div class="game-area">
+<div class="status-row">
+<span>Skor: <span id="mem-score">0</span></span>
+<span>Süre: <span id="mem-time">60</span> sn</span>
+<span>Çift: <span id="mem-pairs">0</span>/8</span>
+</div>
+<div class="mem-board" id="mem-board"></div>
+</div>
+<div class="game-header controls" style="margin-top:1rem;">
+<button class="btn" onclick="window.renderLeaderboardForGame('memory')">Global Top 10</button>
+<button class="btn" onclick="window.submitScoreUI('memory')">Skor Gönder</button>
+<button class="btn tab" data-target="hafiza">Geri</button>
+</div>
+</section>
+
+<section id="leaderboard" class="panel hidden">
+<h2 id="lb-title">Leaderboard</h2>
+<div id="lb-list" class="card" style="padding:0.6rem">Yükleniyor...</div>
+<div class="small muted" id="lb-source-note" style="margin-top:0.6rem">Kaynak:</div>
+<div style="margin-top:0.6rem"><button class="btn tab" data-target="home">Kapat</button></div>
+</section>
+</main>
+
+<footer class="site-footer">
+<div class="container">
+<p>© <span id="year"></span> matbilzek — Eğitsel matematik oyunları</p>
+<p class="muted small">60 sn • 10 puan • 3 doğru = +15 bonus</p>
+</div>
+</footer>
+
+<script>
+function showGameOverModal(finalScore) {
+document.getElementById('final-score-display').textContent = finalScore;
+document.getElementById('game-over-modal').classList.remove('hidden');
+}
+
+function closeGameOverModal() {
+document.getElementById('game-over-modal').classList.add('hidden');
+}
+
+document.getElementById('year').textContent = new Date().getFullYear();
+
+if ('serviceWorker' in navigator) {
+navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
+</script>
+
+<!-- Tüm Oyun Mantığı Burada -->
+<script>
+let currentTimer = null;
+
+const gameInitFunctions = {
+addition: function() {
+let score = 0, time = 60, combo = 0;
+const scoreEl = document.getElementById('add-score');
+const timeEl = document.getElementById('add-time');
+scoreEl.textContent = score;
+timeEl.textContent = time;
+
+currentTimer = setInterval(() => {
+time--;
+timeEl.textContent = time;
+if (time <= 0) {
+clearInterval(currentTimer);
+showGameOverModal(score);
+window._saveLocalScore('addition', score);
+}
+}, 1000);
+
+function gen() {
+const a = Math.floor(Math.random() * 20) + 1;
+const b = Math.floor(Math.random() * 20) + 1;
+const correct = a + b;
+let opts = [correct];
+while (opts.length < 4) {
+let w = correct + Math.floor(Math.random() * 11 - 5);
+if (w > 0 && !opts.includes(w)) opts.push(w);
+}
+opts.sort(() => Math.random() - 0.5);
+document.getElementById('add-question').textContent = `${a} + ${b} = ?`;
+const ans = document.getElementById('add-answers'); ans.innerHTML = '';
+opts.forEach(o => {
+const btn = document.createElement('button');
+btn.className = 'answer-btn';
+btn.textContent = o;
+btn.onclick = () => {
+if (btn.disabled) return;
+document.querySelectorAll('#add-answers button').forEach(b => b.disabled = true);
+btn.classList.add(o === correct ? 'correct' : 'wrong');
+if (o === correct) {
+score += 10; combo++;
+if (combo % 3 === 0) score += 15;
+} else combo = 0;
+scoreEl.textContent = score;
+setTimeout(() => {
+document.querySelectorAll('#add-answers button').forEach(b => {
+b.disabled = false; b.classList.remove('correct', 'wrong');
+});
+gen();
+}, 800);
+};
+ans.appendChild(btn);
+});
+}
+gen();
+},
+
+subtraction: function() {
+let score = 0, time = 60, combo = 0;
+const scoreEl = document.getElementById('sub-score');
+const timeEl = document.getElementById('sub-time');
+scoreEl.textContent = score;
+timeEl.textContent = time;
+
+currentTimer = setInterval(() => {
+time--;
+timeEl.textContent = time;
+if (time <= 0) {
+clearInterval(currentTimer);
+showGameOverModal(score);
+window._saveLocalScore('subtraction', score);
+}
+}, 1000);
+
+function gen() {
+const a = Math.floor(Math.random() * 30) + 10;
+const b = Math.floor(Math.random() * a);
+const correct = a - b;
+let opts = [correct];
+while (opts.length < 4) {
+let w = correct + Math.floor(Math.random() * 11 - 5);
+if (w >= 0 && !opts.includes(w)) opts.push(w);
+}
+opts.sort(() => Math.random() - 0.5);
+document.getElementById('sub-question').textContent = `${a} - ${b} = ?`;
+const ans = document.getElementById('sub-answers'); ans.innerHTML = '';
+opts.forEach(o => {
+const btn = document.createElement('button');
+btn.className = 'answer-btn';
+btn.textContent = o;
+btn.onclick = () => {
+if (btn.disabled) return;
+document.querySelectorAll('#sub-answers button').forEach(b => b.disabled = true);
+btn.classList.add(o === correct ? 'correct' : 'wrong');
+if (o === correct) {
+score += 10; combo++;
+if (combo % 3 === 0) score += 15;
+} else combo = 0;
+scoreEl.textContent = score;
+setTimeout(() => {
+document.querySelectorAll('#sub-answers button').forEach(b => {
+b.disabled = false; b.classList.remove('correct', 'wrong');
+});
+gen();
+}, 800);
+};
+ans.appendChild(btn);
+});
+}
+gen();
+},
+
+multiplication: function() {
+let score = 0, time = 60, combo = 0;
+const scoreEl = document.getElementById('mul-score');
+const timeEl = document.getElementById('mul-time');
+scoreEl.textContent = score;
+timeEl.textContent = time;
+
+currentTimer = setInterval(() => {
+time--;
+timeEl.textContent = time;
+if (time <= 0) {
+clearInterval(currentTimer);
+showGameOverModal(score);
+window._saveLocalScore('multiplication', score);
+}
+}, 1000);
+
+function gen() {
+const a = Math.floor(Math.random() * 10) + 1;
+const b = Math.floor(Math.random() * 10) + 1;
+const correct = a * b;
+let opts = [correct];
+while (opts.length < 4) {
+let w = correct + Math.floor(Math.random() * 21 - 10);
+if (!opts.includes(w)) opts.push(w);
+}
+opts.sort(() => Math.random() - 0.5);
+document.getElementById('mul-question').textContent = `${a} × ${b} = ?`;
+const ans = document.getElementById('mul-answers'); ans.innerHTML = '';
+opts.forEach(o => {
+const btn = document.createElement('button');
+btn.className = 'answer-btn';
+btn.textContent = o;
+btn.onclick = () => {
+if (btn.disabled) return;
+document.querySelectorAll('#mul-answers button').forEach(b => b.disabled = true);
+btn.classList.add(o === correct ? 'correct' : 'wrong');
+if (o === correct) {
+score += 10; combo++;
+if (combo % 3 === 0) score += 15;
+} else combo = 0;
+scoreEl.textContent = score;
+setTimeout(() => {
+document.querySelectorAll('#mul-answers button').forEach(b => {
+b.disabled = false; b.classList.remove('correct', 'wrong');
+});
+gen();
+}, 800);
+};
+ans.appendChild(btn);
+});
+}
+gen();
+},
+
+division: function() {
+let score = 0, time = 60, combo = 0;
+const scoreEl = document.getElementById('div-score');
+const timeEl = document.getElementById('div-time');
+scoreEl.textContent = score;
+timeEl.textContent = time;
+
+currentTimer = setInterval(() => {
+time--;
+timeEl.textContent = time;
+if (time <= 0) {
+clearInterval(currentTimer);
+showGameOverModal(score);
+window._saveLocalScore('division', score);
+}
+}, 1000);
+
+function gen() {
+const divisor = Math.floor(Math.random() * 9) + 2;
+const quotient = Math.floor(Math.random() * 10) + 1;
+const dividend = divisor * quotient;
+const correct = quotient;
+let opts = [correct];
+while (opts.length < 4) {
+let w = correct + Math.floor(Math.random() * 5 - 2);
+if (w > 0 && !opts.includes(w)) opts.push(w);
+}
+opts.sort(() => Math.random() - 0.5);
+document.getElementById('div-question').textContent = `${dividend} ÷ ${divisor} = ?`;
+const ans = document.getElementById('div-answers'); ans.innerHTML = '';
+opts.forEach(o => {
+const btn = document.createElement('button');
+btn.className = 'answer-btn';
+btn.textContent = o;
+btn.onclick = () => {
+if (btn.disabled) return;
+document.querySelectorAll('#div-answers button').forEach(b => b.disabled = true);
+btn.classList.add(o === correct ? 'correct' : 'wrong');
+if (o === correct) {
+score += 10; combo++;
+if (combo % 3 === 0) score += 15;
+} else combo = 0;
+scoreEl.textContent = score;
+setTimeout(() => {
+document.querySelectorAll('#div-answers button').forEach(b => {
+b.disabled = false; b.classList.remove('correct', 'wrong');
+});
+gen();
+}, 800);
+};
+ans.appendChild(btn);
+});
+}
+gen();
+},
+
+primes: function() {
+let score = 0, time = 60, combo = 0;
+const scoreEl = document.getElementById('prime-score');
+const timeEl = document.getElementById('prime-time');
+scoreEl.textContent = score;
+timeEl.textContent = time;
+
+currentTimer = setInterval(() => {
+time--;
+timeEl.textContent = time;
+if (time <= 0) {
+clearInterval(currentTimer);
+showGameOverModal(score);
+window._saveLocalScore('primes', score);
+}
+}, 1000);
+
+const isPrime = n => {
+if (n <= 1) return false;
+for (let i = 2; i <= Math.sqrt(n); i++) if (n % i === 0) return false;
+return true;
+};
+
+function gen() {
+const num = Math.floor(Math.random() * 99) + 2;
+const correct = isPrime(num) ? 'Evet' : 'Hayır';
+document.getElementById('prime-question').textContent = `${num} asal sayı mı?`;
+const ans = document.getElementById('prime-answers'); ans.innerHTML = '';
+['Evet', 'Hayır'].forEach(o => {
+const btn = document.createElement('button');
+btn.className = 'answer-btn';
+btn.textContent = o;
+btn.onclick = () => {
+if (btn.disabled) return;
+document.querySelectorAll('#prime-answers button').forEach(b => b.disabled = true);
+btn.classList.add(o === correct ? 'correct' : 'wrong');
+if (o === correct) {
+score += 10; combo++;
+if (combo % 3 === 0) score += 15;
+} else combo = 0;
+scoreEl.textContent = score;
+setTimeout(() => {
+document.querySelectorAll('#prime-answers button').forEach(b => {
+b.disabled = false; b.classList.remove('correct', 'wrong');
+});
+gen();
+}, 800);
+};
+ans.appendChild(btn);
+});
+}
+gen();
+},
+
+factors: function() {
+let score = 0, time = 60, combo = 0;
+const scoreEl = document.getElementById('fac-score');
+const timeEl = document.getElementById('fac-time');
+scoreEl.textContent = score;
+timeEl.textContent = time;
+
+currentTimer = setInterval(() => {
+time--;
+timeEl.textContent = time;
+if (time <= 0) {
+clearInterval(currentTimer);
+showGameOverModal(score);
+window._saveLocalScore('factors', score);
+}
+}, 1000);
+
+const getFactorsStr = n => {
+let f = [];
+for (let i = 1; i <= n; i++) if (n % i === 0) f.push(i);
+return f.join(', ');
+};
+
+function gen() {
+const num = Math.floor(Math.random() * 50) + 10;
+const correct = getFactorsStr(num);
+let opts = [correct];
+while (opts.length < 4) {
+const wrongNum = num + Math.floor(Math.random() * 10 - 5);
+const w = wrongNum > 1 ? getFactorsStr(wrongNum) : '1';
+if (!opts.includes(w)) opts.push(w);
+}
+opts.sort(() => Math.random() - 0.5);
+document.getElementById('fac-question').textContent = `${num} sayısının çarpanları?`;
+const ans = document.getElementById('fac-answers'); ans.innerHTML = '';
+opts.forEach(o => {
+const btn = document.createElement('button');
+btn.className = 'answer-btn';
+btn.textContent = o;
+btn.onclick = () => {
+if (btn.disabled) return;
+document.querySelectorAll('#fac-answers button').forEach(b => b.disabled = true);
+btn.classList.add(o === correct ? 'correct' : 'wrong');
+if (o === correct) {
+score += 10; combo++;
+if (combo % 3 === 0) score += 15;
+} else combo = 0;
+scoreEl.textContent = score;
+setTimeout(() => {
+document.querySelectorAll('#fac-answers button').forEach(b => {
+b.disabled = false; b.classList.remove('correct', 'wrong');
+});
+gen();
+}, 800);
+};
+ans.appendChild(btn);
+});
+}
+gen();
+},
+
+gcdlcm: function() {
+let score = 0, time = 60, combo = 0;
+const scoreEl = document.getElementById('gcd-score');
+const timeEl = document.getElementById('gcd-time');
+scoreEl.textContent = score;
+timeEl.textContent = time;
+
+currentTimer = setInterval(() => {
+time--;
+timeEl.textContent = time;
+if (time <= 0) {
+clearInterval(currentTimer);
+showGameOverModal(score);
+window._saveLocalScore('gcdlcm', score);
+}
+}, 1000);
+
+const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+const lcm = (a, b) => (a * b) / gcd(a, b);
+
+function gen() {
+const a = Math.floor(Math.random() * 30) + 5;
+const b = Math.floor(Math.random() * 30) + 5;
+const isGcd = Math.random() > 0.5;
+const correct = isGcd ? gcd(a, b) : lcm(a, b);
+let opts = [correct];
+while (opts.length < 4) {
+let w = correct + Math.floor(Math.random() * 11 - 5);
+if (w > 0 && !opts.includes(w)) opts.push(w);
+}
+opts.sort(() => Math.random() - 0.5);
+document.getElementById('gcd-question').textContent = `${a} ve ${b}'nin ${isGcd ? 'EBOB' : 'EKOK'}'u?`;
+const ans = document.getElementById('gcd-answers'); ans.innerHTML = '';
+opts.forEach(o => {
+const btn = document.createElement('button');
+btn.className = 'answer-btn';
+btn.textContent = o;
+btn.onclick = () => {
+if (btn.disabled) return;
+document.querySelectorAll('#gcd-answers button').forEach(b => b.disabled = true);
+btn.classList.add(o === correct ? 'correct' : 'wrong');
+if (o === correct) {
+score += 10; combo++;
+if (combo % 3 === 0) score += 15;
+} else combo = 0;
+scoreEl.textContent = score;
+setTimeout(() => {
+document.querySelectorAll('#gcd-answers button').forEach(b => {
+b.disabled = false; b.classList.remove('correct', 'wrong');
+});
+gen();
+}, 800);
+};
+ans.appendChild(btn);
+});
+}
+gen();
+},
+
+frac6: function() {
+let score = 0, time = 60, combo = 0;
+const scoreEl = document.getElementById('frac-score');
+const timeEl = document.getElementById('frac-time');
+scoreEl.textContent = score;
+timeEl.textContent = time;
+
+currentTimer = setInterval(() => {
+time--;
+timeEl.textContent = time;
+if (time <= 0) {
+clearInterval(currentTimer);
+showGameOverModal(score);
+window._saveLocalScore('frac6', score);
+}
+}, 1000);
+
+function gen() {
+const pay = Math.floor(Math.random() * 10) + 1;
+const payda = Math.floor(Math.random() * 9) + 2;
+const carp = Math.floor(Math.random() * 5) + 2;
+const correct = `\( {pay * carp}/ \){payda * carp}`;
+let opts = [correct];
+while (opts.length < 4) {
+const wrongPay = pay * carp + Math.floor(Math.random() * 5 - 2);
+const w = `\( {wrongPay}/ \){payda * carp}`;
+if (!opts.includes(w)) opts.push(w);
+}
+opts.sort(() => Math.random() - 0.5);
+document.getElementById('frac-question').textContent = `\( {pay}/ \){payda} ile denk kesir?`;
+const ans = document.getElementById('frac-answers'); ans.innerHTML = '';
+opts.forEach(o => {
+const btn = document.createElement('button');
+btn.className = 'answer-btn';
+btn.textContent = o;
+btn.onclick = () => {
+if (btn.disabled) return;
+document.querySelectorAll('#frac-answers button').forEach(b => b.disabled = true);
+btn.classList.add(o === correct ? 'correct' : 'wrong');
+if (o === correct) {
+score += 10; combo++;
+if (combo % 3 === 0) score += 15;
+} else combo = 0;
+scoreEl.textContent = score;
+setTimeout(() => {
+document.querySelectorAll('#frac-answers button').forEach(b => {
+b.disabled = false; b.classList.remove('correct', 'wrong');
+});
+gen();
+}, 800);
+};
+ans.appendChild(btn);
+});
+}
+gen();
+},
+
+mixed: function() {
+let score = 0, time = 60, combo = 0;
+const scoreEl = document.getElementById('mix-score');
+const timeEl = document.getElementById('mix-time');
+scoreEl.textContent = score;
+timeEl.textContent = time;
+
+currentTimer = setInterval(() => {
+time--;
+timeEl.textContent = time;
+if (time <= 0) {
+clearInterval(currentTimer);
+showGameOverModal(score);
+window._saveLocalScore('mixed', score);
+}
+}, 1000);
+
+function gen() {
+const tam = Math.floor(Math.random() * 6) + 1;
+const pay = Math.floor(Math.random() * 8) + 1;
+const payda = Math.floor(Math.random() * 7) + 3;
+const correct = `\( {tam * payda + pay}/ \){payda}`;
+let opts = [correct];
+while (opts.length < 4) {
+const wrongPay = tam * payda + pay + Math.floor(Math.random() * 9 - 4);
+const w = `\( {wrongPay}/ \){payda}`;
+if (!opts.includes(w)) opts.push(w);
+}
+opts.sort(() => Math.random() - 0.5);
+document.getElementById('mix-question').innerHTML = `<strong>${tam} \( {pay}/ \){payda}</strong> bileşik kesir hali?`;
+const ans = document.getElementById('mix-answers'); ans.innerHTML = '';
+opts.forEach(o => {
+const btn = document.createElement('button');
+btn.className = 'answer-btn';
+btn.textContent = o;
+btn.onclick = () => {
+if (btn.disabled) return;
+document.querySelectorAll('#mix-answers button').forEach(b => b.disabled = true);
+btn.classList.add(o === correct ? 'correct' : 'wrong');
+if (o === correct) {
+score += 10; combo++;
+if (combo % 3 === 0) score += 15;
+} else combo = 0;
+scoreEl.textContent = score;
+setTimeout(() => {
+document.querySelectorAll('#mix-answers button').forEach(b => {
+b.disabled = false; b.classList.remove('correct', 'wrong');
+});
+gen();
+}, 800);
+};
+ans.appendChild(btn);
+});
+}
+gen();
+},
+
+stats: function() {
+let score = 0, time = 60, combo = 0;
+const scoreEl = document.getElementById('stat-score');
+const timeEl = document.getElementById('stat-time');
+scoreEl.textContent = score;
+timeEl.textContent = time;
+
+currentTimer = setInterval(() => {
+time--;
+timeEl.textContent = time;
+if (time <= 0) {
+clearInterval(currentTimer);
+showGameOverModal(score);
+window._saveLocalScore('stats', score);
+}
+}, 1000);
+
+const mean = arr => (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1);
+const median = arr => {
+const s = [...arr].sort((a,b)=>a-b);
+const m = Math.floor(s.length/2);
+return s.length%2===0 ? ((s[m-1]+s[m])/2).toFixed(1) : s[m];
+};
+const mode = arr => {
+const f = {};
+arr.forEach(n=>f[n]=(f[n]||0)+1);
+return Object.keys(f).reduce((a,b)=>f[b]>f[a]?b:a);
+};
+
+function gen() {
+const nums = Array.from({length: Math.floor(Math.random()*3)+5}, () => Math.floor(Math.random()*15)+1);
+const type = Math.floor(Math.random()*3);
+let correct, qType;
+if (type===0) { correct = mean(nums); qType = 'Aritmetik Ortalama'; }
+else if (type===1) { correct = median(nums); qType = 'Ortanca'; }
+else { correct = mode(nums); qType = 'Tepe Değer'; }
+let opts = [correct];
+while (opts.length < 4) {
+let w = (parseFloat(correct) + Math.random()*4 - 2).toFixed(1);
+if (!opts.includes(w)) opts.push(w);
+}
+opts.sort(() => Math.random() - 0.5);
+document.getElementById('stat-question').textContent = `${nums.join(', ')} sayılarının ${qType}'si?`;
+const ans = document.getElementById('stat-answers'); ans.innerHTML = '';
+opts.forEach(o => {
+const btn = document.createElement('button');
+btn.className = 'answer-btn';
+btn.textContent = o;
+btn.onclick = () => {
+if (btn.disabled) return;
+document.querySelectorAll('#stat-answers button').forEach(b => b.disabled = true);
+btn.classList.add(o == correct ? 'correct' : 'wrong');
+if (o == correct) {
+score += 10; combo++;
+if (combo % 3 === 0) score += 15;
+} else combo = 0;
+scoreEl.textContent = score;
+setTimeout(() => {
+document.querySelectorAll('#stat-answers button').forEach(b => {
+b.disabled = false; b.classList.remove('correct', 'wrong');
+});
+gen();
+}, 800);
+};
+ans.appendChild(btn);
+});
+}
+gen();
+},
+
+shapes: function() {
+let score = 0, time = 60, combo = 0;
+const scoreEl = document.getElementById('shape-score');
+const timeEl = document.getElementById('shape-time');
+scoreEl.textContent = score;
+timeEl.textContent = time;
+
+currentTimer = setInterval(() => {
+time--;
+timeEl.textContent = time;
+if (time <= 0) {
+clearInterval(currentTimer);
+showGameOverModal(score);
+window._saveLocalScore('shapes', score);
+}
+}, 1000);
+
+const shapes = ['circle','square','triangle','star'];
+function gen() {
+const target = shapes[Math.floor(Math.random()*4)];
+document.getElementById('target-shape-display').className = `shape ${target}`;
+const board = document.getElementById('shape-board'); board.innerHTML = '';
+let cards = [target, target];
+while (cards.length < 8) {
+cards.push(shapes.filter(s=>s!==target)[Math.floor(Math.random()*3)]);
+}
+cards.sort(() => Math.random() - 0.5);
+cards.forEach(sh => {
+const div = document.createElement('div');
+div.className = `shape ${sh}`;
+div.onclick = () => {
+if (div.dataset.clicked) return;
+div.dataset.clicked = '1';
+if (sh === target) {
+score += 10; combo++;
+if (combo % 3 === 0) score += 15;
+div.style.background = '#b2ffba';
+} else {
+combo = 0;
+div.style.background = '#ff9e9e';
+}
+scoreEl.textContent = score;
+setTimeout(gen, 600);
+};
+board.appendChild(div);
+});
+}
+gen();
+},
+
+memory: function() {
+let score = 0, time = 60, combo = 0, pairsFound = 0, flipped = [], lock = false;
+const scoreEl = document.getElementById('mem-score');
+const pairsEl = document.getElementById('mem-pairs');
+const timeEl = document.getElementById('mem-time');
+scoreEl.textContent = score;
+pairsEl.textContent = pairsFound;
+timeEl.textContent = time;
+
+currentTimer = setInterval(() => {
+time--;
+timeEl.textContent = time;
+if (time <= 0) {
+clearInterval(currentTimer);
+showGameOverModal(score);
+window._saveLocalScore('memory', score);
+}
+}, 1000);
+
+const symbols = ['🍎','🍌','🍇','🍊','🍉','🍓','🥝','🍍','🍎','🍌','🍇','🍊','🍉','🍓','🥝','🍍'].sort(() => Math.random() - 0.5);
+const board = document.getElementById('mem-board');
+board.innerHTML = '';
+symbols.forEach(sym => {
+const card = document.createElement('div');
+card.className = 'mem-card';
+card.dataset.symbol = sym;
+card.onclick = () => {
+if (lock || flipped.length === 2 || card.classList.contains('flipped')) return;
+card.classList.add('flipped');
+card.textContent = sym;
+flipped.push(card);
+if (flipped.length === 2) {
+lock = true;
+setTimeout(() => {
+if (flipped[0].dataset.symbol === flipped[1].dataset.symbol) {
+flipped.forEach(c => c.classList.add('matched'));
+pairsFound++;
+score += 10; combo++;
+if (combo % 3 === 0) score += 15;
+pairsEl.textContent = pairsFound;
+if (pairsFound === 8) {
+clearInterval(currentTimer);
+showGameOverModal(score);
+window._saveLocalScore('memory', score);
+}
+} else {
+flipped.forEach(c => { c.classList.remove('flipped'); c.textContent = ''; });
+combo = 0;
+}
+scoreEl.textContent = score;
+flipped = [];
+lock = false;
+}, 1000);
+}
+};
+board.appendChild(card);
+});
+}
+};
+
+// Panel geçişlerini ve oyun başlatmayı yönet
+document.addEventListener('click', function(e) {
+if (e.target.matches('.tab') || e.target.matches('.go')) {
+const targetId = e.target.dataset.target;
+
+// Tüm panelleri gizle
+document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
+// Hedef paneli göster
+const targetPanel = document.getElementById(targetId);
+if (targetPanel) targetPanel.classList.remove('hidden');
+
+// Eğer oyun paneliyse başlat
+if (gameInitFunctions[targetId]) {
+if (currentTimer) clearInterval(currentTimer);
+// Skor ve süre elemanlarını sıfırla (güvenli olsun)
+const scoreEls = targetPanel.querySelectorAll('[id$="-score"]');
+scoreEls.forEach(el => el.textContent = '0');
+const timeEls = targetPanel.querySelectorAll('[id$="-time"]');
+timeEls.forEach(el => el.textContent = '60');
+if (targetPanel.querySelector('#mem-pairs')) targetPanel.querySelector('#mem-pairs').textContent = '0';
+
+gameInitFunctions[targetId]();
+}
+}
+});
+</script>
+
+<script src="app.js"></script>
 </body>
 </html>
+
