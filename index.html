@@ -305,6 +305,7 @@ const gameInitFunctions = {
     const timeEl = document.getElementById('add-time');
     scoreEl.textContent = score;
     timeEl.textContent = time;
+
     currentTimer = setInterval(() => {
       time--;
       timeEl.textContent = time;
@@ -316,17 +317,25 @@ const gameInitFunctions = {
     }, 1000);
 
     function gen() {
-      const a = Math.floor(Math.random() * 20) + 1;
-      const b = Math.floor(Math.random() * 20) + 1;
-      const correct = a + b;
+      // 3 basamaklı sayılar: 100-999
+      const a = Math.floor(Math.random() * 900) + 100;
+      const b = Math.floor(Math.random() * 900) + 100;
+      const correct = a + b;  // Toplam en fazla 1998 olacak
+
       let opts = [correct];
       while (opts.length < 4) {
-        let w = correct + Math.floor(Math.random() * 11 - 5);
-        if (w > 0 && !opts.includes(w)) opts.push(w);
+        // Yanlış şıkları doğru cevaba yakın üret (±50 civarı), negatif olmaması için kontrol
+        let w = correct + Math.floor(Math.random() * 101) - 50;  // -50 ile +50 arası
+        if (w > 0 && !opts.includes(w) && w !== correct) {
+          opts.push(w);
+        }
       }
       opts.sort(() => Math.random() - 0.5);
+
       document.getElementById('add-question').textContent = `${a} + ${b} = ?`;
-      const ans = document.getElementById('add-answers'); ans.innerHTML = '';
+      const ans = document.getElementById('add-answers');
+      ans.innerHTML = '';
+
       opts.forEach(o => {
         const btn = document.createElement('button');
         btn.className = 'answer-btn';
@@ -335,14 +344,20 @@ const gameInitFunctions = {
           if (btn.disabled) return;
           document.querySelectorAll('#add-answers button').forEach(b => b.disabled = true);
           btn.classList.add(o === correct ? 'correct' : 'wrong');
+
           if (o === correct) {
-            score += 10; combo++;
+            score += 10;
+            combo++;
             if (combo % 3 === 0) score += 15;
-          } else combo = 0;
+          } else {
+            combo = 0;
+          }
           scoreEl.textContent = score;
+
           setTimeout(() => {
             document.querySelectorAll('#add-answers button').forEach(b => {
-              b.disabled = false; b.classList.remove('correct', 'wrong');
+              b.disabled = false;
+              b.classList.remove('correct', 'wrong');
             });
             gen();
           }, 800);
