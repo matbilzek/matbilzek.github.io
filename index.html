@@ -374,6 +374,7 @@ const gameInitFunctions = {
     const timeEl = document.getElementById('sub-time');
     scoreEl.textContent = score;
     timeEl.textContent = time;
+
     currentTimer = setInterval(() => {
       time--;
       timeEl.textContent = time;
@@ -385,17 +386,26 @@ const gameInitFunctions = {
     }, 1000);
 
     function gen() {
-      const a = Math.floor(Math.random() * 30) + 10;
+      // 3 basamaklı büyük sayı
+      const a = Math.floor(Math.random() * 900) + 100; // 100-999
+      // b, a'dan küçük veya eşit olsun (sonuç negatif olmasın)
       const b = Math.floor(Math.random() * a);
       const correct = a - b;
+
       let opts = [correct];
       while (opts.length < 4) {
-        let w = correct + Math.floor(Math.random() * 11 - 5);
-        if (w >= 0 && !opts.includes(w)) opts.push(w);
+        // Yanlış şıkları doğru cevaba yakın üret (±50 civarı)
+        let w = correct + Math.floor(Math.random() * 101) - 50; // -50 ile +50 arası
+        if (w >= 0 && !opts.includes(w) && w !== correct) {
+          opts.push(w);
+        }
       }
       opts.sort(() => Math.random() - 0.5);
+
       document.getElementById('sub-question').textContent = `${a} - ${b} = ?`;
-      const ans = document.getElementById('sub-answers'); ans.innerHTML = '';
+      const ans = document.getElementById('sub-answers');
+      ans.innerHTML = '';
+
       opts.forEach(o => {
         const btn = document.createElement('button');
         btn.className = 'answer-btn';
@@ -404,14 +414,20 @@ const gameInitFunctions = {
           if (btn.disabled) return;
           document.querySelectorAll('#sub-answers button').forEach(b => b.disabled = true);
           btn.classList.add(o === correct ? 'correct' : 'wrong');
+
           if (o === correct) {
-            score += 10; combo++;
+            score += 10;
+            combo++;
             if (combo % 3 === 0) score += 15;
-          } else combo = 0;
+          } else {
+            combo = 0;
+          }
           scoreEl.textContent = score;
+
           setTimeout(() => {
             document.querySelectorAll('#sub-answers button').forEach(b => {
-              b.disabled = false; b.classList.remove('correct', 'wrong');
+              b.disabled = false;
+              b.classList.remove('correct', 'wrong');
             });
             gen();
           }, 800);
@@ -421,7 +437,6 @@ const gameInitFunctions = {
     }
     gen();
   },
-
   multiplication: function() {
     let score = 0, time = 60, combo = 0;
     const scoreEl = document.getElementById('mul-score');
