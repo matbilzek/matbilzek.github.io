@@ -437,12 +437,15 @@ const gameInitFunctions = {
     }
     gen();
   },
+
+              
   multiplication: function() {
     let score = 0, time = 60, combo = 0;
     const scoreEl = document.getElementById('mul-score');
     const timeEl = document.getElementById('mul-time');
     scoreEl.textContent = score;
     timeEl.textContent = time;
+
     currentTimer = setInterval(() => {
       time--;
       timeEl.textContent = time;
@@ -454,17 +457,54 @@ const gameInitFunctions = {
     }, 1000);
 
     function gen() {
-      const a = Math.floor(Math.random() * 10) + 1;
-      const b = Math.floor(Math.random() * 10) + 1;
+      // Rastgele çarpma tipi seçiyoruz
+      const type = Math.floor(Math.random() * 5); // 0-4 arası 5 farklı tip
+
+      let a, b;
+
+      if (type === 0) {
+        // 3 basamaklı × 1 basamaklı
+        a = Math.floor(Math.random() * 900) + 100; // 100-999
+        b = Math.floor(Math.random() * 9) + 1;     // 1-9
+      } else if (type === 1) {
+        // 3 basamaklı × 2 basamaklı
+        a = Math.floor(Math.random() * 900) + 100; // 100-999
+        b = Math.floor(Math.random() * 90) + 10;   // 10-99
+      } else if (type === 2) {
+        // 3 basamaklı × 3 basamaklı
+        a = Math.floor(Math.random() * 900) + 100; // 100-999
+        b = Math.floor(Math.random() * 900) + 100; // 100-999
+      } else if (type === 3) {
+        // 2 basamaklı × 1 basamaklı
+        a = Math.floor(Math.random() * 90) + 10;   // 10-99
+        b = Math.floor(Math.random() * 9) + 1;     // 1-9
+      } else {
+        // 2 basamaklı × 2 basamaklı
+        a = Math.floor(Math.random() * 90) + 10;   // 10-99
+        b = Math.floor(Math.random() * 90) + 10;   // 10-99
+      }
+
       const correct = a * b;
+
+      // Yanlış şıklar: doğru cevaba yakın değerler üretelim
       let opts = [correct];
       while (opts.length < 4) {
-        let w = correct + Math.floor(Math.random() * 21 - 10);
-        if (!opts.includes(w)) opts.push(w);
+        // Doğru cevabın yaklaşık ±15% farkla yanlış şıklar
+        const deviation = Math.floor(correct * 0.15);
+        let w = correct + Math.floor(Math.random() * (deviation * 2 + 1)) - deviation;
+
+        // Negatif olmasın ve zaten listede olmasın
+        if (w > 0 && !opts.includes(w)) {
+          opts.push(w);
+        }
       }
+
       opts.sort(() => Math.random() - 0.5);
+
       document.getElementById('mul-question').textContent = `${a} × ${b} = ?`;
-      const ans = document.getElementById('mul-answers'); ans.innerHTML = '';
+      const ans = document.getElementById('mul-answers');
+      ans.innerHTML = '';
+
       opts.forEach(o => {
         const btn = document.createElement('button');
         btn.className = 'answer-btn';
@@ -473,14 +513,20 @@ const gameInitFunctions = {
           if (btn.disabled) return;
           document.querySelectorAll('#mul-answers button').forEach(b => b.disabled = true);
           btn.classList.add(o === correct ? 'correct' : 'wrong');
+
           if (o === correct) {
-            score += 10; combo++;
+            score += 10;
+            combo++;
             if (combo % 3 === 0) score += 15;
-          } else combo = 0;
+          } else {
+            combo = 0;
+          }
           scoreEl.textContent = score;
+
           setTimeout(() => {
             document.querySelectorAll('#mul-answers button').forEach(b => {
-              b.disabled = false; b.classList.remove('correct', 'wrong');
+              b.disabled = false;
+              b.classList.remove('correct', 'wrong');
             });
             gen();
           }, 800);
@@ -491,12 +537,14 @@ const gameInitFunctions = {
     gen();
   },
 
-  division: function() {
+
+division: function() {
     let score = 0, time = 60, combo = 0;
     const scoreEl = document.getElementById('div-score');
     const timeEl = document.getElementById('div-time');
     scoreEl.textContent = score;
     timeEl.textContent = time;
+
     currentTimer = setInterval(() => {
       time--;
       timeEl.textContent = time;
@@ -508,18 +556,42 @@ const gameInitFunctions = {
     }, 1000);
 
     function gen() {
-      const divisor = Math.floor(Math.random() * 9) + 2;
-      const quotient = Math.floor(Math.random() * 10) + 1;
+      // Rastgele bölen (divisor): 2 veya 3 basamaklı, 11-99 arası (10 ve 5 ile kolay bölünebilirlik için tercihli)
+      const digitCount = Math.random() < 0.7 ? 2 : 3; // %70 2 basamaklı, %30 3 basamaklı
+      let divisor;
+      if (digitCount === 2) {
+        // 2 basamaklı: 11-99, özellikle 10, 20, 25, 30, 40, 50, 60, 75, 80 gibi kolay olanlar ağırlıklı
+        const easyDivisors = [10, 12, 15, 20, 25, 30, 40, 50, 60, 75, 80, 90];
+        divisor = easyDivisors[Math.floor(Math.random() * easyDivisors.length)];
+      } else {
+        // 3 basamaklı nadir, ama mümkün (örneğin 100, 125, 150 gibi)
+        const easyBig = [100, 125, 150, 200, 250, 300, 400, 500];
+        divisor = easyBig[Math.floor(Math.random() * easyBig.length)];
+      }
+
+      // Bölüm (quotient): 5-50 arası (sonuç mantıklı ve zihinden hesaplanabilir olsun)
+      const quotient = Math.floor(Math.random() * 46) + 5; // 5-50
+
+      // Bölünen sayı: divisor * quotient → tam bölünüyor ve genellikle 0 ile bitiyor
       const dividend = divisor * quotient;
+
       const correct = quotient;
+
+      // Yanlış şıklar: doğru cevaba yakın (±10 civarı), pozitif ve tekrarsız
       let opts = [correct];
       while (opts.length < 4) {
-        let w = correct + Math.floor(Math.random() * 5 - 2);
-        if (w > 0 && !opts.includes(w)) opts.push(w);
+        let w = correct + Math.floor(Math.random() * 21) - 10; // -10 ile +10 arası
+        if (w > 0 && !opts.includes(w)) {
+          opts.push(w);
+        }
       }
+
       opts.sort(() => Math.random() - 0.5);
+
       document.getElementById('div-question').textContent = `${dividend} ÷ ${divisor} = ?`;
-      const ans = document.getElementById('div-answers'); ans.innerHTML = '';
+      const ans = document.getElementById('div-answers');
+      ans.innerHTML = '';
+
       opts.forEach(o => {
         const btn = document.createElement('button');
         btn.className = 'answer-btn';
@@ -528,14 +600,20 @@ const gameInitFunctions = {
           if (btn.disabled) return;
           document.querySelectorAll('#div-answers button').forEach(b => b.disabled = true);
           btn.classList.add(o === correct ? 'correct' : 'wrong');
+
           if (o === correct) {
-            score += 10; combo++;
+            score += 10;
+            combo++;
             if (combo % 3 === 0) score += 15;
-          } else combo = 0;
+          } else {
+            combo = 0;
+          }
           scoreEl.textContent = score;
+
           setTimeout(() => {
             document.querySelectorAll('#div-answers button').forEach(b => {
-              b.disabled = false; b.classList.remove('correct', 'wrong');
+              b.disabled = false;
+              b.classList.remove('correct', 'wrong');
             });
             gen();
           }, 800);
@@ -545,7 +623,7 @@ const gameInitFunctions = {
     }
     gen();
   },
-
+  
   primes: function() {
     let score = 0, time = 60, combo = 0;
     const scoreEl = document.getElementById('prime-score');
