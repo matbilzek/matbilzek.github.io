@@ -54,7 +54,7 @@
 <section id="ortaokul5" class="panel hidden">
 <h2>ORTAOKUL (5. SINIF) OYUNLARI</h2>
 <div class="cards">
-<article class="card"><h3>Asal Sayılar</h3><div class="card-actions"><button class="btn go" data-target="primes">Oyna</button></div></article>
+<article class="card"><h3>Geometri Oyunu</h3><div class="card-actions"><button class="btn go" data-target="geometryGame">Oyna</button></div></article>
 <article class="card"><h3>Çarpanlar</h3><div class="card-actions"><button class="btn go" data-target="factors">Oyna</button></div></article>
 <article class="card"><h3>Ortak Bölen / Ortak Kat </h3><div class="card-actions"><button class="btn go" data-target="gcdlcm">Oyna</button></div></article>
 <article class="card"><h3>Denk Kesirler</h3><div class="card-actions"><button class="btn go" data-target="frac6">Oyna</button></div></article>
@@ -179,6 +179,27 @@
 <button class="btn" onclick="window.submitScoreUI('division')">Bitir ve Skor Gönder</button>
 <button class="btn tab" data-target="ilkokul">Geri</button>
 </div>
+</section>
+
+<section id="geometryGame" class="panel hidden">
+  <h2>Geometri Tanıma Oyunu</h2>
+    <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="geo-score">0</span></span>
+      <span>Süre: <span id="geo-time">60</span></span>
+    </div>
+    <div class="question-container" style="text-align:center; padding: 20px;">
+    <div id="geo-question" style="font-size: 80px; min-height: 120px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 10px; margin-bottom: 20px; color: #333;">
+    </div>
+    </div>
+    <div class="answers" id="geo-answers">
+        </div>
+  </div>
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('geometryGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('geometryGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul5">Geri</button>
+  </div>
 </section>
 
 <section id="primes" class="panel hidden">
@@ -668,6 +689,97 @@ division: function() {
     }
     gen();
   },
+
+
+  geometryGame: function() {
+    let score = 0, time = 60, combo = 0;
+    const scoreEl = document.getElementById('geo-score');
+    const timeEl = document.getElementById('geo-time');
+    const questionEl = document.getElementById('geo-question');
+    const drawArea = document.getElementById('geo-draw-area'); // Şeklin çizileceği yer
+    
+    scoreEl.textContent = score;
+    timeEl.textContent = time;
+
+    // Zamanlayıcı
+    currentTimer = setInterval(() => {
+      time--;
+      timeEl.textContent = time;
+      if (time <= 0) {
+        clearInterval(currentTimer);
+        currentTimer = null;
+        window._saveLocalScore('geometry', score);
+      }
+    }, 1000);
+
+    // Geometrik Tanımlar ve Çizim Temsilleri
+    const shapes = [
+      { name: "Nokta", icon: "●" },
+      { name: "Doğru", icon: "←⎯⎯⎯⎯→" },
+      { name: "Doğru Parçası", icon: "⎯⎯⎯⎯" },
+      { name: "Işın", icon: "●⎯⎯⎯⎯→" },
+      { name: "Açı", icon: "∠" },
+      { name: "Çember", icon: "○" },
+      { name: "Dikme (Dik Açı)", icon: "⊥" }
+    ];
+
+    function gen() {
+      // Rastgele bir şekil seç
+      const correctIndex = Math.floor(Math.random() * shapes.length);
+      const correctShape = shapes[correctIndex];
+
+      // Ekranda soruyu göster (Görsel temsil)
+      // Gerçek bir uygulamada burada Canvas veya SVG ile çizim yaptırabilirsin
+      questionEl.innerHTML = `<div class="geo-visual">${correctShape.icon}</div>`;
+      
+      // Şıkları oluştur
+      let opts = [correctShape.name];
+      while (opts.length < 4) {
+        let randomShape = shapes[Math.floor(Math.random() * shapes.length)].name;
+        if (!opts.includes(randomShape)) {
+          opts.push(randomShape);
+        }
+      }
+
+      // Şıkları karıştır
+      opts.sort(() => Math.random() - 0.5);
+
+      const ansContainer = document.getElementById('geo-answers');
+      ansContainer.innerHTML = '';
+
+      opts.forEach(o => {
+        const btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.textContent = o;
+        
+        btn.onclick = () => {
+          if (btn.disabled) return;
+          document.querySelectorAll('#geo-answers button').forEach(b => b.disabled = true);
+          
+          const isCorrect = (o === correctShape.name);
+          btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+          if (isCorrect) {
+            score += 10;
+            combo++;
+            if (combo % 3 === 0) score += 15; // Kombo bonusu
+          } else {
+            combo = 0;
+          }
+          scoreEl.textContent = score;
+
+          setTimeout(() => {
+            gen();
+          }, 800);
+        };
+        ansContainer.appendChild(btn);
+      });
+    }
+
+    gen();
+}
+
+    
   
   primes: function() {
     let score = 0, time = 60, combo = 0;
