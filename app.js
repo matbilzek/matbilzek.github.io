@@ -19,7 +19,7 @@
     const LS_KEY = 'mathgames_scores_v1';
 
     // Save local score (optionally with name). Keep last 50 entries per game.
-    function saveLocalScore(game, score, name = 'Anon') {
+    function saveLocalScore(game, score, name = 'Oyuncu') {
       try {
         const raw = localStorage.getItem(LS_KEY);
         const data = raw ? JSON.parse(raw) : {};
@@ -132,7 +132,7 @@
         res.items.forEach((it, idx) => {
           const row = document.createElement('div');
           row.className = 'lb-item';
-          row.innerHTML = `<div style="display:flex;align-items:center;gap:8px"><div class="lb-rank">${idx+1}</div><div class="lb-name">${escapeHtml(it.name||'Anon')}</div></div><div class="lb-score">${escapeHtml(String(it.score))}</div>`;
+          row.innerHTML = `<div style="display:flex;align-items:center;gap:8px"><div class="lb-rank">${idx+1}</div><div class="lb-name">${escapeHtml(it.name||'Oyuncu')}</div></div><div class="lb-score">${escapeHtml(String(it.score))}</div>`;
           listEl.appendChild(row);
         });
       }
@@ -155,9 +155,9 @@
         const ok = confirm(`En iyi yerel skorunuz ${scoreToSend}. Bunu global gönderiyorsunuz. Devam edilsin mi?`);
         if (!ok) return;
       }
-      const name = prompt('Takma ad gir (en fazla 18 karakter):', 'Anon');
+      const name = prompt('Takma ad gir (en fazla 18 karakter):', 'Oyuncu');
       if (name === null) return;
-      const nickname = name.trim().slice(0,18) || 'Anon';
+      const nickname = name.trim().slice(0,18) || 'Oyuncu';
       if (window.FIREBASE_CONFIG && !firestore) await initFirebaseIfConfigured();
       const res = await submitScoreToBackend(game, nickname, scoreToSend);
       if (res.ok) {
