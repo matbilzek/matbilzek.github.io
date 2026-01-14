@@ -1086,12 +1086,12 @@ division: function() {
     const shapes = ['circle','square','triangle','star','heart','oval','diamond','ellipse'];
 
     function gen() {
-      const target = shapes[Math.floor(Math.random()*4)];
+      const target = shapes[Math.floor(Math.random()*2)];
       document.getElementById('target-shape-display').className = `shape ${target}`;
       const board = document.getElementById('shape-board'); board.innerHTML = '';
       let cards = [target, target];
       while (cards.length < 8) {
-        cards.push(shapes.filter(s=>s!==target)[Math.floor(Math.random()*3)]);
+        cards.push(shapes.filter(s=>s!==target)[Math.floor(Math.random()*1)]);
       }
       cards.sort(() => Math.random() - 0.5);
       cards.forEach(sh => {
