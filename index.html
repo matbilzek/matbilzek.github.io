@@ -812,7 +812,7 @@ division: function() {
         if (w > 0 && !opts.includes(w)) opts.push(w);
       }
       opts.sort(() => Math.random() - 0.5);
-      document.getElementById('gcd-question').textContent = `${a} ve ${b}'nin ${isGcd ? 'Ortak Böleni' : 'Ortak Katı'}' nedir?`;
+      document.getElementById('gcd-question').textContent = `${a} ve ${b}'nin ${isGcd ? 'Ortak Böleni' : 'Ortak Katı'} nedir?`;
       const ans = document.getElementById('gcd-answers'); ans.innerHTML = '';
       opts.forEach(o => {
         const btn = document.createElement('button');
