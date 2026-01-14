@@ -278,6 +278,7 @@
 <div class="game-area">
 <div class="status-row">
 <span>Skor: <span id="shape-score">0</span></span>
+  
 </div>
 <div class="question" style="font-size:1.4rem;margin-bottom:1rem;">Hedef: <div id="target-shape-display" class="shape" style="display:inline-block;margin-left:1rem;"></div></div>
 <div class="mem-board" id="shape-board" style="grid-template-columns:repeat(4,1fr);"></div>
@@ -294,6 +295,7 @@
 <div class="game-area">
 <div class="status-row">
 <span>Skor: <span id="mem-score">0</span></span>
+<span>Süre: <span id="mem-time">60</span></span>
 <span>Çift: <span id="mem-pairs">0</span>/8</span>
 </div>
 <div class="mem-board" id="mem-board"></div>
@@ -800,7 +802,7 @@ division: function() {
         if (w > 0 && !opts.includes(w)) opts.push(w);
       }
       opts.sort(() => Math.random() - 0.5);
-      document.getElementById('gcd-question').textContent = `${a} ve ${b}'nin ${isGcd ? 'OrtakBoleni' : 'OrtakKati'}' nedir?`;
+      document.getElementById('gcd-question').textContent = `${a} ve ${b}'nin ${isGcd ? 'Ortak Böleni' : 'Ortak Katı'}' nedir?`;
       const ans = document.getElementById('gcd-answers'); ans.innerHTML = '';
       opts.forEach(o => {
         const btn = document.createElement('button');
