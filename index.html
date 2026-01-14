@@ -1083,15 +1083,15 @@ division: function() {
       }
     }, 1000);
 
-    const shapes = ['circle','square','triangle','star','heart','oval','diamond','ellipse'];
+    const shapes = ['circle','square','triangle','star'];
 
     function gen() {
-      const target = shapes[Math.floor(Math.random()*8)];
+      const target = shapes[Math.floor(Math.random()*4)];
       document.getElementById('target-shape-display').className = `shape ${target}`;
       const board = document.getElementById('shape-board'); board.innerHTML = '';
-      let cards = [target, target];
+      let cards = [target];
       while (cards.length < 8) {
-        cards.push(shapes.filter(s=>s!==target)[Math.floor(Math.random()*8)]);
+        cards.push(shapes.filter(s=>s!==target)[Math.floor(Math.random()*3)]);
       }
       cards.sort(() => Math.random() - 0.5);
       cards.forEach(sh => {
