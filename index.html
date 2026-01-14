@@ -957,10 +957,19 @@ division: function() {
 
   stats: function() {
   let score = 0, time = 60, combo = 0;
+  let currentTimer = null;  // timer hatasını önlemek için
+
   const scoreEl = document.getElementById('stat-score');
   const timeEl = document.getElementById('stat-time');
+
+  if (!scoreEl || !timeEl) {
+    console.error("Skor veya süre elementi bulunamadı!");
+    return;
+  }
+
   scoreEl.textContent = score;
   timeEl.textContent = time;
+
   currentTimer = setInterval(() => {
     time--;
     timeEl.textContent = time;
@@ -971,82 +980,85 @@ division: function() {
     }
   }, 1000);
 
-  // Tepe değer bul: en çok tekrar eden sayılar (çoklu olabilir)
+  // Tepe değer hesaplama (değişmedi)
   const getModes = arr => {
     const freq = {};
     arr.forEach(n => freq[n] = (freq[n] || 0) + 1);
-
     let maxCount = 0;
     for (let num in freq) {
       if (freq[num] > maxCount) maxCount = freq[num];
     }
-
-    // Maksimum tekrar sayısı 1 ise → Yok
     if (maxCount === 1) return ['Yok'];
-
-    // En yüksek tekrara sahip tüm sayıları topla
     const modes = [];
     for (let num in freq) {
       if (freq[num] === maxCount) modes.push(num);
     }
-
-    // Sıralı olsun diye sort yap
     return modes.sort((a, b) => a - b);
   };
 
-  const mean = arr => (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1);
+  const mean = arr => {
+    const total = arr.reduce((a, b) => a + b, 0);
+    return Math.round(total / arr.length);           // doğal sayı
+  };
+
   const median = arr => {
-    const s = [...arr].sort((a,b)=>a-b);
-    const m = Math.floor(s.length/2);
-    return s.length % 2 === 0 ? ((s[m-1] + s[m]) / 2).toFixed(1) : s[m];
+    const s = [...arr].sort((a, b) => a - b);
+    const mid = Math.floor(s.length / 2);
+    
+    if (s.length % 2 === 1) {
+      // tek sayı → orta eleman zaten tam sayı
+      return s[mid];
+    } else {
+      // çift sayı → iki orta elemanın ortalaması, sonra yuvarla
+      const avg = (s[mid - 1] + s[mid]) / 2;
+      return Math.round(avg);                        // doğal sayı olsun
+    }
   };
 
   function gen() {
-    // 5-8 tane doğal sayı
-    const nums = Array.from({length: Math.floor(Math.random() * 4) + 5}, () => Math.floor(Math.random() * 20) + 1);
+    // 2 ila 6 arası rastgele sayı adedi
+    const count = Math.floor(Math.random() * 5) + 2;   // 2,3,4,5,6
+    const nums = Array.from({ length: count }, () => Math.floor(Math.random() * 20) + 1);
 
     const type = Math.floor(Math.random() * 3);
     let correct, qType;
 
     if (type === 0) {
-      correct = mean(nums); // sayı veya x.x formatında string
+      correct = mean(nums);
       qType = 'Aritmetik Ortalama';
     } else if (type === 1) {
       correct = median(nums);
       qType = 'Ortanca';
     } else {
       const modes = getModes(nums);
-      // Doğru cevap: "Yok" ya da "3 ve 5" gibi birleştirilmiş string
       correct = modes.length === 1 && modes[0] === 'Yok' ? 'Yok' : modes.join(' ve ');
       qType = 'Tepe Değer';
     }
 
-    // Seçenekler oluştur
-    let opts = [correct.toString()];
+    document.getElementById('stat-question').textContent =
+      `${nums.join(', ')} sayılarının ${qType}?`;
 
+    let opts = [correct.toString()];
     while (opts.length < 4) {
       let w;
       if (qType === 'Tepe Değer') {
-        // Tepe için mantıklı yanlış seçenekler
         if (Math.random() < 0.3 && !opts.includes('Yok')) {
           w = 'Yok';
         } else {
-          // Rastgele bir sayı veya yanlış birleştirme
-          const randomNum = Math.floor(Math.random() * 20) + 1;
-          const another = Math.floor(Math.random() * 20) + 1;
-          w = randomNum === another ? randomNum.toString() : `${randomNum} ve ${another}`;
+          const n1 = Math.floor(Math.random() * 20) + 1;
+          const n2 = Math.floor(Math.random() * 20) + 1;
+          w = n1 === n2 ? n1.toString() : `${n1} ve ${n2}`;
         }
       } else {
-        // Ortalama ve ortanca için
-        w = (parseFloat(correct) + (Math.random() * 4 - 2)).toFixed(1);
+        // Hem ortalama hem ortanca için yanlış şıklar da tam sayı olsun
+        const deviation = Math.floor(Math.random() * 5) - 2;  // -2, -1, 0, +1, +2 ama 0'ı engelleyelim
+        w = (Number(correct) + (deviation === 0 ? 3 : deviation)).toString();
       }
-      if (!opts.includes(w)) opts.push(w);
+
+      if (!opts.includes(w) && w !== 'NaN') opts.push(w);
     }
 
     opts.sort(() => Math.random() - 0.5);
-
-    document.getElementById('stat-question').textContent = 
-      `${nums.join(', ')} sayılarının ${qType}'si nedir?`;
 
     const ans = document.getElementById('stat-answers');
     ans.innerHTML = '';
@@ -1055,20 +1067,22 @@ division: function() {
       const btn = document.createElement('button');
       btn.className = 'answer-btn';
       btn.textContent = o;
+
       btn.onclick = () => {
         if (btn.disabled) return;
         document.querySelectorAll('#stat-answers button').forEach(b => b.disabled = true);
 
-        // Doğru kontrol: string karşılaştırma
         const isCorrect = o === correct.toString();
         btn.classList.add(isCorrect ? 'correct' : 'wrong');
 
         if (isCorrect) {
-          score += 10; combo++;
+          score += 10;
+          combo++;
           if (combo % 3 === 0) score += 15;
         } else {
           combo = 0;
         }
+
         scoreEl.textContent = score;
 
         setTimeout(() => {
@@ -1079,11 +1093,13 @@ division: function() {
           gen();
         }, 800);
       };
+
       ans.appendChild(btn);
     });
   }
+
   gen();
-},
+}
 
   shapes: function() {
     let score = 0, time = 60, combo = 0;
