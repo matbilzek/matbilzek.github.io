@@ -118,7 +118,7 @@
 <div class="game-area">
 <div class="status-row">
 <span>Skor: <span id="add-score">0</span></span>
-<span>Süre: <span id="add-time"> </span></span>
+<span>  <span id="add-time"> </span></span>
 </div>
 <div class="question" id="add-question"></div>
 <div class="answers" id="add-answers"></div>
@@ -1227,7 +1227,42 @@ document.addEventListener('click', function(e) {
   }
 });
 </script>
+  
 
 <script src="app.js"></script>
+  
+  <script>
+// Ziyaretçi sayacı – anasayfada her yüklenmede artar
+function updateVisitorCount() {
+  const STORAGE_KEY = 'site_ziyaretci_sayaci_2025';  // benzersiz anahtar
+
+  let count = localStorage.getItem(STORAGE_KEY);
+  count = count ? parseInt(count, 10) : 0;
+  
+  count += 1;
+  localStorage.setItem(STORAGE_KEY, count);
+
+  const countEl = document.getElementById('visitor-count');
+  if (countEl) {
+    countEl.textContent = count.toLocaleString('tr-TR');  // 1.234 gibi okunaklı format
+  }
+}
+
+// Sayfa yüklendiğinde çalıştır
+document.addEventListener('DOMContentLoaded', updateVisitorCount);
+</script>
+  
+<!-- Ziyaretçi Sayacı - Sayfa Altı -->
+<footer class="site-footer" style="text-align: center; padding: 20px 15px; background: #f8f9fa; border-top: 1px solid #e0e0e0; font-size: 0.95rem; color: #555; margin-top: 40px;">
+  <div class="visitor-counter">
+    <span style="margin-right: 6px;">👥</span>
+    Bu siteyi ziyaret eden kişi sayısı: 
+    <strong id="visitor-count" style="color: #e53e3e; font-weight: 600;">0</strong>
+  </div>
+  <div style="margin-top: 8px; font-size: 0.85rem; color: #777;">
+  
+  </div>
+</footer>
+  
 </body>
 </html>
