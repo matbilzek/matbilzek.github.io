@@ -1128,58 +1128,53 @@ problemGame: function() {
 
     if (scoreEl) scoreEl.textContent = score;
 
-    // Diğer timerları temizle
     if (typeof currentTimer !== 'undefined' && currentTimer) {
         clearInterval(currentTimer);
         currentTimer = null;
     }
 
     const problemTemplates = [
-        {
-            text: (a, b, c) => `Bir bakkal tanesi ${a} TL olan çikolatalardan ${b} tane, tanesi ${c} TL olan meyve sularından ${b} tane alıyor. Toplam kaç TL öder?`,
-            solve: (a, b, c) => (a * b) + (c * b)
-        },
-        {
-            text: (a, b, c) => `Bir kütüphanede ${a} raf vardır. Her rafta ${b} kitap bulunmaktadır. Kütüphaneye ${c} yeni kitap daha gelirse toplam kaç kitap olur?`,
-            solve: (a, b, c) => (a * b) + c
-        },
-        {
-            text: (a, b, c) => `${a} sayfalık bir kitabın ilk gün ${b} sayfasını okuyan Elif, kalan sayfaları günde ${c} sayfa okuyarak kaç günde bitirir?`,
-            solve: (a, b, c) => (a - b) / c,
-            constraint: (a, b, c) => (a > b) && ((a - b) % c === 0) // Tam bölünme şartı
-        },
-        {
-            text: (a, b, c) => `Bir otobüste ${a} yolcu vardır. İlk durakta ${b} yolcu inmiş, ${c} yolcu binmiştir. Son durumda otobüste kaç yolcu vardır?`,
-            solve: (a, b, c) => (a - b) + c
-        },
-        {
-            text: (a, b, c) => `Tanesi ${a} TL olan kalemlerden bir deste alan Kerem, satıcıya ${b} TL verirse kaç TL para üstü alır?`,
-            solve: (a, b, c) => b - (a * 10),
-            constraint: (a, b, c) => b > (a * 10)
-        }
+        { text: (a, b, c) => `Bir çiftçi bahçesinden ${a} kg elma, elmalardan ${b} kg fazla armut toplamıştır. Toplam kaç kg meyve toplamıştır?`, solve: (a, b, c) => a + (a + b) },
+        { text: (a, b, c) => `Bir sinema salonunda ${a} sıra ve her sırada ${b} koltuk vardır. Bir gösterimde ${c} koltuk boş kaldığına göre kaç bilet satılmıştır?`, solve: (a, b, c) => (a * b) - c, constraint: (a, b, c) => (a * b) > c },
+        { text: (a, b, c) => `Kumbarasında ${a} TL olan Mert, her gün ${b} TL biriktiriyor. ${c} gün sonra toplam kaç TL'si olur?`, solve: (a, b, c) => a + (b * c) },
+        { text: (a, b, c) => `Bir terzi ${a} metre kumaşın ${b} metresiyle ceket dikiyor. Kalan kumaşla her biri ${c} metre olan kaç tane etek dikebilir?`, solve: (a, b, c) => (a - b) / c, constraint: (a, b, c) => (a > b) && ((a - b) % c === 0) },
+        { text: (a, b, c) => `Bir bakkal tanesi ${a} TL olan ekmeklerden ${b} tane satıp, kazandığı parayla tanesi ${c} TL olan sütlerden kaç tane alabilir?`, solve: (a, b, c) => (a * b) / c, constraint: (a, b, c) => (a * b) % c === 0 },
+        { text: (a, b, c) => `Bir sporcu sabah ${a} metre, akşam sabahkinden ${b} metre fazla koşmuştur. Bu sporcu toplam kaç metre koşmuştur?`, solve: (a, b, c) => a + (a + b) },
+        { text: (a, b, c) => `Bir kırtasiyeci ${a} kalemlik seti ${b} TL'ye alıp, tanesini ${c} TL'ye satıyor. Tüm seti satınca kaç TL kâr eder?`, solve: (a, b, c) => (a * c) - b, constraint: (a, b, c) => (a * c) > b },
+        { text: (a, b, c) => `${a} katlı bir binanın her katında ${b} daire vardır. Her dairede ${c} kişi yaşadığına göre binada toplam kaç kişi vardır?`, solve: (a, b, c) => a * b * c },
+        { text: (a, b, c) => `Bir araç ${a} km'lik yolun ${b} km'sini gitmiştir. Kalan yolu saatte ${c} km hızla kaç saatte gider?`, solve: (a, b, c) => (a - b) / c, constraint: (a, b, c) => (a > b) && ((a - b) % c === 0) },
+        { text: (a, b, c) => `Zeynep ${a} yaşındadır. Annesinin yaşı Zeynep'in yaşının ${b} katından ${c} fazladır. Annesi kaç yaşındadır?`, solve: (a, b, c) => (a * b) + c },
+        { text: (a, b, c) => `Bir miktar fındık ${a} çocuğa ${b}'şer tane dağıtılınca ${c} fındık artıyor. Başlangıçta kaç fındık vardı?`, solve: (a, b, c) => (a * b) + c },
+        { text: (a, b, c) => `Bir su deposunda ${a} litre su vardır. Dakikada ${b} litre su akıtan bir musluk ${c} dakika açık kalırsa depoda kaç litre su kalır?`, solve: (a, b, c) => a - (b * c), constraint: (a, b, c) => a > (b * c) },
+        { text: (a, b, c) => `Bir manav tanesi ${a} TL olan karpuzlardan ${b} tane alıp toplam ${c} TL kâr etmek istiyor. Bir karpuzu kaç TL'ye satmalıdır?`, solve: (a, b, c) => ((a * b) + c) / b, constraint: (a, b, c) => ((a * b) + c) % b === 0 },
+        { text: (a, b, c) => `Okul gezisine ${a} öğrenci ve ${b} öğretmen katılacaktır. Yolcu kapasitesi ${c} kişi olan bir otobüsten en az kaç tane gereklidir?`, solve: (a, b, c) => (a + b) / c, constraint: (a, b, c) => (a + b) % c === 0 },
+        { text: (a, b, c) => `Bir aşçı ${a} gram unun yarısını kullandıktan sonra ${b} gram daha un ekliyor. Son durumda kaç gram un vardır?`, solve: (a, b, c) => (a / 2) + b, constraint: (a, b, c) => a % 2 === 0 },
+        { text: (a, b, c) => `Bir otoparkta ${a} araba vardır. Arabaların her birinde ${b} tekerlek olduğuna göre, otoparka ${c} tane daha araba gelirse toplam tekerlek sayısı kaç olur?`, solve: (a, b, c) => (a + c) * b },
+        { text: (a, b, c) => `Günde ${a} sayfa kitap okuyan birisi, ${b} sayfalık bir kitabı bitirmesine ${c} sayfa kala kaç gün kitap okumuştur?`, solve: (a, b, c) => (b - c) / a, constraint: (a, b, c) => (b > c) && ((b - c) % a === 0) },
+        { text: (a, b, c) => `Bir teknoloji mağazasında ${a} TL'lik tableti ${b} TL peşinat ve kalanını ${c} taksitle alan birinin bir taksiti kaç TL'dir?`, solve: (a, b, c) => (a - b) / c, constraint: (a, b, c) => (a > b) && ((a - b) % c === 0) },
+        { text: (a, b, c) => `Tanesi ${a} TL olan kalemlerden ${b} tane, tanesi ${c} TL olan silgilerden ${b} tane alan biri toplam kaç TL öder?`, solve: (a, b, c) => (a + c) * b },
+        { text: (a, b, c) => `Bir kutuda ${a} adet çikolata vardır. ${b} kutu çikolata alan bir öğretmen, bunları ${c} öğrencisine eşit dağıtırsa her öğrenciye kaç çikolata düşer?`, solve: (a, b, c) => (a * b) / c, constraint: (a, b, c) => (a * b) % c === 0 }
     ];
 
     const gen = () => {
         let template = problemTemplates[Math.floor(Math.random() * problemTemplates.length)];
-        
-        // Rastgele sayılar üret
-        let a = Math.floor(Math.random() * 40) + 10;
-        let b = Math.floor(Math.random() * 50) + 100;
-        let c = Math.floor(Math.random() * 10) + 5;
+        let a, b, c, attempts = 0;
 
-        // Eğer şablonun özel bir şartı varsa (tam bölünme gibi) sağlanana kadar tekrar üret
-        if (template.constraint && !template.constraint(a, b, c)) {
-            return gen();
-        }
+        // Sayıları üret ve kısıtlamalara uyana kadar dene (Max 100 deneme)
+        do {
+            a = Math.floor(Math.random() * 50) + 5;
+            b = Math.floor(Math.random() * 50) + 5;
+            c = Math.floor(Math.random() * 20) + 2;
+            attempts++;
+        } while (template.constraint && !template.constraint(a, b, c) && attempts < 100);
 
         const correctAns = template.solve(a, b, c);
         probTextEl.textContent = template.text(a, b, c);
 
-        // Şıkları oluştur
         let opts = [correctAns];
         while (opts.length < 4) {
-            let offset = (Math.floor(Math.random() * 10) + 1) * (Math.random() > 0.5 ? 1 : -1);
-            let wrong = correctAns + offset;
+            let offset = Math.floor(Math.random() * 15) + 1;
+            let wrong = Math.random() > 0.5 ? correctAns + offset : correctAns - offset;
             if (wrong > 0 && !opts.includes(wrong)) opts.push(wrong);
         }
         opts.sort(() => Math.random() - 0.5);
@@ -1194,20 +1189,19 @@ problemGame: function() {
                 document.querySelectorAll('#prob-answers button').forEach(b => b.disabled = true);
                 if (o === correctAns) {
                     btn.classList.add('correct');
-                    score += 25;
+                    score += 20;
                 } else {
                     btn.classList.add('wrong');
                 }
-                if (scoreEl) scoreEl.textContent = score;
-                setTimeout(gen, 1200);
+                scoreEl.textContent = score;
+                setTimeout(gen, 1000);
             };
             ansContainer.appendChild(btn);
         });
     };
 
     gen();
-}
-
+},
 
 
 
