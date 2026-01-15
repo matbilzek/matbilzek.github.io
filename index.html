@@ -712,30 +712,17 @@ division: function() {
 
 
   geometryGame: function() {
-    let score = 0, time = 60, combo = 0;
+    let score = 0, combo = 0;
     const scoreEl = document.getElementById('geo-score');
-    const timeEl = document.getElementById('geo-time');
     const questionEl = document.getElementById('geo-question');
     const ansContainer = document.getElementById('geo-answers');
 
     scoreEl.textContent = score;
-    timeEl.textContent = time;
 
-    // Varsa eski zamanlayıcıyı temizle
     if (typeof currentTimer !== 'undefined' && currentTimer) {
         clearInterval(currentTimer);
-    }
-
-    currentTimer = setInterval(() => {
-      time--;
-      if (timeEl) timeEl.textContent = time;
-      if (time <= 0) {
-        clearInterval(currentTimer);
         currentTimer = null;
-        alert("Süre Doldu! Skorun: " + score);
-        if (window._saveLocalScore) window._saveLocalScore('geometryGame', score);
-      }
-    }, 1000);
+    }
 
     const shapes = [
       { name: "Nokta", draw: "." },
