@@ -71,7 +71,7 @@
 <article class="card"><h3>Açı Tahmin Oyunu</h3><div class="card-actions"><button class="btn go" data-target="angleGame">Oyna</button></div></article>
 <article class="card"><h3>Çemberden Üçgene </h3><div class="card-actions"><button class="btn go" data-target="triangleCircleGame">Oyna</button></div></article>
 <article class="card"><h3>Çok Basamaklı Sayılar</h3><div class="card-actions"><button class="btn go" data-target="numberGame">Oyna</button></div></article>
-<article class="card"><h3>Tam Sayılı → Bileşik</h3><div class="card-actions"><button class="btn go" data-target="mixed">Oyna</button></div></article>
+<article class="card"><h3>Doğal Sayılarla Problemler</h3><div class="card-actions"><button class="btn go" data-target="problemGame">Oyna</button></div></article>
 <article class="card"><h3>Ortalama / Ortanca / Tepe</h3><div class="card-actions"><button class="btn go" data-target="stats">Oyna</button></div></article>
 </div>
 <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
@@ -280,6 +280,31 @@
   <div class="game-header controls" style="margin-top:1rem;">
     <button class="btn" onclick="window.renderLeaderboardForGame('numberGame')">En Yüksek Skorlar</button>
     <button class="btn" onclick="window.submitScoreUI('numberGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul5">Geri</button>
+  </div>
+</section>
+
+  <section id="problemGame" class="panel hidden">
+  <h2>Gerçek Yaşam Problemleri</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="prob-score">0</span></span>
+      <span>Süre: <span>Sınırsız</span></span>
+    </div>
+    
+    <div class="question-container" style="background: #eef2f3; padding: 25px; border-radius: 12px; margin-bottom: 20px; border-left: 5px solid #3498db;">
+        <div id="prob-text" style="font-size: 1.2rem; line-height: 1.6; color: #2c3e50; font-weight: 500;">
+            Problem yükleniyor...
+        </div>
+    </div>
+
+    <div class="answers" id="prob-answers" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        </div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('problemGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('problemGame')">Bitir ve Skor Gönder</button>
     <button class="btn tab" data-target="ortaokul5">Geri</button>
   </div>
 </section>
@@ -1094,6 +1119,98 @@ numberGame: function() {
     gen();
 },
   
+
+problemGame: function() {
+    let score = 0;
+    const scoreEl = document.getElementById('prob-score');
+    const probTextEl = document.getElementById('prob-text');
+    const ansContainer = document.getElementById('prob-answers');
+
+    if (scoreEl) scoreEl.textContent = score;
+
+    // Diğer timerları temizle
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
+        clearInterval(currentTimer);
+        currentTimer = null;
+    }
+
+    const problemTemplates = [
+        {
+            text: (a, b, c) => `Bir bakkal tanesi ${a} TL olan çikolatalardan ${b} tane, tanesi ${c} TL olan meyve sularından ${b} tane alıyor. Toplam kaç TL öder?`,
+            solve: (a, b, c) => (a * b) + (c * b)
+        },
+        {
+            text: (a, b, c) => `Bir kütüphanede ${a} raf vardır. Her rafta ${b} kitap bulunmaktadır. Kütüphaneye ${c} yeni kitap daha gelirse toplam kaç kitap olur?`,
+            solve: (a, b, c) => (a * b) + c
+        },
+        {
+            text: (a, b, c) => `${a} sayfalık bir kitabın ilk gün ${b} sayfasını okuyan Elif, kalan sayfaları günde ${c} sayfa okuyarak kaç günde bitirir?`,
+            solve: (a, b, c) => (a - b) / c,
+            constraint: (a, b, c) => (a > b) && ((a - b) % c === 0) // Tam bölünme şartı
+        },
+        {
+            text: (a, b, c) => `Bir otobüste ${a} yolcu vardır. İlk durakta ${b} yolcu inmiş, ${c} yolcu binmiştir. Son durumda otobüste kaç yolcu vardır?`,
+            solve: (a, b, c) => (a - b) + c
+        },
+        {
+            text: (a, b, c) => `Tanesi ${a} TL olan kalemlerden bir deste alan Kerem, satıcıya ${b} TL verirse kaç TL para üstü alır?`,
+            solve: (a, b, c) => b - (a * 10),
+            constraint: (a, b, c) => b > (a * 10)
+        }
+    ];
+
+    const gen = () => {
+        let template = problemTemplates[Math.floor(Math.random() * problemTemplates.length)];
+        
+        // Rastgele sayılar üret
+        let a = Math.floor(Math.random() * 40) + 10;
+        let b = Math.floor(Math.random() * 50) + 100;
+        let c = Math.floor(Math.random() * 10) + 5;
+
+        // Eğer şablonun özel bir şartı varsa (tam bölünme gibi) sağlanana kadar tekrar üret
+        if (template.constraint && !template.constraint(a, b, c)) {
+            return gen();
+        }
+
+        const correctAns = template.solve(a, b, c);
+        probTextEl.textContent = template.text(a, b, c);
+
+        // Şıkları oluştur
+        let opts = [correctAns];
+        while (opts.length < 4) {
+            let offset = (Math.floor(Math.random() * 10) + 1) * (Math.random() > 0.5 ? 1 : -1);
+            let wrong = correctAns + offset;
+            if (wrong > 0 && !opts.includes(wrong)) opts.push(wrong);
+        }
+        opts.sort(() => Math.random() - 0.5);
+
+        ansContainer.innerHTML = '';
+        opts.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.textContent = o;
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#prob-answers button').forEach(b => b.disabled = true);
+                if (o === correctAns) {
+                    btn.classList.add('correct');
+                    score += 25;
+                } else {
+                    btn.classList.add('wrong');
+                }
+                if (scoreEl) scoreEl.textContent = score;
+                setTimeout(gen, 1200);
+            };
+            ansContainer.appendChild(btn);
+        });
+    };
+
+    gen();
+}
+
+
+
+
   
   primes: function() {
     let score = 0, combo = 0;
