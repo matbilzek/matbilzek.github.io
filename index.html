@@ -269,12 +269,12 @@
       <span>Süre: <span>Sınırsız</span></span>
     </div>
     
-    <div class="question-container" style="background: #fdf6e3; padding: 20px; border-radius: 10px; margin-bottom: 15px; text-align: center; border: 2px solid #eee;">
-        <div id="num-display" style="font-size: 32px; font-weight: bold; color: #2c3e50; letter-spacing: 2px; margin-bottom: 10px;"></div>
-        <div id="num-question-text" style="font-size: 18px; color: #d35400; font-weight: bold;"></div>
+    <div class="question-container" style="background: #fdf6e3; padding: 20px; border-radius: 10px; margin-bottom: 15px; text-align: center; border: 2px solid #ddd;">
+        <div id="num-display" style="font-size: 28px; font-weight: bold; color: #2c3e50; letter-spacing: 2px; margin-bottom: 10px; font-family: monospace;"></div>
+        <div id="num-question-text" style="font-size: 18px; color: #d35400; font-weight: bold; min-height: 1.5em;"></div>
     </div>
 
-    <div class="answers" id="num-answers"></div>
+    <div class="answers" id="num-answers" style="display: flex; flex-direction: column; gap: 8px;"></div>
   </div>
 
   <div class="game-header controls" style="margin-top:1rem;">
@@ -976,15 +976,16 @@ triangleCircleGame: function() {
 },
 
 
-  numberGame: function() {
-    let score = 0, combo = 0;
+numberGame = function() {
+    let score = 0;
     const scoreEl = document.getElementById('num-score');
     const displayEl = document.getElementById('num-display');
     const questionTextEl = document.getElementById('num-question-text');
     const ansContainer = document.getElementById('num-answers');
 
-    scoreEl.textContent = score;
+    if (scoreEl) scoreEl.textContent = score;
 
+    // Diğer oyunlardan kalan zamanlayıcıyı durdur
     if (typeof currentTimer !== 'undefined' && currentTimer) {
         clearInterval(currentTimer);
         currentTimer = null;
@@ -996,7 +997,6 @@ triangleCircleGame: function() {
         "Milyonlar Basamağı", "On Milyonlar Basamağı", "Yüz Milyonlar Basamağı"
     ];
 
-    // Sayıyı yazıya çeviren yardımcı fonksiyon
     function sayiyiOku(n) {
         if (n === 0) return "sıfır";
         const birler = ["", "bir", "iki", "üç", "dört", "beş", "altı", "yedi", "sekiz", "dokuz"];
@@ -1005,20 +1005,22 @@ triangleCircleGame: function() {
         let sonuc = "";
         let grupSayisi = 0;
         let tempN = n;
-
         while (tempN > 0) {
-            let ucBasamak = tempN % 1000;
-            if (ucBasamak > 0) {
+            let uc = tempN % 1000;
+            if (uc > 0) {
                 let s = "";
-                let y = Math.floor(ucBasamak / 100);
-                let o = Math.floor((ucBasamak % 100) / 10);
-                let b = ucBasamak % 10;
+                let y = Math.floor(uc / 100);
+                let o = Math.floor((uc % 100) / 10);
+                let b = uc % 10;
                 if (y > 0) s += (y === 1 ? "" : birler[y]) + "yüz";
                 if (o > 0) s += onlar[o];
                 if (b > 0) {
-                    if (!(grupSayisi === 1 && b === 1 && y === 0 && o === 0)) s += birler[b];
+                    if (grupSayisi === 1 && b === 1 && y === 0 && o === 0) {} 
+                    else { s += birler[b]; }
                 }
                 sonuc = s + binler[grupSayisi] + " " + sonuc;
+            } else if (grupSayisi === 1 && Math.floor(n / 1000) % 1000 === 0 && n > 1000000) {
+                // Özel durumlar için
             }
             tempN = Math.floor(tempN / 1000);
             grupSayisi++;
@@ -1026,85 +1028,73 @@ triangleCircleGame: function() {
         return sonuc.trim();
     }
 
-    // Rakamları birbirinden farklı sayı üretme fonksiyonu
     function generateUniqueDigitNumber(length) {
-        let digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-        // Başa 0 gelmemesi için 1-9 arası bir rakam seç
-        let firstDigitIndex = Math.floor(Math.random() * 9) + 1; 
-        let result = [digits[firstDigitIndex]];
-        digits.splice(firstDigitIndex, 1);
-
-        // Kalan rakamları karıştır ve ekle
-        digits.sort(() => Math.random() - 0.5);
-        for(let i = 0; i < length - 1; i++) {
-            result.push(digits[i]);
-        }
-        return parseInt(result.join(''));
+        let pool = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        let res = [];
+        let firstIdx = Math.floor(Math.random() * 9) + 1;
+        res.push(pool[firstIdx]);
+        pool.splice(firstIdx, 1);
+        pool.sort(() => Math.random() - 0.5);
+        for(let i = 0; i < length - 1; i++) res.push(pool[i]);
+        return parseInt(res.join(''));
     }
 
     function gen() {
-        // 6-9 basamak arası uzunluk seç
-        const basamakSayisi = Math.floor(Math.random() * 4) + 6;
-        const sayi = generateUniqueDigitNumber(basamakSayisi);
-        
-        const soruTipi = Math.floor(Math.random() * 2);
-        let correctAns = "";
-        let opts = [];
+        const len = Math.floor(Math.random() * 4) + 6; // 6-9 basamak
+        const sayi = generateUniqueDigitNumber(len);
+        const soruTipi = Math.floor(Math.random() * 2); 
+        let correct = "";
+        let options = [];
 
         displayEl.textContent = sayi.toLocaleString('tr-TR');
 
         if (soruTipi === 0) {
             questionTextEl.textContent = "Bu sayının okunuşu hangisidir?";
-            correctAns = sayiyiOku(sayi);
-            opts = [correctAns];
-            while (opts.length < 4) {
-                // Yanlış şıklar için de rakamları farklı sayılar üret
-                let yanlisSayi = generateUniqueDigitNumber(basamakSayisi);
-                let yanlisOkunus = sayiyiOku(yanlisSayi);
-                if (!opts.includes(yanlisOkunus)) opts.push(yanlisOkunus);
+            correct = sayiyiOku(sayi);
+            options = [correct];
+            while(options.length < 4) {
+                let yanlis = sayiyiOku(generateUniqueDigitNumber(len));
+                if(!options.includes(yanlis)) options.push(yanlis);
             }
         } else {
-            // Hangi basamağın sorulacağını seç
-            const basamakIndex = Math.floor(Math.random() * basamakSayisi);
-            const rakamlarDizisi = String(sayi).split('').reverse();
-            const secilenRakam = rakamlarDizisi[basamakIndex];
-            
-            questionTextEl.innerHTML = `<span style="color:blue; font-size:24px;">${secilenRakam}</span> rakamı hangi basamaktadır?`;
-            correctAns = basamaklar[basamakIndex];
-            opts = [correctAns];
-            while (opts.length < 4) {
+            const idx = Math.floor(Math.random() * len);
+            const rakam = String(sayi).split('').reverse()[idx];
+            questionTextEl.innerHTML = `<span style="color:blue; font-size:24px;">${rakam}</span> rakamı hangi basamaktadır?`;
+            correct = basamaklar[idx];
+            options = [correct];
+            while(options.length < 4) {
                 let yanlis = basamaklar[Math.floor(Math.random() * 9)];
-                if (!opts.includes(yanlis)) opts.push(yanlis);
+                if(!options.includes(yanlis)) options.push(yanlis);
             }
         }
 
-        opts.sort(() => Math.random() - 0.5);
+        options.sort(() => Math.random() - 0.5);
         ansContainer.innerHTML = '';
-        opts.forEach(o => {
+        options.forEach(opt => {
             const btn = document.createElement('button');
             btn.className = 'answer-btn';
-            btn.style.width = "100%";
             btn.style.textAlign = "left";
             btn.style.padding = "10px";
-            btn.style.marginBottom = "8px";
-            btn.textContent = o;
+            btn.textContent = opt;
             btn.onclick = () => {
                 if (btn.disabled) return;
                 document.querySelectorAll('#num-answers button').forEach(b => b.disabled = true);
-                if (o === correctAns) {
+                if (opt === correct) {
                     btn.classList.add('correct');
                     score += 10;
                 } else {
                     btn.classList.add('wrong');
                 }
-                scoreEl.textContent = score;
+                if (scoreEl) scoreEl.textContent = score;
                 setTimeout(gen, 1000);
             };
             ansContainer.appendChild(btn);
         });
     }
+
     gen();
-}
+};
+
   
   
   primes: function() {
