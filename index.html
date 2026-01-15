@@ -56,7 +56,7 @@
 <div class="cards">
 <article class="card"><h3>Geometri Oyunu</h3><div class="card-actions"><button class="btn go" data-target="geometryGame">Oyna</button></div></article>
 <article class="card"><h3>Açı Tahmin Oyunu</h3><div class="card-actions"><button class="btn go" data-target="angleGame">Oyna</button></div></article>
-<article class="card"><h3>Ortak Bölen / Ortak Kat </h3><div class="card-actions"><button class="btn go" data-target="gcdlcm">Oyna</button></div></article>
+<article class="card"><h3>Çemberden Üçgene </h3><div class="card-actions"><button class="btn go" data-target="triangleCircleGame">Oyna</button></div></article>
 <article class="card"><h3>Denk Kesirler</h3><div class="card-actions"><button class="btn go" data-target="frac6">Oyna</button></div></article>
 <article class="card"><h3>Tam Sayılı → Bileşik</h3><div class="card-actions"><button class="btn go" data-target="mixed">Oyna</button></div></article>
 <article class="card"><h3>Ortalama / Ortanca / Tepe</h3><div class="card-actions"><button class="btn go" data-target="stats">Oyna</button></div></article>
@@ -221,6 +221,33 @@
     <button class="btn tab" data-target="ortaokul5">Geri</button>
   </div>
 </section>
+
+<section id="triangleCircleGame" class="panel hidden">
+  <h2>Çember ve Üçgen İlişkisi</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="tri-score">0</span></span>
+      <span>Süre: <span>Sınırsız</span></span>
+    </div>
+    
+    <div style="background: white; border-radius: 10px; margin: 15px 0; display: flex; justify-content: center; align-items: center; padding: 10px;">
+        <svg id="tri-svg" width="250" height="200" viewBox="0 0 250 200">
+            </svg>
+    </div>
+
+    <div class="question" style="font-weight: bold; margin-bottom: 10px;">
+        Merkezler ve kesişim noktasıyla oluşan üçgen hangisidir?
+    </div>
+    <div class="answers" id="tri-answers"></div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('triangleCircleGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('triangleCircleGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul5">Geri</button>
+  </div>
+</section>
+  
   
 <section id="primes" class="panel hidden">
 <h2>Asal Sayılar Oyunu</h2>
@@ -834,7 +861,84 @@ division: function() {
     gen();
 },
 
-    
+
+triangleCircleGame: function() {
+    let score = 0, combo = 0;
+    const scoreEl = document.getElementById('tri-score');
+    const ansContainer = document.getElementById('tri-answers');
+    const svg = document.getElementById('tri-svg');
+
+    scoreEl.textContent = score;
+
+    // Varsa eski zamanlayıcıyı durdur
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
+        clearInterval(currentTimer);
+        currentTimer = null;
+    }
+
+    function gen() {
+        const types = ["Eşkenar Üçgen", "İkizkenar Üçgen", "Çeşitkenar Üçgen"];
+        const targetType = types[Math.floor(Math.random() * types.length)];
+        
+        let r1, r2, d; // r1: 1.çember, r2: 2.çember, d: merkezler arası mesafe
+        
+        // Üçgen eşitsizliği ve tiplerine göre değer belirleme
+        if (targetType === "Eşkenar Üçgen") {
+            r1 = r2 = d = 70; // Tüm kenarlar eşit
+        } else if (targetType === "İkizkenar Üçgen") {
+            r1 = r2 = 80; d = 60; // İki yarıçap eşit, merkez mesafesi farklı
+        } else {
+            r1 = 90; r2 = 60; d = 70; // Tüm kenarlar farklı
+        }
+
+        // Çizim koordinatları
+        const c1x = 70, c1y = 100;
+        const c2x = c1x + d, c2y = 100;
+
+        // Kesişim noktasını bulma (Trigonometrik hesaplama)
+        const cosA = (r1*r1 + d*d - r2*r2) / (2 * r1 * d);
+        const sinA = Math.sqrt(1 - cosA * cosA);
+        const kx = c1x + r1 * cosA;
+        const ky = c1y - r1 * sinA;
+
+        // SVG İçeriğini Oluştur
+        svg.innerHTML = `
+            <circle cx="${c1x}" cy="${c1y}" r="${r1}" fill="none" stroke="#add8e6" stroke-width="2" />
+            <circle cx="${c2x}" cy="${c2y}" r="${r2}" fill="none" stroke="#ffb6c1" stroke-width="2" />
+            <path d="M ${c1x} ${c1y} L ${c2x} ${c2y} L ${kx} ${ky} Z" fill="rgba(255,255,0,0.2)" stroke="black" stroke-width="3" />
+            <circle cx="${c1x}" cy="${c1y}" r="4" fill="blue" />
+            <circle cx="${c2x}" cy="${c2y}" r="4" fill="red" />
+            <circle cx="${kx}" cy="${ky}" r="4" fill="black" />
+        `;
+
+        // Şıkları oluştur
+        ansContainer.innerHTML = '';
+        types.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.textContent = o;
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#tri-answers button').forEach(b => b.disabled = true);
+                
+                if (o === targetType) {
+                    btn.classList.add('correct');
+                    score += 20;
+                    combo++;
+                } else {
+                    btn.classList.add('wrong');
+                    combo = 0;
+                }
+                scoreEl.textContent = score;
+                setTimeout(gen, 800);
+            };
+            ansContainer.appendChild(btn);
+        });
+    }
+
+    gen();
+},
+  
   
   primes: function() {
     let score = 0, combo = 0;
