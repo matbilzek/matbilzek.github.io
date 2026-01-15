@@ -976,7 +976,123 @@ triangleCircleGame: function() {
 },
 
 
+numberGame: function() {
+    let score = 0, combo = 0;
+    // ID'leri HTML ile eşleştiriyoruz
+    const scoreEl = document.getElementById('num-score');
+    const displayEl = document.getElementById('num-display');
+    const questionTextEl = document.getElementById('num-question-text');
+    const ansContainer = document.getElementById('num-answers');
 
+    if (scoreEl) scoreEl.textContent = score;
+
+    // Timer kontrolü: Diğer oyunları bozmamak için sadece varsa temizle
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
+        clearInterval(currentTimer);
+        currentTimer = null;
+    }
+
+    const basamaklar = [
+        "Birler Basamağı", "Onlar Basamağı", "Yüzler Basamağı",
+        "Binler Basamağı", "On Binler Basamağı", "Yüz Binler Basamağı",
+        "Milyonlar Basamağı", "On Milyonlar Basamağı", "Yüz Milyonlar Basamağı"
+    ];
+
+    // Rakamları birbirinden farklı sayı üretme
+    function generateUniqueDigitNumber(length) {
+        let pool = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        let res = [];
+        let firstIdx = Math.floor(Math.random() * 9) + 1;
+        res.push(pool[firstIdx]);
+        pool.splice(firstIdx, 1);
+        pool.sort(() => Math.random() - 0.5);
+        for(let i = 0; i < length - 1; i++) res.push(pool[i]);
+        return parseInt(res.join(''));
+    }
+
+    // Sayıyı yazıya çevirme
+    function sayiyiOku(n) {
+        const birler = ["", "bir", "iki", "üç", "dört", "beş", "altı", "yedi", "sekiz", "dokuz"];
+        const onlar = ["", "on", "yirmi", "otuz", "kırk", "elli", "altmış", "yetmiş", "seksen", "doksan"];
+        const binler = ["", "bin", "milyon"];
+        let sonuc = "";
+        let grupSayisi = 0;
+        let tempN = n;
+        while (tempN > 0) {
+            let uc = tempN % 1000;
+            if (uc > 0) {
+                let s = "";
+                let y = Math.floor(uc / 100);
+                let o = Math.floor((uc % 100) / 10);
+                let b = uc % 10;
+                if (y > 0) s += (y === 1 ? "" : birler[y]) + "yüz";
+                if (o > 0) s += onlar[o];
+                if (b > 0) {
+                    if (!(grupSayisi === 1 && b === 1 && y === 0 && o === 0)) s += birler[b];
+                }
+                sonuc = s + binler[grupSayisi] + " " + sonuc;
+            }
+            tempN = Math.floor(tempN / 1000);
+            grupSayisi++;
+        }
+        return sonuc.trim() || "sıfır";
+    }
+
+    const gen = () => {
+        const len = Math.floor(Math.random() * 4) + 6; // 6-9 basamak
+        const sayi = generateUniqueDigitNumber(len);
+        const soruTipi = Math.floor(Math.random() * 2); 
+        let correct = "";
+        let options = [];
+
+        if (displayEl) displayEl.textContent = sayi.toLocaleString('tr-TR');
+
+        if (soruTipi === 0) {
+            if (questionTextEl) questionTextEl.textContent = "Bu sayının okunuşu hangisidir?";
+            correct = sayiyiOku(sayi);
+            options = [correct];
+            while(options.length < 4) {
+                let yanlis = sayiyiOku(generateUniqueDigitNumber(len));
+                if(!options.includes(yanlis)) options.push(yanlis);
+            }
+        } else {
+            const idx = Math.floor(Math.random() * len);
+            const rakam = String(sayi).split('').reverse()[idx];
+            if (questionTextEl) questionTextEl.innerHTML = `<span style="color:blue; font-size:24px;">${rakam}</span> rakamı hangi basamaktadır?`;
+            correct = basamaklar[idx];
+            options = [correct];
+            while(options.length < 4) {
+                let yanlis = basamaklar[Math.floor(Math.random() * 9)];
+                if(!options.includes(yanlis)) options.push(yanlis);
+            }
+        }
+
+        options.sort(() => Math.random() - 0.5);
+        if (ansContainer) {
+            ansContainer.innerHTML = '';
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.textContent = opt;
+                btn.onclick = () => {
+                    if (btn.disabled) return;
+                    document.querySelectorAll('#num-answers button').forEach(b => b.disabled = true);
+                    if (opt === correct) {
+                        btn.classList.add('correct');
+                        score += 10;
+                    } else {
+                        btn.classList.add('wrong');
+                    }
+                    if (scoreEl) scoreEl.textContent = score;
+                    setTimeout(gen, 800);
+                };
+                ansContainer.appendChild(btn);
+            });
+        }
+    };
+
+    gen();
+},
   
   
   primes: function() {
