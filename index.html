@@ -386,21 +386,16 @@ let currentTimer = null;
 
 const gameInitFunctions = {
   addition: function() {
-    let score = 0, time = 60, combo = 0;
+    let score = 0, combo = 0;
     const scoreEl = document.getElementById('add-score');
-    const timeEl = document.getElementById('add-time');
     scoreEl.textContent = score;
-    timeEl.textContent = time;
 
-    currentTimer = setInterval(() => {
-      time--;
-      timeEl.textContent = time;
-      if (time <= 0) {
+
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
         clearInterval(currentTimer);
         currentTimer = null;
-        window._saveLocalScore('addition', score);
-      }
-    }, 1000);
+    }
+    
 
     function gen() {
       // 3 basamaklı sayılar: 100-999
@@ -455,21 +450,16 @@ const gameInitFunctions = {
   },
 
   subtraction: function() {
-    let score = 0, time = 60, combo = 0;
+    let score = 0, combo = 0;
     const scoreEl = document.getElementById('sub-score');
-    const timeEl = document.getElementById('sub-time');
+    
     scoreEl.textContent = score;
-    timeEl.textContent = time;
-
-    currentTimer = setInterval(() => {
-      time--;
-      timeEl.textContent = time;
-      if (time <= 0) {
+   
+ if (typeof currentTimer !== 'undefined' && currentTimer) {
         clearInterval(currentTimer);
         currentTimer = null;
-        window._saveLocalScore('subtraction', score);
-      }
-    }, 1000);
+    }
+    
 
     function gen() {
       // 3 basamaklı büyük sayı
@@ -526,21 +516,16 @@ const gameInitFunctions = {
 
               
   multiplication: function() {
-    let score = 0, time = 60, combo = 0;
+    let score = 0, combo = 0;
     const scoreEl = document.getElementById('mul-score');
-    const timeEl = document.getElementById('mul-time');
+    
     scoreEl.textContent = score;
-    timeEl.textContent = time;
+    
 
-    currentTimer = setInterval(() => {
-      time--;
-      timeEl.textContent = time;
-      if (time <= 0) {
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
         clearInterval(currentTimer);
         currentTimer = null;
-        window._saveLocalScore('multiplication', score);
-      }
-    }, 1000);
+    }
 
     function gen() {
       // Rastgele çarpma tipi seçiyoruz
@@ -625,21 +610,16 @@ const gameInitFunctions = {
 
 
 division: function() {
-    let score = 0, time = 60, combo = 0;
+    let score = 0, combo = 0;
     const scoreEl = document.getElementById('div-score');
-    const timeEl = document.getElementById('div-time');
+    
     scoreEl.textContent = score;
-    timeEl.textContent = time;
+    
 
-    currentTimer = setInterval(() => {
-      time--;
-      timeEl.textContent = time;
-      if (time <= 0) {
+     if (typeof currentTimer !== 'undefined' && currentTimer) {
         clearInterval(currentTimer);
         currentTimer = null;
-        window._saveLocalScore('division', score);
-      }
-    }, 1000);
+    }
 
     function gen() {
       // Rastgele bölen (divisor): 2 veya 3 basamaklı, 11-99 arası (10 ve 5 ile kolay bölünebilirlik için tercihli)
@@ -857,20 +837,15 @@ division: function() {
     
   
   primes: function() {
-    let score = 0, time = 60, combo = 0;
+    let score = 0, combo = 0;
     const scoreEl = document.getElementById('prime-score');
     const timeEl = document.getElementById('prime-time');
     scoreEl.textContent = score;
-    timeEl.textContent = time;
-    currentTimer = setInterval(() => {
-      time--;
-      timeEl.textContent = time;
-      if (time <= 0) {
+ 
+     if (typeof currentTimer !== 'undefined' && currentTimer) {
         clearInterval(currentTimer);
         currentTimer = null;
-        window._saveLocalScore('primes', score);
-      }
-    }, 1000);
+    }
 
     const isPrime = n => {
       if (n <= 1) return false;
@@ -910,20 +885,15 @@ division: function() {
   },
 
   factors: function() {
-    let score = 0, time = 60, combo = 0;
+    let score = 0, combo = 0;
     const scoreEl = document.getElementById('fac-score');
-    const timeEl = document.getElementById('fac-time');
+   
     scoreEl.textContent = score;
-    timeEl.textContent = time;
-    currentTimer = setInterval(() => {
-      time--;
-      timeEl.textContent = time;
-      if (time <= 0) {
+
+     if (typeof currentTimer !== 'undefined' && currentTimer) {
         clearInterval(currentTimer);
         currentTimer = null;
-        window._saveLocalScore('factors', score);
-      }
-    }, 1000);
+    }
 
     const getFactorsStr = n => {
       let f = [];
@@ -970,20 +940,15 @@ division: function() {
   },
 
   gcdlcm: function() {
-    let score = 0, time = 60, combo = 0;
+    let score = 0,  combo = 0;
     const scoreEl = document.getElementById('gcd-score');
-    const timeEl = document.getElementById('gcd-time');
+    
     scoreEl.textContent = score;
-    timeEl.textContent = time;
-    currentTimer = setInterval(() => {
-      time--;
-      timeEl.textContent = time;
-      if (time <= 0) {
+  
+     if (typeof currentTimer !== 'undefined' && currentTimer) {
         clearInterval(currentTimer);
         currentTimer = null;
-        window._saveLocalScore('gcdlcm', score);
-      }
-    }, 1000);
+    }
 
     const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
     const lcm = (a, b) => (a * b) / gcd(a, b);
@@ -1028,20 +993,15 @@ division: function() {
   },
 
   frac6: function() {
-    let score = 0, time = 60, combo = 0;
+    let score = 0, combo = 0;
     const scoreEl = document.getElementById('frac-score');
-    const timeEl = document.getElementById('frac-time');
+    
     scoreEl.textContent = score;
-    timeEl.textContent = time;
-    currentTimer = setInterval(() => {
-      time--;
-      timeEl.textContent = time;
-      if (time <= 0) {
+   
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
         clearInterval(currentTimer);
         currentTimer = null;
-        window._saveLocalScore('frac6', score);
-      }
-    }, 1000);
+    }
 
     function gen() {
       const pay = Math.floor(Math.random() * 10) + 1;
@@ -1084,20 +1044,15 @@ division: function() {
   },
 
   mixed: function() {
-    let score = 0, time = 60, combo = 0;
+    let score = 0, combo = 0;
     const scoreEl = document.getElementById('mix-score');
-    const timeEl = document.getElementById('mix-time');
+    
     scoreEl.textContent = score;
-    timeEl.textContent = time;
-    currentTimer = setInterval(() => {
-      time--;
-      timeEl.textContent = time;
-      if (time <= 0) {
+    
+     if (typeof currentTimer !== 'undefined' && currentTimer) {
         clearInterval(currentTimer);
         currentTimer = null;
-        window._saveLocalScore('mixed', score);
-      }
-    }, 1000);
+    }
 
     function gen() {
       const tam = Math.floor(Math.random() * 6) + 1;
@@ -1143,20 +1098,16 @@ division: function() {
   },
 
   stats: function() {
-  let score = 0, time = 60, combo = 0;
+  let score = 0, combo = 0;
   const scoreEl = document.getElementById('stat-score');
-  const timeEl = document.getElementById('stat-time');
+  
   scoreEl.textContent = score;
-  timeEl.textContent = time;
-  currentTimer = setInterval(() => {
-    time--;
-    timeEl.textContent = time;
-    if (time <= 0) {
-      clearInterval(currentTimer);
-      currentTimer = null;
-      window._saveLocalScore('stats', score);
+  
+   if (typeof currentTimer !== 'undefined' && currentTimer) {
+        clearInterval(currentTimer);
+        currentTimer = null;
     }
-  }, 1000);
+    
   // Tepe değer bul: en çok tekrar eden sayılar (çoklu olabilir)
   const getModes = arr => {
     const freq = {};
@@ -1255,20 +1206,15 @@ division: function() {
 },
 
   shapes: function() {
-    let score = 0, time = 60, combo = 0;
+    let score = 0, combo = 0;
     const scoreEl = document.getElementById('shape-score');
-    const timeEl = document.getElementById('shape-time');
+    
     scoreEl.textContent = score;
-    timeEl.textContent = time;
-    currentTimer = setInterval(() => {
-      time--;
-      timeEl.textContent = time;
-      if (time <= 0) {
+    
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
         clearInterval(currentTimer);
         currentTimer = null;
-        window._saveLocalScore('shapes', score);
-      }
-    }, 1000);
+    }
 
     const shapes = ['circle','square','triangle','star'];
 
@@ -1305,22 +1251,17 @@ division: function() {
   },
 
   memory: function() {
-    let score = 0, time = 60, combo = 0, pairsFound = 0, flipped = [], lock = false;
+    let score = 0, combo = 0, pairsFound = 0, flipped = [], lock = false;
     const scoreEl = document.getElementById('mem-score');
     const pairsEl = document.getElementById('mem-pairs');
-    const timeEl = document.getElementById('mem-time');
+   
     scoreEl.textContent = score;
     pairsEl.textContent = pairsFound;
-    timeEl.textContent = time;
-    currentTimer = setInterval(() => {
-      time--;
-      timeEl.textContent = time;
-      if (time <= 0) {
+   
+     if (typeof currentTimer !== 'undefined' && currentTimer) {
         clearInterval(currentTimer);
         currentTimer = null;
-        window._saveLocalScore('memory', score);
-      }
-    }, 1000);
+    }
 
     const symbols = ['🍎','🍌','🍇','🍊','🍉','🍓','🥝','🍍','🍎','🍌','🍇','🍊','🍉','🍓','🥝','🍍'].sort(() => Math.random() - 0.5);
     const board = document.getElementById('mem-board');
@@ -1387,8 +1328,7 @@ document.addEventListener('click', function(e) {
 
       const scoreEls = targetPanel.querySelectorAll('[id$="-score"]');
       scoreEls.forEach(el => el.textContent = '0');
-      const timeEls = targetPanel.querySelectorAll('[id$="-time"]');
-      timeEls.forEach(el => el.textContent = '60');
+      
       if (targetPanel.querySelector('#mem-pairs')) targetPanel.querySelector('#mem-pairs').textContent = '0';
 
       gameInitFunctions[targetId]();
