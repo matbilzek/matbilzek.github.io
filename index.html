@@ -996,46 +996,57 @@ triangleCircleGame: function() {
         "Milyonlar Basamağı", "On Milyonlar Basamağı", "Yüz Milyonlar Basamağı"
     ];
 
+    // Sayıyı yazıya çeviren yardımcı fonksiyon
     function sayiyiOku(n) {
         if (n === 0) return "sıfır";
         const birler = ["", "bir", "iki", "üç", "dört", "beş", "altı", "yedi", "sekiz", "dokuz"];
         const onlar = ["", "on", "yirmi", "otuz", "kırk", "elli", "altmış", "yetmiş", "seksen", "doksan"];
         const binler = ["", "bin", "milyon"];
-
         let sonuc = "";
         let grupSayisi = 0;
+        let tempN = n;
 
-        while (n > 0) {
-            let ucBasamak = n % 1000;
+        while (tempN > 0) {
+            let ucBasamak = tempN % 1000;
             if (ucBasamak > 0) {
                 let s = "";
                 let y = Math.floor(ucBasamak / 100);
                 let o = Math.floor((ucBasamak % 100) / 10);
                 let b = ucBasamak % 10;
-
                 if (y > 0) s += (y === 1 ? "" : birler[y]) + "yüz";
                 if (o > 0) s += onlar[o];
                 if (b > 0) {
                     if (!(grupSayisi === 1 && b === 1 && y === 0 && o === 0)) s += birler[b];
                 }
                 sonuc = s + binler[grupSayisi] + " " + sonuc;
-            } else if (grupSayisi === 1 && n % 1000000 >= 1000) {
-                 // Sadece binler grubu boşsa ve daha büyük grup varsa bin ekleme
             }
-            n = Math.floor(n / 1000);
+            tempN = Math.floor(tempN / 1000);
             grupSayisi++;
         }
         return sonuc.trim();
     }
 
+    // Rakamları birbirinden farklı sayı üretme fonksiyonu
+    function generateUniqueDigitNumber(length) {
+        let digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        // Başa 0 gelmemesi için 1-9 arası bir rakam seç
+        let firstDigitIndex = Math.floor(Math.random() * 9) + 1; 
+        let result = [digits[firstDigitIndex]];
+        digits.splice(firstDigitIndex, 1);
+
+        // Kalan rakamları karıştır ve ekle
+        digits.sort(() => Math.random() - 0.5);
+        for(let i = 0; i < length - 1; i++) {
+            result.push(digits[i]);
+        }
+        return parseInt(result.join(''));
+    }
+
     function gen() {
-        // 6 ile 9 basamaklı sayı üret (100,000 ile 999,999,999 arası)
+        // 6-9 basamak arası uzunluk seç
         const basamakSayisi = Math.floor(Math.random() * 4) + 6;
-        const min = Math.pow(10, basamakSayisi - 1);
-        const max = Math.pow(10, basamakSayisi) - 1;
-        const sayi = Math.floor(Math.random() * (max - min + 1)) + min;
+        const sayi = generateUniqueDigitNumber(basamakSayisi);
         
-        // Soru tipini seç: 0 = Okunuş, 1 = Basamak İsmi
         const soruTipi = Math.floor(Math.random() * 2);
         let correctAns = "";
         let opts = [];
@@ -1047,14 +1058,18 @@ triangleCircleGame: function() {
             correctAns = sayiyiOku(sayi);
             opts = [correctAns];
             while (opts.length < 4) {
-                let rastgeleSayi = sayi + (Math.floor(Math.random() * 20) - 10) * 100;
-                let yanlis = sayiyiOku(Math.abs(rastgeleSayi));
-                if (!opts.includes(yanlis)) opts.push(yanlis);
+                // Yanlış şıklar için de rakamları farklı sayılar üret
+                let yanlisSayi = generateUniqueDigitNumber(basamakSayisi);
+                let yanlisOkunus = sayiyiOku(yanlisSayi);
+                if (!opts.includes(yanlisOkunus)) opts.push(yanlisOkunus);
             }
         } else {
+            // Hangi basamağın sorulacağını seç
             const basamakIndex = Math.floor(Math.random() * basamakSayisi);
-            const rakam = String(sayi).split('').reverse()[basamakIndex];
-            questionTextEl.innerHTML = `<span style="color:blue">${rakam}</span> rakamı hangi basamaktadır?`;
+            const rakamlarDizisi = String(sayi).split('').reverse();
+            const secilenRakam = rakamlarDizisi[basamakIndex];
+            
+            questionTextEl.innerHTML = `<span style="color:blue; font-size:24px;">${secilenRakam}</span> rakamı hangi basamaktadır?`;
             correctAns = basamaklar[basamakIndex];
             opts = [correctAns];
             while (opts.length < 4) {
@@ -1068,9 +1083,10 @@ triangleCircleGame: function() {
         opts.forEach(o => {
             const btn = document.createElement('button');
             btn.className = 'answer-btn';
-            btn.style.display = "block"; // Uzun metinler için alt alta
             btn.style.width = "100%";
-            btn.style.marginBottom = "5px";
+            btn.style.textAlign = "left";
+            btn.style.padding = "10px";
+            btn.style.marginBottom = "8px";
             btn.textContent = o;
             btn.onclick = () => {
                 if (btn.disabled) return;
@@ -1088,7 +1104,7 @@ triangleCircleGame: function() {
         });
     }
     gen();
-},
+}
   
   
   primes: function() {
