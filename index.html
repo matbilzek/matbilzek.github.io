@@ -55,7 +55,7 @@
 <h2>ORTAOKUL (5. SINIF) OYUNLARI</h2>
 <div class="cards">
 <article class="card"><h3>Geometri Oyunu</h3><div class="card-actions"><button class="btn go" data-target="geometryGame">Oyna</button></div></article>
-<article class="card"><h3>Çarpanlar</h3><div class="card-actions"><button class="btn go" data-target="factors">Oyna</button></div></article>
+<article class="card"><h3>Açı Oyunu</h3><div class="card-actions"><button class="btn go" data-target="angleGame">Oyna</button></div></article>
 <article class="card"><h3>Ortak Bölen / Ortak Kat </h3><div class="card-actions"><button class="btn go" data-target="gcdlcm">Oyna</button></div></article>
 <article class="card"><h3>Denk Kesirler</h3><div class="card-actions"><button class="btn go" data-target="frac6">Oyna</button></div></article>
 <article class="card"><h3>Tam Sayılı → Bileşik</h3><div class="card-actions"><button class="btn go" data-target="mixed">Oyna</button></div></article>
@@ -194,6 +194,31 @@
   <div class="game-header controls" style="margin-top:1rem;">
     <button class="btn" onclick="window.renderLeaderboardForGame('geometryGame')">En Yüksek Skorlar</button>
     <button class="btn" onclick="window.submitScoreUI('geometryGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul5">Geri</button>
+  </div>
+</section>
+
+  <section id="angleGame" class="panel hidden">
+  <h2>Açı Ölçme Oyunu</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="angle-score">0</span></span>
+      <span>Süre: <span id="angle-time">60</span></span>
+    </div>
+    
+    <div id="angle-visual-container" style="background: white; border-radius: 10px; margin: 15px 0; display: flex; justify-content: center; align-items: center; padding: 20px;">
+        <svg id="angle-svg" width="200" height="200" viewBox="0 0 200 200">
+            <path id="angle-path" d="" fill="none" stroke="#333" stroke-width="3" />
+            <circle cx="100" cy="150" r="4" fill="red" /> </svg>
+    </div>
+
+    <div class="question" id="angle-question" style="font-weight: bold; margin-bottom: 10px;">Bu açı kaç derecedir?</div>
+    <div class="answers" id="angle-answers"></div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('angleGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('angleGame')">Bitir ve Skor Gönder</button>
     <button class="btn tab" data-target="ortaokul5">Geri</button>
   </div>
 </section>
@@ -761,6 +786,97 @@ division: function() {
         ansContainer.appendChild(btn);
       });
     }
+    gen();
+},
+
+
+  angleGame: function() {
+    let score = 0, time = 60, combo = 0;
+    const scoreEl = document.getElementById('angle-score');
+    const timeEl = document.getElementById('angle-time');
+    const ansContainer = document.getElementById('angle-answers');
+    const anglePath = document.getElementById('angle-path');
+
+    scoreEl.textContent = score;
+    timeEl.textContent = time;
+
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
+        clearInterval(currentTimer);
+    }
+
+    currentTimer = setInterval(() => {
+        time--;
+        if (timeEl) timeEl.textContent = time;
+        if (time <= 0) {
+            clearInterval(currentTimer);
+            currentTimer = null;
+            if (window._saveLocalScore) window._saveLocalScore('angleGame', score);
+            alert("Süre bitti! Skorunuz: " + score);
+        }
+    }, 1000);
+
+    function drawAngle(degree) {
+        const cx = 100; // Merkez X
+        const cy = 150; // Merkez Y (Tabanda)
+        const r = 80;   // Kol uzunluğu
+        
+        // İlk kol her zaman yatay (sağa doğru)
+        const x1 = cx + r;
+        const y1 = cy;
+        
+        // İkinci kol açığa göre hesaplanır (Radyan cinsinden)
+        const rad = (degree * Math.PI) / 180;
+        const x2 = cx + r * Math.cos(-rad); // SVG'de Y aşağı artar, bu yüzden -rad
+        const y2 = cy + r * Math.sin(-rad);
+        
+        // SVG Path oluşturma: Merkeze git -> İlk kola git -> Merkeze dön -> İkinci kola git
+        anglePath.setAttribute('d', `M ${x1} ${y1} L ${cx} ${cy} L ${x2} ${y2}`);
+    }
+
+    function gen() {
+        // 10 ile 170 derece arası rastgele bir açı seç (5'in katları olması kolaylık sağlar)
+        const correctDegree = (Math.floor(Math.random() * 33) + 2) * 5; 
+        drawAngle(correctDegree);
+
+        // Şıkları oluştur
+        let opts = [correctDegree];
+        while (opts.length < 4) {
+            let offset = (Math.floor(Math.random() * 5) - 2) * 10; // ±10 veya ±20 fark
+            let wrong = correctDegree + (offset === 0 ? 15 : offset);
+            if (wrong > 0 && wrong <= 180 && !opts.includes(wrong)) {
+                opts.push(wrong);
+            }
+        }
+        opts.sort(() => Math.random() - 0.5);
+
+        ansContainer.innerHTML = '';
+        opts.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.textContent = o + "°";
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#angle-answers button').forEach(b => b.disabled = true);
+                
+                if (o === correctDegree) {
+                    btn.classList.add('correct');
+                    score += 15; // Açı ölçme daha zor olduğu için puanı artırdık
+                    combo++;
+                    if (combo % 3 === 0) score += 20;
+                } else {
+                    btn.classList.add('wrong');
+                    combo = 0;
+                }
+                scoreEl.textContent = score;
+
+                setTimeout(() => {
+                    gen();
+                }, 800);
+            };
+            ansContainer.appendChild(btn);
+        });
+    }
+
     gen();
 },
 
