@@ -791,29 +791,17 @@ division: function() {
 
 
   angleGame: function() {
-    let score = 0, time = 60, combo = 0;
+    let score = 0, combo = 0;
     const scoreEl = document.getElementById('angle-score');
-    const timeEl = document.getElementById('angle-time');
     const ansContainer = document.getElementById('angle-answers');
     const anglePath = document.getElementById('angle-path');
 
     scoreEl.textContent = score;
-    timeEl.textContent = time;
 
     if (typeof currentTimer !== 'undefined' && currentTimer) {
         clearInterval(currentTimer);
+        currentTimer = null;
     }
-
-    currentTimer = setInterval(() => {
-        time--;
-        if (timeEl) timeEl.textContent = time;
-        if (time <= 0) {
-            clearInterval(currentTimer);
-            currentTimer = null;
-            if (window._saveLocalScore) window._saveLocalScore('angleGame', score);
-            alert("Süre bitti! Skorunuz: " + score);
-        }
-    }, 1000);
 
     function drawAngle(degree) {
         const cx = 100; // Merkez X
