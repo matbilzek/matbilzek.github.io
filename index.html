@@ -70,7 +70,7 @@
 <article class="card"><h3>Geometri Oyunu</h3><div class="card-actions"><button class="btn go" data-target="geometryGame">Oyna</button></div></article>
 <article class="card"><h3>Açı Tahmin Oyunu</h3><div class="card-actions"><button class="btn go" data-target="angleGame">Oyna</button></div></article>
 <article class="card"><h3>Çemberden Üçgene </h3><div class="card-actions"><button class="btn go" data-target="triangleCircleGame">Oyna</button></div></article>
-<article class="card"><h3>Denk Kesirler</h3><div class="card-actions"><button class="btn go" data-target="frac6">Oyna</button></div></article>
+<article class="card"><h3>Çok Basamaklı Sayılar</h3><div class="card-actions"><button class="btn go" data-target="numberGame">Oyna</button></div></article>
 <article class="card"><h3>Tam Sayılı → Bileşik</h3><div class="card-actions"><button class="btn go" data-target="mixed">Oyna</button></div></article>
 <article class="card"><h3>Ortalama / Ortanca / Tepe</h3><div class="card-actions"><button class="btn go" data-target="stats">Oyna</button></div></article>
 </div>
@@ -257,6 +257,29 @@
   <div class="game-header controls" style="margin-top:1rem;">
     <button class="btn" onclick="window.renderLeaderboardForGame('triangleCircleGame')">En Yüksek Skorlar</button>
     <button class="btn" onclick="window.submitScoreUI('triangleCircleGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul5">Geri</button>
+  </div>
+</section>
+
+  <section id="numberGame" class="panel hidden">
+  <h2>Çok Basamaklı Sayılar</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="num-score">0</span></span>
+      <span>Süre: <span>Sınırsız</span></span>
+    </div>
+    
+    <div class="question-container" style="background: #fdf6e3; padding: 20px; border-radius: 10px; margin-bottom: 15px; text-align: center; border: 2px solid #eee;">
+        <div id="num-display" style="font-size: 32px; font-weight: bold; color: #2c3e50; letter-spacing: 2px; margin-bottom: 10px;"></div>
+        <div id="num-question-text" style="font-size: 18px; color: #d35400; font-weight: bold;"></div>
+    </div>
+
+    <div class="answers" id="num-answers"></div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('numberGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('numberGame')">Bitir ve Skor Gönder</button>
     <button class="btn tab" data-target="ortaokul5">Geri</button>
   </div>
 </section>
@@ -949,6 +972,121 @@ triangleCircleGame: function() {
         });
     }
 
+    gen();
+},
+
+
+  numberGame: function() {
+    let score = 0, combo = 0;
+    const scoreEl = document.getElementById('num-score');
+    const displayEl = document.getElementById('num-display');
+    const questionTextEl = document.getElementById('num-question-text');
+    const ansContainer = document.getElementById('num-answers');
+
+    scoreEl.textContent = score;
+
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
+        clearInterval(currentTimer);
+        currentTimer = null;
+    }
+
+    const basamaklar = [
+        "Birler Basamağı", "Onlar Basamağı", "Yüzler Basamağı",
+        "Binler Basamağı", "On Binler Basamağı", "Yüz Binler Basamağı",
+        "Milyonlar Basamağı", "On Milyonlar Basamağı", "Yüz Milyonlar Basamağı"
+    ];
+
+    function sayiyiOku(n) {
+        if (n === 0) return "sıfır";
+        const birler = ["", "bir", "iki", "üç", "dört", "beş", "altı", "yedi", "sekiz", "dokuz"];
+        const onlar = ["", "on", "yirmi", "otuz", "kırk", "elli", "altmış", "yetmiş", "seksen", "doksan"];
+        const binler = ["", "bin", "milyon"];
+
+        let sonuc = "";
+        let grupSayisi = 0;
+
+        while (n > 0) {
+            let ucBasamak = n % 1000;
+            if (ucBasamak > 0) {
+                let s = "";
+                let y = Math.floor(ucBasamak / 100);
+                let o = Math.floor((ucBasamak % 100) / 10);
+                let b = ucBasamak % 10;
+
+                if (y > 0) s += (y === 1 ? "" : birler[y]) + "yüz";
+                if (o > 0) s += onlar[o];
+                if (b > 0) {
+                    if (!(grupSayisi === 1 && b === 1 && y === 0 && o === 0)) s += birler[b];
+                }
+                sonuc = s + binler[grupSayisi] + " " + sonuc;
+            } else if (grupSayisi === 1 && n % 1000000 >= 1000) {
+                 // Sadece binler grubu boşsa ve daha büyük grup varsa bin ekleme
+            }
+            n = Math.floor(n / 1000);
+            grupSayisi++;
+        }
+        return sonuc.trim();
+    }
+
+    function gen() {
+        // 6 ile 9 basamaklı sayı üret (100,000 ile 999,999,999 arası)
+        const basamakSayisi = Math.floor(Math.random() * 4) + 6;
+        const min = Math.pow(10, basamakSayisi - 1);
+        const max = Math.pow(10, basamakSayisi) - 1;
+        const sayi = Math.floor(Math.random() * (max - min + 1)) + min;
+        
+        // Soru tipini seç: 0 = Okunuş, 1 = Basamak İsmi
+        const soruTipi = Math.floor(Math.random() * 2);
+        let correctAns = "";
+        let opts = [];
+
+        displayEl.textContent = sayi.toLocaleString('tr-TR');
+
+        if (soruTipi === 0) {
+            questionTextEl.textContent = "Bu sayının okunuşu hangisidir?";
+            correctAns = sayiyiOku(sayi);
+            opts = [correctAns];
+            while (opts.length < 4) {
+                let rastgeleSayi = sayi + (Math.floor(Math.random() * 20) - 10) * 100;
+                let yanlis = sayiyiOku(Math.abs(rastgeleSayi));
+                if (!opts.includes(yanlis)) opts.push(yanlis);
+            }
+        } else {
+            const basamakIndex = Math.floor(Math.random() * basamakSayisi);
+            const rakam = String(sayi).split('').reverse()[basamakIndex];
+            questionTextEl.innerHTML = `<span style="color:blue">${rakam}</span> rakamı hangi basamaktadır?`;
+            correctAns = basamaklar[basamakIndex];
+            opts = [correctAns];
+            while (opts.length < 4) {
+                let yanlis = basamaklar[Math.floor(Math.random() * 9)];
+                if (!opts.includes(yanlis)) opts.push(yanlis);
+            }
+        }
+
+        opts.sort(() => Math.random() - 0.5);
+        ansContainer.innerHTML = '';
+        opts.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.style.display = "block"; // Uzun metinler için alt alta
+            btn.style.width = "100%";
+            btn.style.marginBottom = "5px";
+            btn.textContent = o;
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#num-answers button').forEach(b => b.disabled = true);
+                if (o === correctAns) {
+                    btn.classList.add('correct');
+                    score += 10;
+                } else {
+                    btn.classList.add('wrong');
+                }
+                scoreEl.textContent = score;
+                setTimeout(gen, 1000);
+            };
+            ansContainer.appendChild(btn);
+        });
+    }
     gen();
 },
   
