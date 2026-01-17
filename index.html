@@ -98,7 +98,7 @@
 <article class="card"><h3>Rasyonel Sayıları Ondalık Sayıya Çevirme</h3><div class="card-actions"><button class="btn go" data-target="rationalToDecimalGame">Oyna</button></div></article>
 <article class="card"><h3>Rasyonel Sayılarla Toplama ve Çıkarma</h3><div class="card-actions"><button class="btn go" data-target="rationalOpGame">Oyna</button></div></article>
 <article class="card"><h3>Rasyonel Sayılarla Çarpma ve Bölme</h3><div class="card-actions"><button class="btn go" data-target="rationalMulDivGame">Oyna</button></div></article>
-<article class="card"><h3>Ortalama / Ortanca / Tepe</h3><div class="card-actions"><button class="btn go" data-target="stats">Oyna</button></div></article>
+<article class="card"><h3>Rasyonel Sayılarla Çok Adımlı İşlemler</h3><div class="card-actions"><button class="btn go" data-target="multiStepRationalGame">Oyna</button></div></article>
 </div>
 <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
 </section>
@@ -592,6 +592,32 @@
   <div class="game-header controls" style="margin-top:1rem;">
     <button class="btn" onclick="window.renderLeaderboardForGame('rationalMulDivGame')">En Yüksek Skorlar</button>
     <button class="btn" onclick="window.submitScoreUI('rationalMulDivGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul7">Geri</button>
+  </div>
+</section>
+
+
+  <section id="multiStepRationalGame" class="panel hidden">
+  <h2>Rasyonel Sayılarla Çok Adımlı İşlemler</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="msr-score">0</span></span>
+      <span>Süre: <span>Sınırsız</span></span>
+    </div>
+    
+    <div class="question-container" style="background: #fdfdfd; padding: 30px; border-radius: 15px; margin-bottom: 20px; text-align: center; border: 2px solid #2980b9; min-height: 200px; display: flex; align-items: center; justify-content: center;">
+        <div id="msr-question" style="font-size: 24px; font-weight: bold; font-family: 'serif';">
+            Yükleniyor...
+        </div>
+    </div>
+
+    <div class="answers" id="msr-answers" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        </div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('multiStepRationalGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('multiStepRationalGame')">Bitir ve Skor Gönder</button>
     <button class="btn tab" data-target="ortaokul7">Geri</button>
   </div>
 </section>
@@ -2317,6 +2343,132 @@ rationalMulDivGame: function() {
 },
 
 
+
+multiStepRationalGame: function() {
+    let score = 0;
+    const scoreEl = document.getElementById('msr-score');
+    const questionEl = document.getElementById('msr-question');
+    const ansContainer = document.getElementById('msr-answers');
+
+    if (scoreEl) scoreEl.textContent = score;
+
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
+        clearInterval(currentTimer);
+        currentTimer = null;
+    }
+
+    function getGCD(a, b) {
+        return b === 0 ? Math.abs(a) : getGCD(b, a % b);
+    }
+
+    const gen = () => {
+        // İki farklı kalıp arasından seçim yapıyoruz
+        const pattern = Math.floor(Math.random() * 2);
+        let resNum, resDen, htmlStr;
+
+        if (pattern === 0) {
+            // Kalıp: 1 + (1 / (1 + a/b))
+            let a = Math.floor(Math.random() * 3) + 1;
+            let b = Math.floor(Math.random() * 4) + 2;
+            
+            // İç kısım: 1 + a/b = (b+a)/b
+            // Ters çevrilmiş: b / (b+a)
+            // Sonuç: 1 + b/(b+a) = (b+a+b) / (b+a)
+            resNum = (2 * b) + a;
+            resDen = b + a;
+
+            htmlStr = `
+                <div style="display:flex; align-items:center;">
+                    1 + 
+                    <div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:10px;">
+                        <div>1</div>
+                        <div style="width:100%; height:2px; background:black; margin:3px 0;"></div>
+                        <div style="display:flex; align-items:center;">
+                            1 + 
+                            <div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:5px; font-size:0.8em;">
+                                <div>${a}</div>
+                                <div style="width:20px; height:2px; background:black; margin:2px 0;"></div>
+                                <div>${b}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+        } else {
+            // Kalıp: (1 - a/b) / c
+            let a = 1;
+            let b = Math.floor(Math.random() * 3) + 2;
+            let c = Math.floor(Math.random() * 3) + 2;
+
+            // Üst kısım: (b-a)/b
+            // Sonuç: (b-a) / (b*c)
+            resNum = b - a;
+            resDen = b * c;
+
+            htmlStr = `
+                <div style="display:inline-flex; flex-direction:column; align-items:center;">
+                    <div style="display:flex; align-items:center; font-size:0.8em;">
+                        1 - 
+                        <div style="display:inline-flex; flex-direction:column; align-items:center; margin-left:5px;">
+                            <div>${a}</div>
+                            <div style="width:20px; height:2px; background:black; margin:2px 0;"></div>
+                            <div>${b}</div>
+                        </div>
+                    </div>
+                    <div style="width:120%; height:3px; background:black; margin:5px 0;"></div>
+                    <div>${c}</div>
+                </div>`;
+        }
+
+        // Sadeleştirme
+        const common = getGCD(resNum, resDen);
+        resNum /= common;
+        resDen /= common;
+
+        const correctAns = `${resNum}/${resDen}`;
+        questionEl.innerHTML = htmlStr;
+
+        // Şıkları oluştur
+        let opts = [correctAns];
+        while (opts.length < 4) {
+            let wn = Math.max(1, resNum + (Math.floor(Math.random() * 5) - 2));
+            let wd = Math.max(2, resDen + (Math.floor(Math.random() * 5) - 2));
+            let wAns = `${wn}/${wd}`;
+            if (!opts.includes(wAns)) opts.push(wAns);
+        }
+
+        opts.sort(() => Math.random() - 0.5);
+
+        ansContainer.innerHTML = '';
+        opts.forEach(opt => {
+            const parts = opt.split('/');
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.style.height = "auto";
+            btn.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; padding: 5px;">
+                    <div>${parts[0]}</div>
+                    <div style="width: 20px; height: 2px; background: currentColor; margin: 2px 0;"></div>
+                    <div>${parts[1]}</div>
+                </div>`;
+
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#msr-answers button').forEach(b => b.disabled = true);
+                if (opt === correctAns) {
+                    btn.classList.add('correct');
+                    score += 40; // Çok adımlı olduğu için puan daha yüksek
+                } else {
+                    btn.classList.add('wrong');
+                }
+                scoreEl.textContent = score;
+                setTimeout(gen, 1200);
+            };
+            ansContainer.appendChild(btn);
+        });
+    }
+    gen();
+},
+  
   
   
   shapes: function() {
