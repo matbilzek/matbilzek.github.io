@@ -97,7 +97,7 @@
 <article class="card"><h3>Tam Sayılarla Çarpma ve Bölme</h3><div class="card-actions"><button class="btn go" data-target="integerMulDivGame">Oyna</button></div></article>
 <article class="card"><h3>Rasyonel Sayıları Ondalık Sayıya Çevirme</h3><div class="card-actions"><button class="btn go" data-target="rationalToDecimalGame">Oyna</button></div></article>
 <article class="card"><h3>Rasyonel Sayılarla Toplama ve Çıkarma</h3><div class="card-actions"><button class="btn go" data-target="rationalOpGame">Oyna</button></div></article>
-<article class="card"><h3>Tam Sayılı → Bileşik</h3><div class="card-actions"><button class="btn go" data-target="mixed">Oyna</button></div></article>
+<article class="card"><h3>Rasyonel Sayılarla Çarpma ve Bölme</h3><div class="card-actions"><button class="btn go" data-target="rationalMulDivGame">Oyna</button></div></article>
 <article class="card"><h3>Ortalama / Ortanca / Tepe</h3><div class="card-actions"><button class="btn go" data-target="stats">Oyna</button></div></article>
 </div>
 <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
@@ -559,6 +559,43 @@
   </div>
 </section>
 
+<section id="rationalMulDivGame" class="panel hidden">
+  <h2>Rasyonel Sayılarla Çarpma ve Bölme</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="ratmd-score">0</span></span>
+      <span>Süre: <span>Sınırsız</span></span>
+    </div>
+    
+    <div class="question-container" style="background: #fff5e6; padding: 25px; border-radius: 15px; margin-bottom: 20px; text-align: center; border: 2px solid #e67e22; display: flex; align-items: center; justify-content: center; gap: 15px;">
+        <div class="fraction-box" style="display: flex; flex-direction: column; align-items: center; font-size: 28px; font-weight: bold;">
+            <div id="ratmd-n1">2</div>
+            <div style="width: 40px; height: 3px; background: #2c3e50; margin: 2px 0;"></div>
+            <div id="ratmd-d1">3</div>
+        </div>
+        
+        <div id="ratmd-op" style="font-size: 32px; font-weight: bold; color: #d35400;">×</div>
+
+        <div class="fraction-box" style="display: flex; flex-direction: column; align-items: center; font-size: 28px; font-weight: bold;">
+            <div id="ratmd-n2">1</div>
+            <div style="width: 40px; height: 3px; background: #2c3e50; margin: 2px 0;"></div>
+            <div id="ratmd-d2">4</div>
+        </div>
+
+        <div style="font-size: 32px; font-weight: bold;">= ?</div>
+    </div>
+
+    <div class="answers" id="ratmd-answers" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        </div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('rationalMulDivGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('rationalMulDivGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul7">Geri</button>
+  </div>
+</section>
+  
   
 <section id="shapes" class="panel hidden">
 <h2>Şekiller Oyunu</h2>
@@ -2185,6 +2222,102 @@ rationalOpGame: function() {
 },
   
 
+rationalMulDivGame: function() {
+    let score = 0;
+    const scoreEl = document.getElementById('ratmd-score');
+    const n1El = document.getElementById('ratmd-n1');
+    const d1El = document.getElementById('ratmd-d1');
+    const n2El = document.getElementById('ratmd-n2');
+    const d2El = document.getElementById('ratmd-d2');
+    const opEl = document.getElementById('ratmd-op');
+    const ansContainer = document.getElementById('ratmd-answers');
+
+    if (scoreEl) scoreEl.textContent = score;
+
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
+        clearInterval(currentTimer);
+        currentTimer = null;
+    }
+
+    function getGCD(a, b) {
+        return b === 0 ? Math.abs(a) : getGCD(b, a % b);
+    }
+
+    const gen = () => {
+        // Sayıları 1-10 arası seçiyoruz ki işlemler çok devasa olmasın
+        let n1 = Math.floor(Math.random() * 9) + 1;
+        let d1 = Math.floor(Math.random() * 9) + 2;
+        let n2 = Math.floor(Math.random() * 9) + 1;
+        let d2 = Math.floor(Math.random() * 9) + 2;
+        
+        const type = Math.floor(Math.random() * 2); // 0: Çarpma, 1: Bölme
+        const op = type === 0 ? "×" : "÷";
+        
+        n1El.textContent = n1; d1El.textContent = d1;
+        n2El.textContent = n2; d2El.textContent = d2;
+        opEl.textContent = op;
+
+        let resNum, resDen;
+
+        if (type === 0) { // Çarpma: Paylar çarpımı / Paydalar çarpımı
+            resNum = n1 * n2;
+            resDen = d1 * d2;
+        } else { // Bölme: n1/d1 * d2/n2
+            resNum = n1 * d2;
+            resDen = d1 * n2;
+        }
+
+        // Sadeleştirme
+        const common = getGCD(resNum, resDen);
+        resNum /= common;
+        resDen /= common;
+
+        const correctAns = `${resNum}/${resDen}`;
+
+        // Şıkları oluştur
+        let opts = [correctAns];
+        while (opts.length < 4) {
+            let wn = Math.max(1, resNum + (Math.floor(Math.random() * 5) - 2));
+            let wd = Math.max(2, resDen + (Math.floor(Math.random() * 5) - 2));
+            let wAns = `${wn}/${wd}`;
+            if (!opts.includes(wAns)) opts.push(wAns);
+        }
+
+        opts.sort(() => Math.random() - 0.5);
+
+        ansContainer.innerHTML = '';
+        opts.forEach(opt => {
+            const parts = opt.split('/');
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.style.height = "auto";
+            btn.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; padding: 5px;">
+                    <div>${parts[0]}</div>
+                    <div style="width: 20px; height: 2px; background: currentColor; margin: 2px 0;"></div>
+                    <div>${parts[1]}</div>
+                </div>`;
+
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#ratmd-answers button').forEach(b => b.disabled = true);
+                if (opt === correctAns) {
+                    btn.classList.add('correct');
+                    score += 20;
+                } else {
+                    btn.classList.add('wrong');
+                }
+                scoreEl.textContent = score;
+                setTimeout(gen, 1000);
+            };
+            ansContainer.appendChild(btn);
+        });
+    }
+    gen();
+},
+
+
+  
   
   shapes: function() {
     let score = 0, combo = 0;
