@@ -93,7 +93,7 @@
 <section id="ortaokul7" class="panel hidden">
 <h2>ORTAOKUL (7. SINIF) OYUNLARI</h2>
 <div class="cards">
-<article class="card"><h3>Asal Sayılar</h3><div class="card-actions"><button class="btn go" data-target="primes">Oyna</button></div></article>
+<article class="card"><h3>Tam Sayılarla Toplama ve Çıkarma</h3><div class="card-actions"><button class="btn go" data-target="integerGame">Oyna</button></div></article>
 <article class="card"><h3>Çarpanlar</h3><div class="card-actions"><button class="btn go" data-target="factors">Oyna</button></div></article>
 <article class="card"><h3>EBOB / EKOK</h3><div class="card-actions"><button class="btn go" data-target="gcdlcm">Oyna</button></div></article>
 <article class="card"><h3>Denk Kesirler</h3><div class="card-actions"><button class="btn go" data-target="frac6">Oyna</button></div></article>
@@ -442,6 +442,31 @@
 </div>
 </section>
 
+<section id="integerGame" class="panel hidden">
+  <h2>Tam Sayılarla Toplama ve Çıkarma</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="int-score">0</span></span>
+      <span>Süre: <span>Sınırsız</span></span>
+    </div>
+    
+    <div class="question-container" style="background: #2c3e50; padding: 30px; border-radius: 15px; margin-bottom: 20px; text-align: center;">
+        <div id="int-question" style="font-size: 42px; font-weight: bold; color: #ecf0f1; font-family: 'Courier New', Courier, monospace;">
+            (-5) + (+8) = ?
+        </div>
+    </div>
+
+    <div class="answers" id="int-answers" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        </div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('integerGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('integerGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul7">Geri</button>
+  </div>
+</section>
+  
 <section id="shapes" class="panel hidden">
 <h2>Şekiller Oyunu</h2>
 <div class="game-area">
@@ -1694,6 +1719,89 @@ rectAreaPerimeterGame: function() {
   }
   gen();
 },
+
+
+  integerGame: function() {
+    let score = 0;
+    const scoreEl = document.getElementById('int-score');
+    const questionEl = document.getElementById('int-question');
+    const ansContainer = document.getElementById('int-answers');
+
+    if (scoreEl) scoreEl.textContent = score;
+
+    // Önceki timerları temizle
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
+        clearInterval(currentTimer);
+        currentTimer = null;
+    }
+
+    function formatNum(n) {
+        // Sayıyı parantez içinde işaretiyle gösterir: (-5) veya (+3)
+        return n >= 0 ? `(+${n})` : `(${n})`;
+    }
+
+    function gen() {
+        // -20 ile 20 arasında rastgele iki tam sayı
+        const a = Math.floor(Math.random() * 41) - 20;
+        const b = Math.floor(Math.random() * 41) - 20;
+        
+        // İşlem tipi: 0 = Toplama, 1 = Çıkarma
+        const type = Math.floor(Math.random() * 2);
+        const op = type === 0 ? "+" : "-";
+        const correctAns = type === 0 ? a + b : a - b;
+
+        // Soruyu ekrana yazdır
+        questionEl.textContent = `${formatNum(a)} ${op} ${formatNum(b)} = ?`;
+
+        // Şıkları oluştur (Öğrencinin yapabileceği işaret hatalarına göre çeldiriciler)
+        let opts = new Set([correctAns]);
+        
+        // Olası yanlışlar: Ters işaretli sonuç, sadece sayıların toplamı vb.
+        opts.add(-(correctAns)); 
+        opts.add(a + b);
+        opts.add(a - b);
+        opts.add(Math.abs(a) + Math.abs(b));
+        opts.add(Math.abs(a) - Math.abs(b));
+
+        // Eğer set hala 4'ten azsa rastgele ekle
+        let optArr = Array.from(opts);
+        while (optArr.length < 4) {
+            let r = correctAns + (Math.floor(Math.random() * 10) - 5);
+            if (!optArr.includes(r)) optArr.push(r);
+        }
+        
+        // Sadece ilk 4 şıkkı al ve karıştır
+        optArr = optArr.slice(0, 4).sort(() => Math.random() - 0.5);
+
+        ansContainer.innerHTML = '';
+        optArr.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.style.fontSize = "20px";
+            btn.textContent = o > 0 ? `+${o}` : o;
+            if(o === 0) btn.textContent = "0";
+
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#int-answers button').forEach(b => b.disabled = true);
+                
+                if (o === correctAns) {
+                    btn.classList.add('correct');
+                    score += 15;
+                } else {
+                    btn.classList.add('wrong');
+                }
+                
+                if (scoreEl) scoreEl.textContent = score;
+                setTimeout(gen, 1000);
+            };
+            ansContainer.appendChild(btn);
+        });
+    }
+
+    gen();
+},
+  
 
   shapes: function() {
     let score = 0, combo = 0;
