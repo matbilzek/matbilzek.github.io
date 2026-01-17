@@ -2493,8 +2493,7 @@ multiStepRationalGame: function() {
     gen();
 },
 
-  
-factorsGame: function() {
+  factorsGame: function() {
     let score = 0;
     const scoreEl = document.getElementById('fact-score');
     const numEl = document.getElementById('fact-number');
@@ -2508,81 +2507,83 @@ factorsGame: function() {
         currentTimer = null;
     }
 
-    // Sayıyı asal çarpanlarına ayıran fonksiyon
+    // Asal çarpanlara ayırma fonksiyonu (Optimize edildi)
     function getPrimeFactors(n) {
         let factors = {};
         let d = 2;
         let temp = n;
-        while (temp > 1) {
+        while (d * d <= temp) {
             while (temp % d === 0) {
                 factors[d] = (factors[d] || 0) + 1;
                 temp /= d;
             }
             d++;
-            if (d * d > temp) {
-                if (temp > 1) factors[temp] = (factors[temp] || 0) + 1;
-                break;
-            }
         }
+        if (temp > 1) factors[temp] = (factors[temp] || 0) + 1;
         return factors;
     }
 
-    // Asal çarpanları üslü stringe çeviren fonksiyon (2² . 3¹ gibi)
     function formatFactors(factors) {
-        return Object.keys(factors).map(p => {
+        let keys = Object.keys(factors).sort((a,b) => a-b);
+        return keys.map(p => {
             let exp = factors[p];
             return exp > 1 ? `${p}<sup>${exp}</sup>` : `${p}`;
         }).join(' . ');
     }
 
     const gen = () => {
-        // 12 ile 100 arasında çarpanları güzel olan sayılar
-        const numbers = [12, 18, 20, 24, 30, 36, 40, 45, 48, 50, 60, 72, 80, 90, 100];
+        const numbers = [12, 18, 20, 24, 30, 36, 40, 45, 48, 50, 60, 72, 80, 84, 90, 96, 100];
         let n = numbers[Math.floor(Math.random() * numbers.length)];
         
-        const type = Math.floor(Math.random() * 2); // 0: Çarpan bulma, 1: Üslü gösterim
+        const type = Math.floor(Math.random() * 2); 
         let correctAnsHTML = "";
         let options = [];
 
         numEl.textContent = n;
 
         if (type === 0) {
-            qTextEl.textContent = "Aşağıdakilerden hangisi bu sayının bir çarpanıdır?";
-            let allFactors = [];
-            for(let i=1; i<=n; i++) if(n % i === 0) allFactors.push(i);
+            qTextEl.textContent = "Hangisi bu sayının bir çarpanıdır?";
+            let divisors = [];
+            for(let i=1; i<=n; i++) if(n % i === 0) divisors.push(i);
             
-            let correct = allFactors[Math.floor(Math.random() * (allFactors.length - 2)) + 1]; // 1 ve kendisi hariç rastgele
+            // 1 ve kendisi hariç rastgele bir bölen seç
+            let correct = divisors[Math.floor(Math.random() * (divisors.length - 1))];
             correctAnsHTML = correct.toString();
             options.push(correctAnsHTML);
 
-            while(options.length < 4) {
-                let wrong = Math.floor(Math.random() * 20) + 7;
-                if(n % wrong !== 0 && !options.includes(wrong.toString())) options.push(wrong.toString());
+            // Yanlış şıklar için havuz kullan (Döngü takılmasını önler)
+            const wrongPool = [7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
+            wrongPool.sort(() => Math.random() - 0.5);
+            
+            for(let w of wrongPool) {
+                if(options.length >= 4) break;
+                if(n % w !== 0) options.push(w.toString());
             }
         } else {
-            qTextEl.textContent = "Sayının asal çarpanlarının çarpımı şeklinde yazılışı hangisidir?";
-            let factors = getPrimeFactors(n);
-            correctAnsHTML = formatFactors(factors);
+            qTextEl.textContent = "Asal çarpanların çarpımı şeklinde yazılışı hangisidir?";
+            correctAnsHTML = formatFactors(getPrimeFactors(n));
             options.push(correctAnsHTML);
 
-            while(options.length < 4) {
-                let fakeN = n + (Math.random() > 0.5 ? 6 : -4);
-                if(fakeN < 10) fakeN = 15;
-                let fakeFactors = getPrimeFactors(fakeN);
-                let fakeStr = formatFactors(fakeFactors);
-                if(!options.includes(fakeStr)) options.push(fakeStr);
+            // Yanlışlar için n'e yakın diğer sayıların asal çarpanlarını kullan
+            let neighbors = [n+2, n-2, n+4, n-4, n+6, n-6];
+            for(let neigh of neighbors) {
+                if(options.length >= 4) break;
+                if(neigh > 1) {
+                    let f = formatFactors(getPrimeFactors(neigh));
+                    if(!options.includes(f)) options.push(f);
+                }
             }
         }
 
+        // Şıkları karıştır ve eksik varsa rastgele doldur
+        while(options.length < 4) options.push("7 . 2");
         options.sort(() => Math.random() - 0.5);
 
         ansContainer.innerHTML = '';
         options.forEach(opt => {
             const btn = document.createElement('button');
             btn.className = 'answer-btn';
-            btn.style.padding = "15px 5px";
             btn.innerHTML = opt;
-            
             btn.onclick = () => {
                 if (btn.disabled) return;
                 document.querySelectorAll('#fact-answers button').forEach(b => b.disabled = true);
@@ -2593,14 +2594,13 @@ factorsGame: function() {
                     btn.classList.add('wrong');
                 }
                 scoreEl.textContent = score;
-                setTimeout(gen, 1000);
+                setTimeout(gen, 800);
             };
             ansContainer.appendChild(btn);
         });
     }
-
     gen();
-},  
+},
   
   
   shapes: function() {
