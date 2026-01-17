@@ -95,7 +95,7 @@
 <div class="cards">
 <article class="card"><h3>Tam Sayılarla Toplama ve Çıkarma</h3><div class="card-actions"><button class="btn go" data-target="integerGame">Oyna</button></div></article>
 <article class="card"><h3>Tam Sayılarla Çarpma ve Bölme</h3><div class="card-actions"><button class="btn go" data-target="integerMulDivGame">Oyna</button></div></article>
-<article class="card"><h3>EBOB / EKOK</h3><div class="card-actions"><button class="btn go" data-target="gcdlcm">Oyna</button></div></article>
+<article class="card"><h3>Rasyonel Sayıları Ondalık Sayıya Çevirme</h3><div class="card-actions"><button class="btn go" data-target="rationalToDecimalGame">Oyna</button></div></article>
 <article class="card"><h3>Denk Kesirler</h3><div class="card-actions"><button class="btn go" data-target="frac6">Oyna</button></div></article>
 <article class="card"><h3>Tam Sayılı → Bileşik</h3><div class="card-actions"><button class="btn go" data-target="mixed">Oyna</button></div></article>
 <article class="card"><h3>Ortalama / Ortanca / Tepe</h3><div class="card-actions"><button class="btn go" data-target="stats">Oyna</button></div></article>
@@ -492,6 +492,35 @@
     <button class="btn tab" data-target="ortaokul7">Geri</button>
   </div>
 </section>
+
+<section id="rationalToDecimalGame" class="panel hidden">
+  <h2>Rasyonel Sayıları Ondalık Sayıya Çevirme</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="rat-score">0</span></span>
+      <span>Süre: <span>Sınırsız</span></span>
+    </div>
+    
+    <div class="question-container" style="background: #fff; padding: 25px; border-radius: 15px; margin-bottom: 20px; text-align: center; border: 2px dashed #9b59b6; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="font-size: 18px; color: #8e44ad; margin-bottom: 10px; font-weight: bold;">Aşağıdaki kesrin ondalık gösterimi hangisidir?</div>
+        <div style="display: flex; flex-direction: column; align-items: center; font-size: 32px; font-weight: bold; font-family: 'serif';">
+            <div id="rat-num">1</div>
+            <div style="width: 50px; height: 3px; background: #2c3e50; margin: 2px 0;"></div>
+            <div id="rat-den">3</div>
+        </div>
+    </div>
+
+    <div class="answers" id="rat-answers" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        </div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('rationalToDecimalGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('rationalToDecimalGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul7">Geri</button>
+  </div>
+</section>
+
   
 <section id="shapes" class="panel hidden">
 <h2>Şekiller Oyunu</h2>
@@ -1911,6 +1940,99 @@ integerMulDivGame: function() {
                 
                 if (scoreEl) scoreEl.textContent = score;
                 setTimeout(gen, 1000);
+            };
+            ansContainer.appendChild(btn);
+        });
+    }
+
+    gen();
+},
+
+
+  rationalToDecimalGame: function() {
+    let score = 0;
+    const scoreEl = document.getElementById('rat-score');
+    const numEl = document.getElementById('rat-num');
+    const denEl = document.getElementById('rat-den');
+    const ansContainer = document.getElementById('rat-answers');
+
+    if (scoreEl) scoreEl.textContent = score;
+
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
+        clearInterval(currentTimer);
+        currentTimer = null;
+    }
+
+    // Ondalık sayıyı devirli formata sokan yardımcı fonksiyon
+    function formatDecimal(n, d) {
+        const val = n / d;
+        const s = val.toString();
+        
+        // Basit devirliler için (1/3, 2/3, 1/9 vb.)
+        if (d === 3 || d === 9) {
+            let digit = Math.floor((n * 10) / d) % 10;
+            let integerPart = Math.floor(n / d);
+            return `${integerPart},<span style="border-top: 2px solid black;">${digit}</span>`;
+        }
+        if (d === 6) {
+            // Örn: 1/6 = 0,1666... -> 0,16 (6 devirli)
+            let integerPart = Math.floor(n / d);
+            let firstDigit = Math.floor((n * 10) / d) % 10;
+            let repeatingDigit = Math.floor((n * 100) / d) % 10;
+            return `${integerPart},${firstDigit}<span style="border-top: 2px solid black;">${repeatingDigit}</span>`;
+        }
+
+        // Devirli olmayanlar (Paydası 2, 4, 5, 8, 10 olanlar)
+        return val.toLocaleString('tr-TR', { minimumFractionDigits: 0, maximumFractionDigits: 3 });
+    }
+
+    function gen() {
+        const denominators = [2, 4, 5, 8, 10, 3, 6, 9];
+        const d = denominators[Math.floor(Math.random() * denominators.length)];
+        let n = Math.floor(Math.random() * 10) + 1;
+        
+        // Sadeleşmiş formda kalsın veya tam sayı çıkmasın diye
+        if (n % d === 0) n += 1;
+
+        numEl.textContent = n;
+        denEl.textContent = d;
+
+        const correctDisplay = formatDecimal(n, d);
+        const correctVal = (n / d).toFixed(4); // Karşılaştırma için gizli değer
+
+        // Şıkları oluştur
+        let opts = [{ display: correctDisplay, val: correctVal }];
+        
+        while (opts.length < 4) {
+            let offset = (Math.random() * 0.5 - 0.25).toFixed(2);
+            let wVal = (parseFloat(correctVal) + parseFloat(offset)).toFixed(2);
+            let wDisplay = wVal.toString().replace('.', ',');
+            
+            if (!opts.some(o => o.val === wVal) && wVal > 0) {
+                opts.push({ display: wDisplay, val: wVal });
+            }
+        }
+
+        opts.sort(() => Math.random() - 0.5);
+
+        ansContainer.innerHTML = '';
+        opts.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.innerHTML = o.display; // HTML içeriği (çizgi için) destekler
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#rat-answers button').forEach(b => b.disabled = true);
+                
+                if (o.val === correctVal) {
+                    btn.classList.add('correct');
+                    score += 25;
+                } else {
+                    btn.classList.add('wrong');
+                }
+                
+                scoreEl.textContent = score;
+                setTimeout(gen, 1200);
             };
             ansContainer.appendChild(btn);
         });
