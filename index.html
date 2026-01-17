@@ -111,7 +111,7 @@
 <article class="card"><h3>Aralarında Asal Olan Sayıyı Bulma</h3><div class="card-actions"><button class="btn go" data-target="coprimeGame">Oyna</button></div></article>
 <article class="card"><h3>Tam Sayıların Kuvvetleri</h3><div class="card-actions"><button class="btn go" data-target="integerPowerGame">Oyna</button></div></article>
 <article class="card"><h3>Üslü Sayılarla İşlemler</h3><div class="card-actions"><button class="btn go" data-target="combinedPowerGame">Oyna</button></div></article>
-<article class="card"><h3>Ortalama / Ortanca / Tepe</h3><div class="card-actions"><button class="btn go" data-target="stats">Oyna</button></div></article>
+<article class="card"><h3>Ondalık Çözümleme ve 10'un Kuvvetleri</h3><div class="card-actions"><button class="btn go" data-target="decimalPowerGame">Oyna</button></div></article>
 </div>
 <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
 </section>
@@ -754,6 +754,32 @@
   </div>
 </section>
 
+
+  <section id="decimalPowerGame" class="panel hidden">
+  <h2>Ondalık Çözümleme ve 10'un Kuvvetleri</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="dec-score">0</span></span>
+      <span>Süre: <span>Sınırsız</span></span>
+    </div>
+    
+    <div class="question-container" style="background: #f0f3f1; padding: 30px; border-radius: 20px; margin-bottom: 20px; text-align: center; border: 4px solid #27ae60;">
+        <div id="dec-hint" style="font-size: 18px; color: #2c3e50; margin-bottom: 15px; font-weight: bold;">Sayının çözümlenmiş hali hangisidir?</div>
+        <div id="dec-question" style="font-size: 42px; font-weight: bold; color: #27ae60; font-family: 'Courier New', monospace;">
+            45,08
+        </div>
+    </div>
+
+    <div class="answers" id="dec-answers" style="display: grid; grid-template-columns: 1fr; gap: 12px;">
+        </div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('decimalPowerGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('decimalPowerGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul5">Geri</button>
+  </div>
+</section>
   
 <section id="shapes" class="panel hidden">
 <h2>Şekiller Oyunu</h2>
@@ -3086,6 +3112,99 @@ combinedPowerGame: function() {
 },
 
 
+decimalPowerGame: function() {
+    let score = 0;
+    const scoreEl = document.getElementById('dec-score');
+    const questionEl = document.getElementById('dec-question');
+    const hintEl = document.getElementById('dec-hint');
+    const ansContainer = document.getElementById('dec-answers');
+
+    if (scoreEl) scoreEl.textContent = score;
+
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
+        clearInterval(currentTimer);
+        currentTimer = null;
+    }
+
+    const gen = () => {
+        const mode = Math.random() > 0.5 ? 'cozumleme' : 'farkli_ifade';
+        let correctStr = "";
+        let opts = [];
+
+        if (mode === 'cozumleme') {
+            hintEl.textContent = "Sayının çözümlenmiş hali hangisidir?";
+            // Rastgele ondalık sayı üret (Örn: 24,05 veya 3,108)
+            let tam = Math.floor(Math.random() * 90) + 1;
+            let ondalik = [5, 8, 12, 45, 108][Math.floor(Math.random() * 5)];
+            let sayiStr = (tam + (ondalik / (ondalik > 99 ? 1000 : 100))).toString().replace('.', ',');
+            questionEl.innerHTML = sayiStr;
+
+            // Doğru çözümleme üretimi
+            let parts = sayiStr.replace(',', '.').split('.');
+            let tamPart = parts[0];
+            let ondalikPart = parts[1];
+            
+            let res = [];
+            for(let i=0; i<tamPart.length; i++) {
+                let basamakVal = tamPart.length - 1 - i;
+                if(tamPart[i] !== '0') res.push(`${tamPart[i]}·10<sup>${basamakVal}</sup>`);
+            }
+            for(let i=0; i<ondalikPart.length; i++) {
+                if(ondalikPart[i] !== '0') res.push(`${ondalikPart[i]}·10<sup>-${i+1}</sup>`);
+            }
+            correctStr = res.join(' + ');
+            opts = [correctStr];
+
+            // Çeldiriciler (Eksi işaretleri, yanlış basamak kuvvetleri)
+            opts.push(correctStr.replace('10<sup>-1</sup>', '10<sup>1</sup>'));
+            opts.push(correctStr.replace(/·/g, ' + '));
+            opts.push(correctStr.replace(/<sup>/g, '<sup>-'));
+        } else {
+            hintEl.textContent = "Boşluğa (?) gelmesi gereken kuvvet kaçtır?";
+            let sayi = (Math.random() * 100).toFixed(3);
+            let virgülSag = Math.floor(Math.random() * 3) + 1; 
+            let baslangicKuvvet = Math.floor(Math.random() * 10) - 5;
+            
+            // 12,345 * 10^2 = 1234,5 * 10^?
+            let yeniSayi = sayi * Math.pow(10, virgülSag);
+            let yeniKuvvet = baslangicKuvvet - virgülSag;
+
+            questionEl.innerHTML = `<span style="font-size:28px">${sayi.replace('.',',')}·10<sup>${baslangicKuvvet}</sup> = ${yeniSayi.toString().replace('.',',')}·10<sup>?</sup></span>`;
+            correctStr = yeniKuvvet.toString();
+            opts = [correctStr, (baslangicKuvvet + virgülSag).toString(), virgülSag.toString(), "0"];
+        }
+
+        opts = [...new Set(opts)]; // Tekrar edenleri sil
+        while(opts.length < 4) opts.push((Math.floor(Math.random()*20)-10).toString());
+        opts.sort(() => Math.random() - 0.5);
+
+        ansContainer.innerHTML = '';
+        opts.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.style.fontSize = "16px";
+            btn.style.padding = "10px";
+            btn.innerHTML = opt;
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#dec-answers button').forEach(b => b.disabled = true);
+                if (opt === correctStr) {
+                    btn.classList.add('correct');
+                    score += 30;
+                } else {
+                    btn.classList.add('wrong');
+                }
+                scoreEl.textContent = score;
+                setTimeout(gen, 1200);
+            };
+            ansContainer.appendChild(btn);
+        });
+    }
+    gen();
+},
+
+
+  
   
   shapes: function() {
     let score = 0, combo = 0;
