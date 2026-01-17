@@ -108,7 +108,7 @@
 <div class="cards">
 <article class="card"><h3>Sayıların Çarpanlarını Üslü İfade Şeklinde Yazma</h3><div class="card-actions"><button class="btn go" data-target="factorsGame">Oyna</button></div></article>
 <article class="card"><h3>EBOB-EKOK Bulma</h3><div class="card-actions"><button class="btn go" data-target="ebobEkokGame">Oyna</button></div></article>
-<article class="card"><h3>EBOB / EKOK</h3><div class="card-actions"><button class="btn go" data-target="gcdlcm">Oyna</button></div></article>
+<article class="card"><h3>Aralarında Asal Olan Sayıyı Bulma</h3><div class="card-actions"><button class="btn go" data-target="coprimeGame">Oyna</button></div></article>
 <article class="card"><h3>Denk Kesirler</h3><div class="card-actions"><button class="btn go" data-target="frac6">Oyna</button></div></article>
 <article class="card"><h3>Tam Sayılı → Bileşik</h3><div class="card-actions"><button class="btn go" data-target="mixed">Oyna</button></div></article>
 <article class="card"><h3>Ortalama / Ortanca / Tepe</h3><div class="card-actions"><button class="btn go" data-target="stats">Oyna</button></div></article>
@@ -670,6 +670,33 @@
   <div class="game-header controls" style="margin-top:1rem;">
     <button class="btn" onclick="window.renderLeaderboardForGame('ebobEkokGame')">En Yüksek Skorlar</button>
     <button class="btn" onclick="window.submitScoreUI('ebobEkokGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul8">Geri</button>
+  </div>
+</section>
+
+
+  <section id="coprimeGame" class="panel hidden">
+  <h2>Aralarında Asal Olan Sayıyı Bulma</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="cp-score">0</span></span>
+      <span>Süre: <span>Sınırsız</span></span>
+    </div>
+    
+    <div class="question-container" style="background: #f8f9fa; padding: 30px; border-radius: 15px; margin-bottom: 20px; text-align: center; border: 3px solid #3498db;">
+        <div id="cp-question-text" style="font-size: 20px; color: #2c3e50; margin-bottom: 15px;">Bu sayılar aralarında asal mıdır?</div>
+        <div style="font-size: 42px; font-weight: bold; color: #3498db; letter-spacing: 2px;">
+            <span id="cp-num1">15</span> ve <span id="cp-num2">28</span>
+        </div>
+    </div>
+
+    <div class="answers" id="cp-answers" style="display: flex; justify-content: center; gap: 20px;">
+        </div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('coprimeGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('coprimeGame')">Bitir ve Skor Gönder</button>
     <button class="btn tab" data-target="ortaokul8">Geri</button>
   </div>
 </section>
@@ -2713,6 +2740,81 @@ ebobEkokGame: function() {
                 }
                 scoreEl.textContent = score;
                 setTimeout(gen, 1000);
+            };
+            ansContainer.appendChild(btn);
+        });
+    }
+
+    gen();
+},
+
+
+coprimeGame: function() {
+    let score = 0;
+    const scoreEl = document.getElementById('cp-score');
+    const num1El = document.getElementById('cp-num1');
+    const num2El = document.getElementById('cp-num2');
+    const ansContainer = document.getElementById('cp-answers');
+
+    if (scoreEl) scoreEl.textContent = score;
+
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
+        clearInterval(currentTimer);
+        currentTimer = null;
+    }
+
+    // EBOB fonksiyonu (Aralarında asallık kontrolü için)
+    function getGCD(a, b) {
+        return b === 0 ? a : getGCD(b, a % b);
+    }
+
+    const gen = () => {
+        let a, b, isCoprime;
+
+        // %50 ihtimalle aralarında asal olan veya olmayan çiftler üret
+        if (Math.random() > 0.5) {
+            // Aralarında asal olmayan üret (Ortak bölen ekle)
+            const common = Math.floor(Math.random() * 5) + 2; // 2, 3, 4, 5, 6
+            a = common * (Math.floor(Math.random() * 10) + 2);
+            b = common * (Math.floor(Math.random() * 10) + 2);
+            if (a === b) b += common;
+        } else {
+            // Aralarında asal olma ihtimali yüksek sayılar üret
+            a = Math.floor(Math.random() * 40) + 7;
+            b = Math.floor(Math.random() * 40) + 7;
+        }
+
+        isCoprime = getGCD(a, b) === 1;
+        num1El.textContent = a;
+        num2El.textContent = b;
+
+        const options = [
+            { text: "EVET (Aralarında Asal)", value: true },
+            { text: "HAYIR (Değil)", value: false }
+        ];
+
+        ansContainer.innerHTML = '';
+        options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.style.padding = "15px 25px";
+            btn.style.fontSize = "18px";
+            btn.style.minWidth = "180px";
+            btn.textContent = opt.text;
+
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#cp-answers button').forEach(b => b.disabled = true);
+                
+                if (opt.value === isCoprime) {
+                    btn.classList.add('correct');
+                    score += 20;
+                } else {
+                    btn.classList.add('wrong');
+                }
+                
+                scoreEl.textContent = score;
+                setTimeout(gen, 800);
             };
             ansContainer.appendChild(btn);
         });
