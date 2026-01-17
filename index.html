@@ -106,7 +106,7 @@
 <section id="ortaokul8" class="panel hidden">
 <h2>ORTAOKUL (8. SINIF) OYUNLARI</h2>
 <div class="cards">
-<article class="card"><h3>Asal Sayılar</h3><div class="card-actions"><button class="btn go" data-target="primes">Oyna</button></div></article>
+<article class="card"><h3>Sayıların Çarpanlarını Üslü İfade Şeklinde Yazma</h3><div class="card-actions"><button class="btn go" data-target="factorsGame">Oyna</button></div></article>
 <article class="card"><h3>Çarpanlar</h3><div class="card-actions"><button class="btn go" data-target="factors">Oyna</button></div></article>
 <article class="card"><h3>EBOB / EKOK</h3><div class="card-actions"><button class="btn go" data-target="gcdlcm">Oyna</button></div></article>
 <article class="card"><h3>Denk Kesirler</h3><div class="card-actions"><button class="btn go" data-target="frac6">Oyna</button></div></article>
@@ -621,7 +621,31 @@
     <button class="btn tab" data-target="ortaokul7">Geri</button>
   </div>
 </section>
-  
+
+
+<section id="factorsGame" class="panel hidden">
+  <h2>Sayıların Çarpanlarını Üslü İfade Şeklinde Yazma</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="fact-score">0</span></span>
+      <span>Süre: <span>Sınırsız</span></span>
+    </div>
+    
+    <div class="question-container" style="background: #fdfdfd; padding: 25px; border-radius: 15px; margin-bottom: 20px; text-align: center; border: 3px solid #27ae60;">
+        <div id="fact-question-text" style="font-size: 18px; color: #2c3e50; margin-bottom: 10px;">Aşağıdaki sayının asal çarpanlarına ayrılmış hali hangisidir?</div>
+        <div id="fact-number" style="font-size: 48px; font-weight: bold; color: #27ae60; font-family: 'serif';">60</div>
+    </div>
+
+    <div class="answers" id="fact-answers" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        </div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('factorsGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('factorsGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul8">Geri</button>
+  </div>
+</section>  
   
 <section id="shapes" class="panel hidden">
 <h2>Şekiller Oyunu</h2>
@@ -2468,7 +2492,115 @@ multiStepRationalGame: function() {
     }
     gen();
 },
+
   
+factorsGame: function() {
+    let score = 0;
+    const scoreEl = document.getElementById('fact-score');
+    const numEl = document.getElementById('fact-number');
+    const qTextEl = document.getElementById('fact-question-text');
+    const ansContainer = document.getElementById('fact-answers');
+
+    if (scoreEl) scoreEl.textContent = score;
+
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
+        clearInterval(currentTimer);
+        currentTimer = null;
+    }
+
+    // Sayıyı asal çarpanlarına ayıran fonksiyon
+    function getPrimeFactors(n) {
+        let factors = {};
+        let d = 2;
+        let temp = n;
+        while (temp > 1) {
+            while (temp % d === 0) {
+                factors[d] = (factors[d] || 0) + 1;
+                temp /= d;
+            }
+            d++;
+            if (d * d > temp) {
+                if (temp > 1) factors[temp] = (factors[temp] || 0) + 1;
+                break;
+            }
+        }
+        return factors;
+    }
+
+    // Asal çarpanları üslü stringe çeviren fonksiyon (2² . 3¹ gibi)
+    function formatFactors(factors) {
+        return Object.keys(factors).map(p => {
+            let exp = factors[p];
+            return exp > 1 ? `${p}<sup>${exp}</sup>` : `${p}`;
+        }).join(' . ');
+    }
+
+    const gen = () => {
+        // 12 ile 100 arasında çarpanları güzel olan sayılar
+        const numbers = [12, 18, 20, 24, 30, 36, 40, 45, 48, 50, 60, 72, 80, 90, 100];
+        let n = numbers[Math.floor(Math.random() * numbers.length)];
+        
+        const type = Math.floor(Math.random() * 2); // 0: Çarpan bulma, 1: Üslü gösterim
+        let correctAnsHTML = "";
+        let options = [];
+
+        numEl.textContent = n;
+
+        if (type === 0) {
+            qTextEl.textContent = "Aşağıdakilerden hangisi bu sayının bir çarpanıdır?";
+            let allFactors = [];
+            for(let i=1; i<=n; i++) if(n % i === 0) allFactors.push(i);
+            
+            let correct = allFactors[Math.floor(Math.random() * (allFactors.length - 2)) + 1]; // 1 ve kendisi hariç rastgele
+            correctAnsHTML = correct.toString();
+            options.push(correctAnsHTML);
+
+            while(options.length < 4) {
+                let wrong = Math.floor(Math.random() * 20) + 7;
+                if(n % wrong !== 0 && !options.includes(wrong.toString())) options.push(wrong.toString());
+            }
+        } else {
+            qTextEl.textContent = "Sayının asal çarpanlarının çarpımı şeklinde yazılışı hangisidir?";
+            let factors = getPrimeFactors(n);
+            correctAnsHTML = formatFactors(factors);
+            options.push(correctAnsHTML);
+
+            while(options.length < 4) {
+                let fakeN = n + (Math.random() > 0.5 ? 6 : -4);
+                if(fakeN < 10) fakeN = 15;
+                let fakeFactors = getPrimeFactors(fakeN);
+                let fakeStr = formatFactors(fakeFactors);
+                if(!options.includes(fakeStr)) options.push(fakeStr);
+            }
+        }
+
+        options.sort(() => Math.random() - 0.5);
+
+        ansContainer.innerHTML = '';
+        options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.style.padding = "15px 5px";
+            btn.innerHTML = opt;
+            
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#fact-answers button').forEach(b => b.disabled = true);
+                if (opt === correctAnsHTML) {
+                    btn.classList.add('correct');
+                    score += 25;
+                } else {
+                    btn.classList.add('wrong');
+                }
+                scoreEl.textContent = score;
+                setTimeout(gen, 1000);
+            };
+            ansContainer.appendChild(btn);
+        });
+    }
+
+    gen();
+},  
   
   
   shapes: function() {
