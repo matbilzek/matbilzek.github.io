@@ -96,7 +96,7 @@
 <article class="card"><h3>Tam Sayılarla Toplama ve Çıkarma</h3><div class="card-actions"><button class="btn go" data-target="integerGame">Oyna</button></div></article>
 <article class="card"><h3>Tam Sayılarla Çarpma ve Bölme</h3><div class="card-actions"><button class="btn go" data-target="integerMulDivGame">Oyna</button></div></article>
 <article class="card"><h3>Rasyonel Sayıları Ondalık Sayıya Çevirme</h3><div class="card-actions"><button class="btn go" data-target="rationalToDecimalGame">Oyna</button></div></article>
-<article class="card"><h3>Denk Kesirler</h3><div class="card-actions"><button class="btn go" data-target="frac6">Oyna</button></div></article>
+<article class="card"><h3>Rasyonel Sayılarla Toplama ve Çıkarma</h3><div class="card-actions"><button class="btn go" data-target="rationalOpGame">Oyna</button></div></article>
 <article class="card"><h3>Tam Sayılı → Bileşik</h3><div class="card-actions"><button class="btn go" data-target="mixed">Oyna</button></div></article>
 <article class="card"><h3>Ortalama / Ortanca / Tepe</h3><div class="card-actions"><button class="btn go" data-target="stats">Oyna</button></div></article>
 </div>
@@ -517,6 +517,44 @@
   <div class="game-header controls" style="margin-top:1rem;">
     <button class="btn" onclick="window.renderLeaderboardForGame('rationalToDecimalGame')">En Yüksek Skorlar</button>
     <button class="btn" onclick="window.submitScoreUI('rationalToDecimalGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul7">Geri</button>
+  </div>
+</section>
+
+  
+  <section id="rationalOpGame" class="panel hidden">
+  <h2>Rasyonel Sayılarla Toplama ve Çıkarma</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="ratop-score">0</span></span>
+      <span>Süre: <span>Sınırsız</span></span>
+    </div>
+    
+    <div class="question-container" style="background: #f4f7f6; padding: 25px; border-radius: 15px; margin-bottom: 20px; text-align: center; border: 2px solid #34495e; display: flex; align-items: center; justify-content: center; gap: 15px;">
+        <div class="fraction-box" style="display: flex; flex-direction: column; align-items: center; font-size: 28px; font-weight: bold;">
+            <div id="ratop-n1">1</div>
+            <div style="width: 40px; height: 3px; background: #2c3e50; margin: 2px 0;"></div>
+            <div id="ratop-d1">2</div>
+        </div>
+        
+        <div id="ratop-op" style="font-size: 32px; font-weight: bold;">+</div>
+
+        <div class="fraction-box" style="display: flex; flex-direction: column; align-items: center; font-size: 28px; font-weight: bold;">
+            <div id="ratop-n2">1</div>
+            <div style="width: 40px; height: 3px; background: #2c3e50; margin: 2px 0;"></div>
+            <div id="ratop-d2">4</div>
+        </div>
+
+        <div style="font-size: 32px; font-weight: bold;">= ?</div>
+    </div>
+
+    <div class="answers" id="ratop-answers" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        </div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('rationalOpGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('rationalOpGame')">Bitir ve Skor Gönder</button>
     <button class="btn tab" data-target="ortaokul7">Geri</button>
   </div>
 </section>
@@ -2040,6 +2078,120 @@ integerMulDivGame: function() {
 
     gen();
 },
+
+
+rationalOpGame: function() {
+    let score = 0;
+    const scoreEl = document.getElementById('ratop-score');
+    const n1El = document.getElementById('ratop-n1');
+    const d1El = document.getElementById('ratop-d1');
+    const n2El = document.getElementById('ratop-n2');
+    const d2El = document.getElementById('ratop-d2');
+    const opEl = document.getElementById('ratop-op');
+    const ansContainer = document.getElementById('ratop-answers');
+
+    if (scoreEl) scoreEl.textContent = score;
+
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
+        clearInterval(currentTimer);
+        currentTimer = null;
+    }
+
+    // OBEB (En Büyük Ortak Bölen) hesaplama - Sadeleştirme için
+    function getGCD(a, b) {
+        return b === 0 ? a : getGCD(b, a % b);
+    }
+
+    function gen() {
+        // Paydalar: 2, 3, 4, 5, 6, 8, 10, 12 arasından seçilir
+        const dens = [2, 3, 4, 5, 6, 8, 10, 12];
+        let d1 = dens[Math.floor(Math.random() * dens.length)];
+        let d2;
+        
+        // %60 ihtimalle paydalar eşit veya katı gelsin (Öğretici olması için)
+        if (Math.random() > 0.4) {
+            d2 = d1 * (Math.floor(Math.random() * 2) + 1);
+        } else {
+            d2 = dens[Math.floor(Math.random() * dens.length)];
+        }
+
+        let n1 = Math.floor(Math.random() * 5) + 1;
+        let n2 = Math.floor(Math.random() * 5) + 1;
+        
+        const type = Math.floor(Math.random() * 2); // 0: Toplama, 1: Çıkarma
+        const op = type === 0 ? "+" : "-";
+        opEl.textContent = op;
+
+        // Çıkarmada sonucun negatif çıkmamasını sağlamak için (Başlangıç seviyesi)
+        if (type === 1 && (n1/d1 < n2/d2)) {
+            [n1, n2] = [n2, n1];
+            [d1, d2] = [d2, d1];
+        }
+
+        n1El.textContent = n1; d1El.textContent = d1;
+        n2El.textContent = n2; d2El.textContent = d2;
+
+        // İşlem sonucu hesaplama: (n1*d2 ± n2*d1) / (d1*d2)
+        let resNum = type === 0 ? (n1 * d2 + n2 * d1) : (n1 * d2 - n2 * d1);
+        let resDen = d1 * d2;
+
+        // Sadeleştirme
+        const common = getGCD(resNum, resDen);
+        resNum /= common;
+        resDen /= common;
+
+        const correctAns = `${resNum}/${resDen}`;
+
+        // Şıkları oluştur
+        let opts = [correctAns];
+        while (opts.length < 4) {
+            let wn = resNum + (Math.floor(Math.random() * 3) - 1);
+            let wd = resDen + (Math.floor(Math.random() * 2));
+            if (wn < 1) wn = 1;
+            if (wd < 2) wd = 3;
+            let wAns = `${wn}/${wd}`;
+            if (!opts.includes(wAns)) opts.push(wAns);
+        }
+
+        opts.sort(() => Math.random() - 0.5);
+
+        ansContainer.innerHTML = '';
+        opts.forEach(opt => {
+            const parts = opt.split('/');
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.style.height = "auto";
+            btn.style.padding = "10px";
+            
+            // Buton içine kesir görünümü
+            btn.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <div>${parts[0]}</div>
+                    <div style="width: 25px; height: 2px; background: currentColor; margin: 1px 0;"></div>
+                    <div>${parts[1]}</div>
+                </div>`;
+
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#ratop-answers button').forEach(b => b.disabled = true);
+                
+                if (opt === correctAns) {
+                    btn.classList.add('correct');
+                    score += 30;
+                } else {
+                    btn.classList.add('wrong');
+                }
+                
+                if (scoreEl) scoreEl.textContent = score;
+                setTimeout(gen, 1200);
+            };
+            ansContainer.appendChild(btn);
+        });
+    }
+
+    gen();
+},
+  
 
   
   shapes: function() {
