@@ -17,12 +17,12 @@
 <div class="subbar">
 <div class="tabs">
 <button class="tab active" data-target="home">Ana Sayfa</button>
-<button class="tab" data-target="ilkokul3"><h4>İLKOKUL(3.Sınıf)</h4></button>
-<button class="tab" data-target="ilkokul4">İLKOKUL(4.Sınıf)</button>
-<button class="tab" data-target="ortaokul5">ORTAOKUL(5.Sınıf)</button>
-<button class="tab" data-target="ortaokul6">ORTAOKUL(6.Sınıf)</button>
-<button class="tab" data-target="ortaokul7">ORTAOKUL(7.Sınıf)</button>
-<button class="tab" data-target="ortaokul8">ORTAOKUL(8.Sınıf)</button>
+<button class="tab" data-target="ilkokul3">İLKOKUL (3.Sınıf)</button>
+<button class="tab" data-target="ilkokul4">İLKOKUL (4.Sınıf)</button>
+<button class="tab" data-target="ortaokul5">ORTAOKUL (5.Sınıf)</button>
+<button class="tab" data-target="ortaokul6">ORTAOKUL (6.Sınıf)</button>
+<button class="tab" data-target="ortaokul7">ORTAOKUL (7.Sınıf)</button>
+<button class="tab" data-target="ortaokul8">ORTAOKUL (8.Sınıf)</button>
 <button class="tab" data-target="hafiza">HAFIZA OYUNLARI</button>
 </div>
 </div>
@@ -109,7 +109,7 @@
 <article class="card"><h3>Sayıların Çarpanlarını Üslü İfade Şeklinde Yazma</h3><div class="card-actions"><button class="btn go" data-target="factorsGame">Oyna</button></div></article>
 <article class="card"><h3>EBOB-EKOK Bulma</h3><div class="card-actions"><button class="btn go" data-target="ebobEkokGame">Oyna</button></div></article>
 <article class="card"><h3>Aralarında Asal Olan Sayıyı Bulma</h3><div class="card-actions"><button class="btn go" data-target="coprimeGame">Oyna</button></div></article>
-<article class="card"><h3>Denk Kesirler</h3><div class="card-actions"><button class="btn go" data-target="frac6">Oyna</button></div></article>
+<article class="card"><h3>Tam Sayıların Kuvvetleri</h3><div class="card-actions"><button class="btn go" data-target="integerPowerGame">Oyna</button></div></article>
 <article class="card"><h3>Tam Sayılı → Bileşik</h3><div class="card-actions"><button class="btn go" data-target="mixed">Oyna</button></div></article>
 <article class="card"><h3>Ortalama / Ortanca / Tepe</h3><div class="card-actions"><button class="btn go" data-target="stats">Oyna</button></div></article>
 </div>
@@ -700,6 +700,36 @@
     <button class="btn tab" data-target="ortaokul8">Geri</button>
   </div>
 </section>
+
+
+<section id="integerPowerGame" class="panel hidden">
+  <h2>Tam Sayıların Kuvvetleri</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="pow-score">0</span></span>
+      <span>Süre: <span>Sınırsız</span></span>
+    </div>
+    
+    <div class="question-container" style="background: #2d3436; padding: 40px; border-radius: 15px; margin-bottom: 20px; text-align: center; border: 3px solid #0984e3;">
+        <div id="pow-display" style="font-size: 64px; font-weight: bold; color: #fab1a0; font-family: 'serif'; letter-spacing: 2px;">
+            <span id="pow-base">(-2)</span><sup id="pow-exponent" style="font-size: 36px; color: #74b9ff;">3</sup>
+        </div>
+        <div style="color: #dfe6e9; margin-top: 15px; font-size: 18px;">İşleminin sonucu kaçtır?</div>
+    </div>
+
+    <div class="answers" id="pow-answers" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        </div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('integerPowerGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('integerPowerGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul8">Geri</button>
+  </div>
+</section>
+
+
+
   
 <section id="shapes" class="panel hidden">
 <h2>Şekiller Oyunu</h2>
@@ -2823,6 +2853,108 @@ coprimeGame: function() {
     gen();
 },
 
+
+
+
+  integerPowerGame: function() {
+    let score = 0;
+    const scoreEl = document.getElementById('pow-score');
+    const baseEl = document.getElementById('pow-base');
+    const expEl = document.getElementById('pow-exponent');
+    const ansContainer = document.getElementById('pow-answers');
+
+    if (scoreEl) scoreEl.textContent = score;
+
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
+        clearInterval(currentTimer);
+        currentTimer = null;
+    }
+
+    const gen = () => {
+        // Taban: -5 ile 5 arası (0 hariç)
+        let base = Math.floor(Math.random() * 11) - 5;
+        if (base === 0) base = 2;
+        
+        // Üst: -3 ile 4 arası
+        let exp = Math.floor(Math.random() * 8) - 3;
+        
+        baseEl.textContent = base < 0 ? `(${base})` : base;
+        expEl.textContent = exp;
+
+        let correctAns;
+        let isFraction = false;
+
+        if (exp >= 0) {
+            correctAns = Math.pow(base, exp);
+        } else {
+            // Negatif kuvvet durumu: 1 / base^|exp|
+            isFraction = true;
+            let den = Math.pow(base, Math.abs(exp));
+            // İşareti paya taşıyalım (Matematiksel standart)
+            if (den < 0) {
+                correctAns = `-1/${Math.abs(den)}`;
+            } else {
+                correctAns = `1/${den}`;
+            }
+        }
+
+        // Şıkları oluştur
+        let opts = new Set([correctAns.toString()]);
+        
+        while (opts.size < 4) {
+            let fake;
+            if (isFraction) {
+                let fakeDen = Math.pow(Math.abs(base), Math.abs(exp)) + (Math.floor(Math.random() * 5) - 2);
+                if (fakeDen <= 0) fakeDen = 5;
+                fake = (Math.random() > 0.5 ? "" : "-") + `1/${fakeDen}`;
+            } else {
+                // Yaygın hatalar: Taban*Üst, Ters işaret, veya +-1 fark
+                let errors = [base * exp, -correctAns, correctAns + 1, correctAns - 1];
+                fake = errors[Math.floor(Math.random() * errors.length)].toString();
+            }
+            if (fake !== "NaN") opts.add(fake);
+        }
+
+        let optArr = Array.from(opts).sort(() => Math.random() - 0.5);
+
+        ansContainer.innerHTML = '';
+        optArr.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.style.fontSize = "20px";
+            
+            // Kesirli şık görünümü için düzenleme
+            if (opt.includes('/')) {
+                let parts = opt.split('/');
+                btn.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center;">
+                    <div>${parts[0]}</div>
+                    <div style="width:20px; height:2px; background:currentColor; margin:2px 0;"></div>
+                    <div>${parts[1]}</div>
+                </div>`;
+            } else {
+                btn.textContent = opt > 0 && !opt.includes('-') ? `+${opt}` : opt;
+                if (opt === "0") btn.textContent = "0";
+            }
+
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#pow-answers button').forEach(b => b.disabled = true);
+                
+                if (opt === correctAns.toString()) {
+                    btn.classList.add('correct');
+                    score += 25;
+                } else {
+                    btn.classList.add('wrong');
+                }
+                scoreEl.textContent = score;
+                setTimeout(gen, 1000);
+            };
+            ansContainer.appendChild(btn);
+        });
+    }
+
+    gen();
+},
   
   
   shapes: function() {
