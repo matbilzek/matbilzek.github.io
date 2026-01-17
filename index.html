@@ -94,7 +94,7 @@
 <h2>ORTAOKUL (7. SINIF) OYUNLARI</h2>
 <div class="cards">
 <article class="card"><h3>Tam Sayılarla Toplama ve Çıkarma</h3><div class="card-actions"><button class="btn go" data-target="integerGame">Oyna</button></div></article>
-<article class="card"><h3>Çarpanlar</h3><div class="card-actions"><button class="btn go" data-target="factors">Oyna</button></div></article>
+<article class="card"><h3>Tam Sayılarla Çarpma ve Bölme</h3><div class="card-actions"><button class="btn go" data-target="integerMulDivGame">Oyna</button></div></article>
 <article class="card"><h3>EBOB / EKOK</h3><div class="card-actions"><button class="btn go" data-target="gcdlcm">Oyna</button></div></article>
 <article class="card"><h3>Denk Kesirler</h3><div class="card-actions"><button class="btn go" data-target="frac6">Oyna</button></div></article>
 <article class="card"><h3>Tam Sayılı → Bileşik</h3><div class="card-actions"><button class="btn go" data-target="mixed">Oyna</button></div></article>
@@ -463,6 +463,32 @@
   <div class="game-header controls" style="margin-top:1rem;">
     <button class="btn" onclick="window.renderLeaderboardForGame('integerGame')">En Yüksek Skorlar</button>
     <button class="btn" onclick="window.submitScoreUI('integerGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul7">Geri</button>
+  </div>
+</section>
+
+
+  <section id="integerMulDivGame" class="panel hidden">
+  <h2>Tam Sayılarla Çarpma ve Bölme</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="intmd-score">0</span></span>
+      <span>Süre: <span>Sınırsız</span></span>
+    </div>
+    
+    <div class="question-container" style="background: #1e272e; padding: 30px; border-radius: 15px; margin-bottom: 20px; text-align: center; border: 3px solid #f39c12;">
+        <div id="intmd-question" style="font-size: 38px; font-weight: bold; color: #f1c40f; font-family: 'Courier New', Courier, monospace; letter-spacing: 2px;">
+            (-4) × (+3) = ?
+        </div>
+    </div>
+
+    <div class="answers" id="intmd-answers" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        </div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('integerMulDivGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('integerMulDivGame')">Bitir ve Skor Gönder</button>
     <button class="btn tab" data-target="ortaokul7">Geri</button>
   </div>
 </section>
@@ -1803,6 +1829,97 @@ rectAreaPerimeterGame: function() {
 },
   
 
+integerMulDivGame: function() {
+    let score = 0;
+    const scoreEl = document.getElementById('intmd-score');
+    const questionEl = document.getElementById('intmd-question');
+    const ansContainer = document.getElementById('intmd-answers');
+
+    if (scoreEl) scoreEl.textContent = score;
+
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
+        clearInterval(currentTimer);
+        currentTimer = null;
+    }
+
+    function formatNum(n) {
+        return n >= 0 ? `(+${n})` : `(${n})`;
+    }
+
+    function gen() {
+        const type = Math.floor(Math.random() * 2); // 0: Çarpma, 1: Bölme
+        let a, b, correctAns, opSym;
+
+        if (type === 0) {
+            // Çarpma: -12 ile 12 arası sayılar
+            a = (Math.floor(Math.random() * 25) - 12);
+            b = (Math.floor(Math.random() * 25) - 12);
+            if (a === 0 && b === 0) a = 5; // İkisi birden 0 olmasın
+            opSym = "·"; // Çarpma noktası
+            correctAns = a * b;
+        } else {
+            // Bölme: Tam bölünme garantisi için çarpma üzerinden git
+            let divisor = (Math.floor(Math.random() * 11) - 5); 
+            if (divisor === 0) divisor = 2; // Payda 0 olamaz
+            let result = (Math.floor(Math.random() * 21) - 10);
+            let dividend = divisor * result;
+            
+            a = dividend;
+            b = divisor;
+            opSym = "÷"; // Bölme sembolü
+            correctAns = result;
+        }
+
+        questionEl.textContent = `${formatNum(a)} ${opSym} ${formatNum(b)} = ?`;
+
+        // Şıkları oluşturma
+        let opts = new Set([correctAns]);
+        
+        // İşaret hatası çeldiricisi
+        opts.add(-(correctAns)); 
+        // Toplama/Çıkarma hatası çeldiricileri
+        opts.add(a + b);
+        opts.add(a - b);
+        
+        let optArr = Array.from(opts);
+        while (optArr.length < 4) {
+            let offset = Math.floor(Math.random() * 10) - 5;
+            let wrong = correctAns + (offset === 0 ? 3 : offset);
+            if (!optArr.includes(wrong)) optArr.push(wrong);
+        }
+        
+        optArr = optArr.slice(0, 4).sort(() => Math.random() - 0.5);
+
+        ansContainer.innerHTML = '';
+        optArr.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.style.fontSize = "22px";
+            btn.textContent = o > 0 ? `+${o}` : o;
+            if (o === 0) btn.textContent = "0";
+
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#intmd-answers button').forEach(b => b.disabled = true);
+                
+                if (o === correctAns) {
+                    btn.classList.add('correct');
+                    score += 20;
+                } else {
+                    btn.classList.add('wrong');
+                }
+                
+                if (scoreEl) scoreEl.textContent = score;
+                setTimeout(gen, 1000);
+            };
+            ansContainer.appendChild(btn);
+        });
+    }
+
+    gen();
+},
+
+  
   shapes: function() {
     let score = 0, combo = 0;
     const scoreEl = document.getElementById('shape-score');
