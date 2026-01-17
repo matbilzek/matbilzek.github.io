@@ -2097,45 +2097,45 @@ rationalOpGame: function() {
         currentTimer = null;
     }
 
-    // OBEB (En Büyük Ortak Bölen) hesaplama - Sadeleştirme için
     function getGCD(a, b) {
+        a = Math.abs(a);
+        b = Math.abs(b);
         return b === 0 ? a : getGCD(b, a % b);
     }
 
-    function gen() {
-        // Paydalar: 2, 3, 4, 5, 6, 8, 10, 12 arasından seçilir
+    const gen = () => {
         const dens = [2, 3, 4, 5, 6, 8, 10, 12];
         let d1 = dens[Math.floor(Math.random() * dens.length)];
-        let d2;
+        let d2 = dens[Math.floor(Math.random() * dens.length)];
         
-        // %60 ihtimalle paydalar eşit veya katı gelsin (Öğretici olması için)
-        if (Math.random() > 0.4) {
-            d2 = d1 * (Math.floor(Math.random() * 2) + 1);
-        } else {
-            d2 = dens[Math.floor(Math.random() * dens.length)];
-        }
+        // %50 ihtimalle paydaları eşitle veya katı yap (Öğretici kolaylık)
+        if (Math.random() > 0.5) d2 = d1; 
 
-        let n1 = Math.floor(Math.random() * 5) + 1;
-        let n2 = Math.floor(Math.random() * 5) + 1;
+        let n1 = Math.floor(Math.random() * 6) + 1;
+        let n2 = Math.floor(Math.random() * 6) + 1;
         
         const type = Math.floor(Math.random() * 2); // 0: Toplama, 1: Çıkarma
         const op = type === 0 ? "+" : "-";
-        opEl.textContent = op;
 
-        // Çıkarmada sonucun negatif çıkmamasını sağlamak için (Başlangıç seviyesi)
-        if (type === 1 && (n1/d1 < n2/d2)) {
-            [n1, n2] = [n2, n1];
-            [d1, d2] = [d2, d1];
+        // Çıkarma işleminde negatifliği önlemek için güvenli kontrol
+        if (type === 1) {
+            if ((n1 * d2) < (n2 * d1)) {
+                // Yer değiştir
+                [n1, n2] = [n2, n1];
+                [d1, d2] = [d2, d1];
+            }
+            // Hala eşitlerse (sonuç 0 çıkmasın diye) n1'i artır
+            if (n1 * d2 === n2 * d1) n1++;
         }
 
         n1El.textContent = n1; d1El.textContent = d1;
         n2El.textContent = n2; d2El.textContent = d2;
+        opEl.textContent = op;
 
-        // İşlem sonucu hesaplama: (n1*d2 ± n2*d1) / (d1*d2)
-        let resNum = type === 0 ? (n1 * d2 + n2 * d1) : (n1 * d2 - n2 * d1);
+        // Hesaplama: (n1*d2 ± n2*d1) / (d1*d2)
+        let resNum = (type === 0) ? (n1 * d2 + n2 * d1) : (n1 * d2 - n2 * d1);
         let resDen = d1 * d2;
 
-        // Sadeleştirme
         const common = getGCD(resNum, resDen);
         resNum /= common;
         resDen /= common;
@@ -2145,10 +2145,8 @@ rationalOpGame: function() {
         // Şıkları oluştur
         let opts = [correctAns];
         while (opts.length < 4) {
-            let wn = resNum + (Math.floor(Math.random() * 3) - 1);
-            let wd = resDen + (Math.floor(Math.random() * 2));
-            if (wn < 1) wn = 1;
-            if (wd < 2) wd = 3;
+            let wn = Math.max(1, resNum + (Math.floor(Math.random() * 5) - 2));
+            let wd = Math.max(2, resDen + (Math.floor(Math.random() * 5) - 2));
             let wAns = `${wn}/${wd}`;
             if (!opts.includes(wAns)) opts.push(wAns);
         }
@@ -2161,34 +2159,28 @@ rationalOpGame: function() {
             const btn = document.createElement('button');
             btn.className = 'answer-btn';
             btn.style.height = "auto";
-            btn.style.padding = "10px";
-            
-            // Buton içine kesir görünümü
             btn.innerHTML = `
-                <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="display: flex; flex-direction: column; align-items: center; padding: 5px;">
                     <div>${parts[0]}</div>
-                    <div style="width: 25px; height: 2px; background: currentColor; margin: 1px 0;"></div>
+                    <div style="width: 20px; height: 2px; background: currentColor; margin: 2px 0;"></div>
                     <div>${parts[1]}</div>
                 </div>`;
 
             btn.onclick = () => {
                 if (btn.disabled) return;
                 document.querySelectorAll('#ratop-answers button').forEach(b => b.disabled = true);
-                
                 if (opt === correctAns) {
                     btn.classList.add('correct');
                     score += 30;
                 } else {
                     btn.classList.add('wrong');
                 }
-                
-                if (scoreEl) scoreEl.textContent = score;
-                setTimeout(gen, 1200);
+                scoreEl.textContent = score;
+                setTimeout(gen, 1000);
             };
             ansContainer.appendChild(btn);
         });
     }
-
     gen();
 },
   
