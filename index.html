@@ -3023,14 +3023,33 @@ combinedPowerGame: function() {
         } else {
             hintEl.textContent = "Verilen ifadeye denk olanı bul:";
             const pool = [
+                // 2'nin Kuvvetleri
                 { q: "4<sup>3</sup>", a: "2<sup>6</sup>", w: ["2<sup>7</sup>", "4<sup>2</sup>", "8<sup>3</sup>"] },
+                { q: "16<sup>2</sup>", a: "2<sup>8</sup>", w: ["2<sup>6</sup>", "4<sup>3</sup>", "32<sup>2</sup>"] },
+                { q: "8<sup>4</sup>", a: "2<sup>12</sup>", w: ["2<sup>10</sup>", "4<sup>5</sup>", "16<sup>4</sup>"] },
+                { q: "64<sup>2</sup>", a: "2<sup>12</sup>", w: ["2<sup>10</sup>", "8<sup>3</sup>", "4<sup>8</sup>"] },
+                { q: "32<sup>3</sup>", a: "2<sup>15</sup>", w: ["2<sup>10</sup>", "4<sup>8</sup>", "16<sup>3</sup>"] },
+                { q: "128<sup>2</sup>", a: "2<sup>14</sup>", w: ["2<sup>12</sup>", "2<sup>16</sup>", "16<sup>4</sup>"] },
+                
+                // 3'ün Kuvvetleri
                 { q: "9<sup>2</sup>", a: "3<sup>4</sup>", w: ["3<sup>2</sup>", "9<sup>3</sup>", "27<sup>2</sup>"] },
                 { q: "27<sup>2</sup>", a: "3<sup>6</sup>", w: ["3<sup>5</sup>", "9<sup>4</sup>", "81<sup>2</sup>"] },
-                { q: "16<sup>2</sup>", a: "2<sup>8</sup>", w: ["2<sup>6</sup>", "4<sup>3</sup>", "32<sup>2</sup>"] },
+                { q: "81<sup>2</sup>", a: "3<sup>8</sup>", w: ["3<sup>6</sup>", "27<sup>3</sup>", "9<sup>5</sup>"] },
+                { q: "243<sup>2</sup>", a: "3<sup>10</sup>", w: ["3<sup>8</sup>", "3<sup>12</sup>", "9<sup>4</sup>"] },
+                
+                // 5'in Kuvvetleri
                 { q: "25<sup>3</sup>", a: "5<sup>6</sup>", w: ["5<sup>5</sup>", "125<sup>2</sup>", "5<sup>9</sup>"] },
-                { q: "100<sup>2</sup>", a: "10<sup>4</sup>", w: ["10<sup>3</sup>", "10<sup>6</sup>", "1000<sup>2</sup>"] },
-                { q: "8<sup>2</sup>", a: "2<sup>6</sup>", w: ["2<sup>5</sup>", "4<sup>4</sup>", "2<sup>8</sup>"] },
-                { q: "49<sup>2</sup>", a: "7<sup>4</sup>", w: ["7<sup>3</sup>", "7<sup>6</sup>", "14<sup>2</sup>"] }
+                { q: "125<sup>2</sup>", a: "5<sup>6</sup>", w: ["5<sup>4</sup>", "25<sup>4</sup>", "5<sup>8</sup>"] },
+                { q: "625<sup>2</sup>", a: "5<sup>8</sup>", w: ["5<sup>6</sup>", "25<sup>3</sup>", "125<sup>3</sup>"] },
+                
+                // 10'un Kuvvetleri
+                { q: "100<sup>3</sup>", a: "10<sup>6</sup>", w: ["10<sup>5</sup>", "10<sup>8</sup>", "1000<sup>3</sup>"] },
+                { q: "1000<sup>2</sup>", a: "10<sup>6</sup>", w: ["10<sup>5</sup>", "100<sup>4</sup>", "10<sup>8</sup>"] },
+
+                // Negatif Kuvvet & Rasyonel Dönüşümler
+                { q: "1/9", a: "3<sup>-2</sup>", w: ["3<sup>2</sup>", "9<sup>1</sup>", "3<sup>-3</sup>"] },
+                { q: "1/27", a: "3<sup>-3</sup>", w: ["3<sup>3</sup>", "3<sup>-2</sup>", "9<sup>-2</sup>"] },
+                
             ];
             let target = pool[Math.floor(Math.random() * pool.length)];
             questionEl.innerHTML = `${target.q} = ?`;
