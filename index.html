@@ -110,7 +110,7 @@
 <article class="card"><h3>EBOB-EKOK Bulma</h3><div class="card-actions"><button class="btn go" data-target="ebobEkokGame">Oyna</button></div></article>
 <article class="card"><h3>Aralarında Asal Olan Sayıyı Bulma</h3><div class="card-actions"><button class="btn go" data-target="coprimeGame">Oyna</button></div></article>
 <article class="card"><h3>Tam Sayıların Kuvvetleri</h3><div class="card-actions"><button class="btn go" data-target="integerPowerGame">Oyna</button></div></article>
-<article class="card"><h3>Tam Sayılı → Bileşik</h3><div class="card-actions"><button class="btn go" data-target="mixed">Oyna</button></div></article>
+<article class="card"><h3>Üslü Sayılarla İşlemler</h3><div class="card-actions"><button class="btn go" data-target="combinedPowerGame">Oyna</button></div></article>
 <article class="card"><h3>Ortalama / Ortanca / Tepe</h3><div class="card-actions"><button class="btn go" data-target="stats">Oyna</button></div></article>
 </div>
 <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
@@ -728,7 +728,31 @@
   </div>
 </section>
 
+<section id="combinedPowerGame" class="panel hidden">
+  <h2>Üslü Sayılarla İşlemler</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="comb-score">0</span></span>
+      <span>Süre: <span>Sınırsız</span></span>
+    </div>
+    
+    <div class="question-container" style="background: #1e272e; padding: 35px; border-radius: 20px; margin-bottom: 20px; text-align: center; border: 4px solid #fbc531;">
+        <div id="comb-hint" style="font-size: 18px; color: #f5f6fa; margin-bottom: 15px; opacity: 0.8;">İşlemi yap ve sonucu bul:</div>
+        <div id="comb-question" style="font-size: 42px; font-weight: bold; color: #fbc531; font-family: 'serif';">
+            2<sup>3</sup> · 2<sup>4</sup> = ?
+        </div>
+    </div>
 
+    <div class="answers" id="comb-answers" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        </div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('combinedPowerGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('combinedPowerGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul5">Geri</button>
+  </div>
+</section>
 
   
 <section id="shapes" class="panel hidden">
@@ -2956,6 +2980,93 @@ coprimeGame: function() {
     gen();
 },
   
+
+combinedPowerGame: function() {
+    let score = 0;
+    const scoreEl = document.getElementById('comb-score');
+    const questionEl = document.getElementById('comb-question');
+    const hintEl = document.getElementById('comb-hint');
+    const ansContainer = document.getElementById('comb-answers');
+
+    if (scoreEl) scoreEl.textContent = score;
+
+    // Varsa eski zamanlayıcıları temizle
+    if (typeof currentTimer !== 'undefined' && currentTimer) {
+        clearInterval(currentTimer);
+        currentTimer = null;
+    }
+
+    const gen = () => {
+        // %50 ihtimalle İşlem veya Dönüşüm modunu seç
+        const mode = Math.random() > 0.5 ? 'islem' : 'donusum';
+        let correctStr = "";
+        let opts = [];
+
+        if (mode === 'islem') {
+            hintEl.textContent = "İşlemi yap ve sonucu bul:";
+            let base = [2, 3, 5, 10][Math.floor(Math.random() * 4)];
+            let e1 = Math.floor(Math.random() * 6) + 2;
+            let e2 = Math.floor(Math.random() * 5) + 2;
+            let type = Math.random() > 0.5 ? 'carp' : 'bol';
+
+            if (type === 'carp') {
+                questionEl.innerHTML = `${base}<sup>${e1}</sup> · ${base}<sup>${e2}</sup> = ?`;
+                correctStr = `${base}<sup>${e1 + e2}</sup>`;
+                // Çeldiriciler: Üstleri çarpma, tabanları çarpma, üstleri çıkarma
+                opts = [correctStr, `${base}<sup>${e1 * e2}</sup>`, `${base * 2}<sup>${e1 + e2}</sup>`, `${base}<sup>${Math.abs(e1 - e2)}</sup>` ];
+            } else {
+                questionEl.innerHTML = `${base}<sup>${e1 + e2}</sup> : ${base}<sup>${e1}</sup> = ?`;
+                correctStr = `${base}<sup>${e2}</sup>`;
+                // Çeldiriciler: Üstleri toplama, tabanları bölme, üstleri bölme
+                opts = [correctStr, `${base}<sup>${e1 + e2 + e1}</sup>`, `1<sup>${e2}</sup>`, `${base}<sup>${Math.floor((e1+e2)/e1)}</sup>` ];
+            }
+        } else {
+            hintEl.textContent = "Verilen ifadeye denk olanı bul:";
+            const pool = [
+                { q: "4<sup>3</sup>", a: "2<sup>6</sup>", w: ["2<sup>7</sup>", "4<sup>2</sup>", "8<sup>3</sup>"] },
+                { q: "9<sup>2</sup>", a: "3<sup>4</sup>", w: ["3<sup>2</sup>", "9<sup>3</sup>", "27<sup>2</sup>"] },
+                { q: "27<sup>2</sup>", a: "3<sup>6</sup>", w: ["3<sup>5</sup>", "9<sup>4</sup>", "81<sup>2</sup>"] },
+                { q: "16<sup>2</sup>", a: "2<sup>8</sup>", w: ["2<sup>6</sup>", "4<sup>3</sup>", "32<sup>2</sup>"] },
+                { q: "25<sup>3</sup>", a: "5<sup>6</sup>", w: ["5<sup>5</sup>", "125<sup>2</sup>", "5<sup>9</sup>"] },
+                { q: "100<sup>2</sup>", a: "10<sup>4</sup>", w: ["10<sup>3</sup>", "10<sup>6</sup>", "1000<sup>2</sup>"] },
+                { q: "8<sup>2</sup>", a: "2<sup>6</sup>", w: ["2<sup>5</sup>", "4<sup>4</sup>", "2<sup>8</sup>"] },
+                { q: "49<sup>2</sup>", a: "7<sup>4</sup>", w: ["7<sup>3</sup>", "7<sup>6</sup>", "14<sup>2</sup>"] }
+            ];
+            let target = pool[Math.floor(Math.random() * pool.length)];
+            questionEl.innerHTML = `${target.q} = ?`;
+            correctStr = target.a;
+            opts = [correctStr, ...target.w];
+        }
+
+        // Şıkları karıştır
+        opts.sort(() => Math.random() - 0.5);
+        ansContainer.innerHTML = '';
+
+        opts.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.innerHTML = opt;
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#comb-answers button').forEach(b => b.disabled = true);
+                
+                if (opt === correctStr) {
+                    btn.classList.add('correct');
+                    score += 30;
+                } else {
+                    btn.classList.add('wrong');
+                }
+                scoreEl.textContent = score;
+                setTimeout(gen, 1000);
+            };
+            ansContainer.appendChild(btn);
+        });
+    };
+
+    gen();
+},
+
+
   
   shapes: function() {
     let score = 0, combo = 0;
