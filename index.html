@@ -84,7 +84,7 @@
 <article class="card"><h3>Çarpanlar</h3><div class="card-actions"><button class="btn go" data-target="factors">Oyna</button></div></article>
 <article class="card"><h3>Ortak Bölen / Ortak Kat</h3><div class="card-actions"><button class="btn go" data-target="gcdlcm">Oyna</button></div></article>
 <article class="card"><h3>Denk Kesirleri Bulma</h3><div class="card-actions"><button class="btn go" data-target="equivalentFractionGame">Oyna</button></div></article>
-<article class="card"><h3>Tam Sayılı → Bileşik</h3><div class="card-actions"><button class="btn go" data-target="mixed">Oyna</button></div></article>
+<article class="card"><h3>Tamsayılı'dan Bileşik'e, Bileşik'ten Tamsayılı'ya </h3><div class="card-actions"><button class="btn go" data-target="fractionConvertGame">Oyna</button></div></article>
 <article class="card"><h3>Ortalama / Ortanca / Tepe</h3><div class="card-actions"><button class="btn go" data-target="stats">Oyna</button></div></article>
 </div>
 <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
@@ -420,23 +420,33 @@
   </div>
 </section>
 
-<section id="mixed" class="panel hidden">
-<h2>Tam Sayılı → Bileşik Kesir</h2>
-<div class="game-area">
-<div class="status-row">
-<span>Skor: <span id="mix-score">0</span></span>
-<span>Süre: <span> Sınırsız </span></span>
-</div>
-<div class="question" id="mix-question"></div>
-<div class="answers" id="mix-answers"></div>
-</div>
-<div class="game-header controls" style="margin-top:1rem;">
-<button class="btn" onclick="window.renderLeaderboardForGame('mixed')">En Yüksek Skorlar</button>
-<button class="btn" onclick="window.submitScoreUI('mixed')">Bitir ve Skor Gönder</button>
-<button class="btn tab" data-target="ortaokul6">Geri</button>
-</div>
+<section id="fractionConvertGame" class="panel hidden">
+  <h2>Tamsayılı'dan Bileşik'e, Bileşik'ten Tamsayılı'ya</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="fconv-score">0</span></span>
+      <span>Süre: <span>Sınırsız</span></span>
+    </div>
+    
+    <div class="question-container" style="background: #fff; padding: 30px; border-radius: 20px; margin-bottom: 20px; text-align: center; border: 4px solid #9b59b6; min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div id="fconv-hint" style="font-size: 18px; color: #34495e; margin-bottom: 20px; font-weight: bold;">Bileşik kesre dönüştürünüz:</div>
+        
+        <div id="fconv-display" style="display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: bold; font-family: 'serif'; color: #8e44ad;">
+            </div>
+    </div>
+
+    <div class="answers" id="fconv-answers" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        </div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('fractionConvertGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('fractionConvertGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul5">Geri</button>
+  </div>
 </section>
 
+  
 <section id="stats" class="panel hidden">
 <h2>Ortalama / Ortanca / Tepe Değer</h2>
 <div class="game-area">
@@ -1928,60 +1938,111 @@ equivalentFractionGame: function() {
 },
   
 
-  mixed: function() {
-    let score = 0, combo = 0;
-    const scoreEl = document.getElementById('mix-score');
-    
-    scoreEl.textContent = score;
-    
-     if (typeof currentTimer !== 'undefined' && currentTimer) {
-        clearInterval(currentTimer);
-        currentTimer = null;
-    }
+fractionConvertGame: function() {
+    let score = 0;
+    const scoreEl = document.getElementById('fconv-score');
+    const displayEl = document.getElementById('fconv-display');
+    const hintEl = document.getElementById('fconv-hint');
+    const ansContainer = document.getElementById('fconv-answers');
 
-    function gen() {
-      const tam = Math.floor(Math.random() * 6) + 1;
-      const pay = Math.floor(Math.random() * 8) + 1;
-      const payda = Math.floor(Math.random() * 7) + 3;
-      const correct = `${tam * payda + pay}/${payda}`;
-      let opts = [correct];
-      while (opts.length < 4) {
-        const wrongPay = tam * payda + pay + Math.floor(Math.random() * 9 - 4);
-        const w = `${wrongPay}/${payda}`;
-        if (!opts.includes(w)) opts.push(w);
-      }
-      opts.sort(() => Math.random() - 0.5);
-      
-      document.getElementById('mix-question').innerHTML = `<strong>${tam}</strong> tam <strong>${pay}</strong> bölü <strong>${payda}</strong> bileşik kesire çevir`;
-      
-      const ans = document.getElementById('mix-answers'); ans.innerHTML = '';
-      
-      opts.forEach(o => {
-        const btn = document.createElement('button');
-        btn.className = 'answer-btn';
-        btn.innerHTML = o;
-        btn.onclick = () => {
-          if (btn.disabled) return;
-          document.querySelectorAll('#mix-answers button').forEach(b => b.disabled = true);
-          btn.classList.add(o === correct ? 'correct' : 'wrong');
-          if (o === correct) {
-            score += 10; combo++;
-            if (combo % 3 === 0) score += 15;
-          } else combo = 0;
-          scoreEl.textContent = score;
-          setTimeout(() => {
-            document.querySelectorAll('#mix-answers button').forEach(b => {
-              b.disabled = false; b.classList.remove('correct', 'wrong');
-            });
-            gen();
-          }, 800);
-        };
-        ans.appendChild(btn);
-      });
+    if (scoreEl) scoreEl.textContent = score;
+
+    const gen = () => {
+        const mode = Math.random() > 0.5 ? 'to_improper' : 'to_mixed';
+        let correctStr = "";
+        let opts = [];
+
+        // Rastgele sayılar üret
+        let whole = Math.floor(Math.random() * 5) + 1; // 1-5 arası tam kısım
+        let den = Math.floor(Math.random() * 7) + 2;   // 2-8 arası payda
+        let num = Math.floor(Math.random() * (den - 1)) + 1; // Paydadan küçük pay
+        
+        let improperNum = (whole * den) + num; // Bileşik pay: (Tam * Payda) + Pay
+
+        if (mode === 'to_improper') {
+            hintEl.textContent = "Verilen kesri bileşik kesre dönüştürünüz:";
+            // Ekranda Tam Sayılı Kesir Göster
+            displayEl.innerHTML = `
+                <div style="margin-right: 8px;">${whole}</div>
+                <div style="display: flex; flex-direction: column; align-items: center; font-size: 32px;">
+                    <div>${num}</div>
+                    <div style="width: 40px; height: 3px; background: #8e44ad; margin: 2px 0;"></div>
+                    <div>${den}</div>
+                </div>`;
+            
+            correctStr = `${improperNum}/${den}`;
+            opts = [correctStr, `${improperNum+1}/${den}`, `${whole*den}/${den}`, `${(whole+num)}/${den}`];
+        } else {
+            hintEl.textContent = "Verilen kesri tam sayılı kesre dönüştürünüz:";
+            // Ekranda Bileşik Kesir Göster
+            displayEl.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <div>${improperNum}</div>
+                    <div style="width: 60px; height: 4px; background: #8e44ad; margin: 4px 0;"></div>
+                    <div>${den}</div>
+                </div>`;
+            
+            correctStr = `${whole} tam ${num}/${den}`;
+            opts = [
+                correctStr,
+                `${whole-1} tam ${num+den}/${den}`,
+                `${whole} tam ${num+1}/${den}`,
+                `${num} tam ${whole}/${den}`
+            ];
+        }
+
+        opts.sort(() => Math.random() - 0.5);
+        ansContainer.innerHTML = '';
+
+        opts.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.style.height = "auto";
+            btn.style.padding = "10px";
+            
+            // Şıkların görünümünü düzenle
+            if(opt.includes('tam')) {
+                let p = opt.split(' '); // [whole, "tam", "num/den"]
+                let f = p[2].split('/');
+                btn.innerHTML = `
+                    <div style="display:flex; align-items:center; justify-content:center; gap:5px;">
+                        <span>${p[0]}</span>
+                        <div style="display:flex; flex-direction:column; align-items:center; font-size:0.8em;">
+                            <span>${f[0]}</span>
+                            <div style="width:15px; height:1px; background:currentColor;"></div>
+                            <span>${f[1]}</span>
+                        </div>
+                    </div>`;
+            } else {
+                let f = opt.split('/');
+                btn.innerHTML = `
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <span>${f[0]}</span>
+                        <div style="width:25px; height:2px; background:currentColor; margin:2px 0;"></div>
+                        <span>${f[1]}</span>
+                    </div>`;
+            }
+
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#fconv-answers button').forEach(b => b.disabled = true);
+                if (opt === correctStr) {
+                    btn.classList.add('correct');
+                    score += 25;
+                } else {
+                    btn.classList.add('wrong');
+                }
+                scoreEl.textContent = score;
+                setTimeout(gen, 1000);
+            };
+            ansContainer.appendChild(btn);
+        });
     }
     gen();
-  },
+},
 
+
+  
   stats: function() {
   let score = 0, combo = 0;
   const scoreEl = document.getElementById('stat-score');
