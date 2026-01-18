@@ -83,7 +83,7 @@
 <article class="card"><h3>Asal Sayılar</h3><div class="card-actions"><button class="btn go" data-target="primes">Oyna</button></div></article>
 <article class="card"><h3>Çarpanlar</h3><div class="card-actions"><button class="btn go" data-target="factors">Oyna</button></div></article>
 <article class="card"><h3>Ortak Bölen / Ortak Kat</h3><div class="card-actions"><button class="btn go" data-target="gcdlcm">Oyna</button></div></article>
-<article class="card"><h3>Denk Kesirler</h3><div class="card-actions"><button class="btn go" data-target="frac6">Oyna</button></div></article>
+<article class="card"><h3>Denk Kesirleri Bulma</h3><div class="card-actions"><button class="btn go" data-target="equivalentFractionGame">Oyna</button></div></article>
 <article class="card"><h3>Tam Sayılı → Bileşik</h3><div class="card-actions"><button class="btn go" data-target="mixed">Oyna</button></div></article>
 <article class="card"><h3>Ortalama / Ortanca / Tepe</h3><div class="card-actions"><button class="btn go" data-target="stats">Oyna</button></div></article>
 </div>
@@ -391,21 +391,33 @@
 </div>
 </section>
 
-<section id="frac6" class="panel hidden">
-<h2>Denk Kesirler Oyunu</h2>
-<div class="game-area">
-<div class="status-row">
-<span>Skor: <span id="frac-score">0</span></span>
-<span>Süre: <span> Sınırsız </span></span>
-</div>
-<div class="question" id="frac-question"></div>
-<div class="answers" id="frac-answers"></div>
-</div>
-<div class="game-header controls" style="margin-top:1rem;">
-<button class="btn" onclick="window.renderLeaderboardForGame('frac6')">En Yüksek Skorlar</button>
-<button class="btn" onclick="window.submitScoreUI('frac6')">Bitir ve Skor Gönder</button>
-<button class="btn tab" data-target="ortaokul6">Geri</button>
-</div>
+<section id="equivalentFractionGame" class="panel hidden">
+  <h2>Denk Kesirleri Bulma</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="eqf-score">0</span></span>
+      <span>Süre: <span>Sınırsız</span></span>
+    </div>
+    
+    <div class="question-container" style="background: #f8f9fa; padding: 25px; border-radius: 15px; margin-bottom: 20px; text-align: center; border: 3px solid #3498db; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+        <div id="eqf-type-text" style="font-size: 18px; color: #2c3e50; font-weight: bold;">Bu kesre denk olanı bulunuz:</div>
+        
+        <div style="display: flex; flex-direction: column; align-items: center; font-size: 42px; font-weight: bold; font-family: 'serif'; color: #2980b9;">
+            <div id="eqf-num">3</div>
+            <div style="width: 55px; height: 4px; background: #2c3e50; margin: 4px 0;"></div>
+            <div id="eqf-den">4</div>
+        </div>
+    </div>
+
+    <div class="answers" id="eqf-answers" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        </div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('equivalentFractionGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('equivalentFractionGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul5">Geri</button>
+  </div>
 </section>
 
 <section id="mixed" class="panel hidden">
@@ -1821,56 +1833,100 @@ rectAreaPerimeterGame: function() {
     gen();
   },
 
-  frac6: function() {
-    let score = 0, combo = 0;
-    const scoreEl = document.getElementById('frac-score');
-    
-    scoreEl.textContent = score;
-   
-    if (typeof currentTimer !== 'undefined' && currentTimer) {
-        clearInterval(currentTimer);
-        currentTimer = null;
+
+equivalentFractionGame: function() {
+    let score = 0;
+    const scoreEl = document.getElementById('eqf-score');
+    const numEl = document.getElementById('eqf-num');
+    const denEl = document.getElementById('eqf-den');
+    const typeText = document.getElementById('eqf-type-text');
+    const ansContainer = document.getElementById('eqf-answers');
+
+    if (scoreEl) scoreEl.textContent = score;
+
+    function getGCD(a, b) {
+        return b === 0 ? a : getGCD(b, a % b);
     }
 
-    function gen() {
-      const pay = Math.floor(Math.random() * 10) + 1;
-      const payda = Math.floor(Math.random() * 9) + 2;
-      const carp = Math.floor(Math.random() * 5) + 2;
-      const correct = `${pay * carp}/${payda * carp}`;
-      let opts = [correct];
-      while (opts.length < 4) {
-        const wrongPay = pay * carp + Math.floor(Math.random() * 5 - 2);
-        const w = `${wrongPay}/${payda * carp}`;
-        if (!opts.includes(w)) opts.push(w);
-      }
-      opts.sort(() => Math.random() - 0.5);
-      document.getElementById('frac-question').innerHTML = `${pay}/${payda} ile denk kesir?`;
-      const ans = document.getElementById('frac-answers'); ans.innerHTML = '';
-      opts.forEach(o => {
-        const btn = document.createElement('button');
-        btn.className = 'answer-btn';
-        btn.innerHTML = o;
-        btn.onclick = () => {
-          if (btn.disabled) return;
-          document.querySelectorAll('#frac-answers button').forEach(b => b.disabled = true);
-          btn.classList.add(o === correct ? 'correct' : 'wrong');
-          if (o === correct) {
-            score += 10; combo++;
-            if (combo % 3 === 0) score += 15;
-          } else combo = 0;
-          scoreEl.textContent = score;
-          setTimeout(() => {
-            document.querySelectorAll('#frac-answers button').forEach(b => {
-              b.disabled = false; b.classList.remove('correct', 'wrong');
-            });
-            gen();
-          }, 800);
-        };
-        ans.appendChild(btn);
-      });
+    const gen = () => {
+        const mode = Math.random() > 0.5 ? 'genislet' : 'sadelestir';
+        let n, d, correctN, correctD;
+
+        if (mode === 'genislet') {
+            typeText.textContent = "Kesri genişleterek denk olanı bulunuz:";
+            // Basit kesir seç
+            const base = [[1,2], [2,3], [3,4], [2,5], [3,5], [4,5], [5,6]][Math.floor(Math.random() * 7)];
+            n = base[0]; d = base[1];
+            let factor = Math.floor(Math.random() * 4) + 2; // 2-5 arası katsayı
+            correctN = n * factor;
+            correctD = d * factor;
+        } else {
+            typeText.textContent = "Kesri sadeleştirerek denk olanı bulunuz:";
+            // Sadeleşebilir büyük kesir üret
+            let factor = Math.floor(Math.random() * 4) + 2;
+            let sn = Math.floor(Math.random() * 5) + 1;
+            let sd = sn + (Math.floor(Math.random() * 4) + 1);
+            n = sn * factor;
+            d = sd * factor;
+            // En sade halini veya bir alt sade halini cevap yap
+            const common = getGCD(n, d);
+            correctN = n / common;
+            correctD = d / common;
+        }
+
+        numEl.textContent = n;
+        denEl.textContent = d;
+        const correctStr = `${correctN}/${correctD}`;
+
+        // Şık Havuzu
+        let opts = [correctStr];
+        while (opts.length < 4) {
+            let wn, wd;
+            let err = Math.random();
+            if (err < 0.33) {
+                wn = correctN + 1; wd = correctD; // Pay hatası
+            } else if (err < 0.66) {
+                wn = correctN; wd = correctD + 1; // Payda hatası
+            } else {
+                wn = n + 2; wd = d + 2; // Toplama hatası
+            }
+            let wStr = `${wn}/${wd}`;
+            if (!opts.includes(wStr)) opts.push(wStr);
+        }
+
+        opts.sort(() => Math.random() - 0.5);
+        ansContainer.innerHTML = '';
+
+        opts.forEach(opt => {
+            const parts = opt.split('/');
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.style.height = "auto";
+            btn.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; padding: 5px;">
+                    <div>${parts[0]}</div>
+                    <div style="width: 25px; height: 2px; background: currentColor; margin: 2px 0;"></div>
+                    <div>${parts[1]}</div>
+                </div>`;
+            
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#eqf-answers button').forEach(b => b.disabled = true);
+                if (opt === correctStr) {
+                    btn.classList.add('correct');
+                    score += 25;
+                } else {
+                    btn.classList.add('wrong');
+                }
+                scoreEl.textContent = score;
+                setTimeout(gen, 1000);
+            };
+            ansContainer.appendChild(btn);
+        });
     }
     gen();
-  },
+},
+  
 
   mixed: function() {
     let score = 0, combo = 0;
