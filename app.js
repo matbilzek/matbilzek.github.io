@@ -209,6 +209,11 @@
       initFirebaseIfConfigured().then(ok=> { if(ok) console.log('Firebase ready'); else console.log('Firebase failed to init'); });
     }
 
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    alert("İçerik koruması nedeniyle sağ tık devre dışı bırakılmıştır.");
+});
+    
     // start at home
     showPanel('home');
   }); // DOMContentLoaded
