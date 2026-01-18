@@ -85,7 +85,7 @@
 <article class="card"><h3>Ortak Bölen / Ortak Kat</h3><div class="card-actions"><button class="btn go" data-target="gcdlcm">Oyna</button></div></article>
 <article class="card"><h3>Denk Kesirleri Bulma</h3><div class="card-actions"><button class="btn go" data-target="equivalentFractionGame">Oyna</button></div></article>
 <article class="card"><h3>Tamsayılı'dan Bileşik'e, Bileşik'ten Tamsayılı'ya </h3><div class="card-actions"><button class="btn go" data-target="fractionConvertGame">Oyna</button></div></article>
-<article class="card"><h3>Ortalama / Ortanca / Tepe</h3><div class="card-actions"><button class="btn go" data-target="stats">Oyna</button></div></article>
+<article class="card"><h3>Aritmetik Ortalama, Tepe Değer, Ortanca, Açıklık</h3><div class="card-actions"><button class="btn go" data-target="dataAnalysisGame">Oyna</button></div></article>
 </div>
 <div class="back"><button class="btn tab" data-target="home">Geri</button></div>
 </section>
@@ -447,23 +447,35 @@
 </section>
 
   
-<section id="stats" class="panel hidden">
-<h2>Ortalama / Ortanca / Tepe Değer</h2>
-<div class="game-area">
-<div class="status-row">
-<span>Skor: <span id="stat-score">0</span></span>
-<span>Süre: <span> Sınırsız </span></span>
-</div>
-<div class="question" id="stat-question"></div>
-<div class="answers" id="stat-answers"></div>
-</div>
-<div class="game-header controls" style="margin-top:1rem;">
-<button class="btn" onclick="window.renderLeaderboardForGame('stats')">En Yüksek Skorlar</button>
-<button class="btn" onclick="window.submitScoreUI('stats')">Bitir ve Skor Gönder</button>
-<button class="btn tab" data-target="ortaokul6">Geri</button>
-</div>
+<section id="dataAnalysisGame" class="panel hidden">
+  <h2>Artimetik Ortalama, Mod, Medyan, Açıklık</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="data-score">0</span></span>
+      <span>Süre: <span>Sınırsız</span></span>
+    </div>
+    
+    <div class="question-container" style="background: #fdfdfd; padding: 25px; border-radius: 20px; margin-bottom: 20px; text-align: center; border: 3px solid #16a085;">
+        <div id="data-hint" style="font-size: 18px; color: #2c3e50; margin-bottom: 15px; font-weight: bold;">Veri grubunun Açıklığı kaçtır?</div>
+        
+        <div id="data-set" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
+            </div>
+
+        <div style="font-size: 24px; color: #16a085; font-weight: bold;">↔</div>
+    </div>
+
+    <div class="answers" id="data-answers" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        </div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('dataAnalysisGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('dataAnalysisGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul5">Geri</button>
+  </div>
 </section>
 
+  
 <section id="integerGame" class="panel hidden">
   <h2>Tam Sayılarla Toplama ve Çıkarma</h2>
   <div class="game-area">
@@ -2042,115 +2054,92 @@ fractionConvertGame: function() {
 },
 
 
-  
-  stats: function() {
-  let score = 0, combo = 0;
-  const scoreEl = document.getElementById('stat-score');
-  
-  scoreEl.textContent = score;
-  
-   if (typeof currentTimer !== 'undefined' && currentTimer) {
-        clearInterval(currentTimer);
-        currentTimer = null;
-    }
-    
-  // Tepe değer bul: en çok tekrar eden sayılar (çoklu olabilir)
-  const getModes = arr => {
-    const freq = {};
-    arr.forEach(n => freq[n] = (freq[n] || 0) + 1);
-    let maxCount = 0;
-    for (let num in freq) {
-      if (freq[num] > maxCount) maxCount = freq[num];
-    }
-    // Maksimum tekrar sayısı 1 ise → Yok
-    if (maxCount === 1) return ['Yok'];
-    // En yüksek tekrara sahip tüm sayıları topla
-    const modes = [];
-    for (let num in freq) {
-      if (freq[num] === maxCount) modes.push(num);
-    }
-    // Sıralı olsun diye sort yap
-    return modes.sort((a, b) => a - b);
-  };
-  const mean = arr => (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1);
-  const median = arr => {
-    const s = [...arr].sort((a,b)=>a-b);
-    const m = Math.floor(s.length/2);
-    return s.length % 2 === 0 ? ((s[m-1] + s[m]) / 2).toFixed(1) : s[m];
-  };
-  function gen() {
-    // 5-8 tane doğal sayı
-    const nums = Array.from({length: Math.floor(Math.random() * 4) + 5}, () => Math.floor(Math.random() * 20) + 1);
-    const type = Math.floor(Math.random() * 3);
-    let correct, qType;
-    if (type === 0) {
-      correct = mean(nums); // sayı veya x.x formatında string
-      qType = 'Aritmetik Ortalama';
-    } else if (type === 1) {
-      correct = median(nums);
-      qType = 'Ortanca';
-    } else {
-      const modes = getModes(nums);
-      // Doğru cevap: "Yok" ya da "3 ve 5" gibi birleştirilmiş string
-      correct = modes.length === 1 && modes[0] === 'Yok' ? 'Yok' : modes.join(' ve ');
-      qType = 'Tepe Değer';
-    }
-    // Seçenekler oluştur
-    let opts = [correct.toString()];
-    while (opts.length < 4) {
-      let w;
-      if (qType === 'Tepe Değer') {
-        // Tepe için mantıklı yanlış seçenekler
-        if (Math.random() < 0.3 && !opts.includes('Yok')) {
-          w = 'Yok';
-        } else {
-          // Rastgele bir sayı veya yanlış birleştirme
-          const randomNum = Math.floor(Math.random() * 20) + 1;
-          const another = Math.floor(Math.random() * 20) + 1;
-          w = randomNum === another ? randomNum.toString() : `${randomNum} ve ${another}`;
-        }
-      } else {
-        // Ortalama ve ortanca için
-        w = (parseFloat(correct) + (Math.random() * 4 - 2)).toFixed(1);
-      }
-      if (!opts.includes(w)) opts.push(w);
-    }
-    opts.sort(() => Math.random() - 0.5);
-    document.getElementById('stat-question').textContent =
-      `${nums.join(', ')} sayılarının ${qType}?`;
-    const ans = document.getElementById('stat-answers');
-    ans.innerHTML = '';
-    opts.forEach(o => {
-      const btn = document.createElement('button');
-      btn.className = 'answer-btn';
-      btn.textContent = o;
-      btn.onclick = () => {
-        if (btn.disabled) return;
-        document.querySelectorAll('#stat-answers button').forEach(b => b.disabled = true);
-        // Doğru kontrol: string karşılaştırma
-        const isCorrect = o === correct.toString();
-        btn.classList.add(isCorrect ? 'correct' : 'wrong');
-        if (isCorrect) {
-          score += 10; combo++;
-          if (combo % 3 === 0) score += 15;
-        } else {
-          combo = 0;
-        }
-        scoreEl.textContent = score;
-        setTimeout(() => {
-          document.querySelectorAll('#stat-answers button').forEach(b => {
-            b.disabled = false;
-            b.classList.remove('correct', 'wrong');
-          });
-          gen();
-        }, 800);
-      };
-      ans.appendChild(btn);
-    });
-  }
-  gen();
-},
+  dataAnalysisGame: function() {
+    let score = 0;
+    const scoreEl = document.getElementById('data-score');
+    const setEl = document.getElementById('data-set');
+    const hintEl = document.getElementById('data-hint');
+    const ansContainer = document.getElementById('data-answers');
 
+    if (scoreEl) scoreEl.textContent = score;
+
+    const gen = () => {
+        let size = Math.random() > 0.5 ? 5 : 7;
+        let data = [];
+        for (let i = 0; i < size; i++) data.push(Math.floor(Math.random() * 25) + 1);
+
+        // Soruyu belirle (0: Ortalama, 1: Mod, 2: Medyan, 3: Açıklık)
+        const mode = Math.floor(Math.random() * 4);
+        let correct;
+
+        setEl.innerHTML = '';
+        data.forEach(num => {
+            const div = document.createElement('div');
+            div.style = "background: #16a085; color: white; padding: 10px 15px; border-radius: 8px; font-weight: bold; font-size: 20px; min-width: 40px;";
+            div.textContent = num;
+            setEl.appendChild(div);
+        });
+
+        if (mode === 0) {
+            hintEl.textContent = "Veri grubunun Aritmetik Ortalaması kaçtır?";
+            let sum = data.reduce((a, b) => a + b, 0);
+            while (sum % size !== 0) { // Tam sayı çıksın diye düzenleme
+                data[0]++;
+                sum = data.reduce((a, b) => a + b, 0);
+                setEl.children[0].textContent = data[0];
+            }
+            correct = sum / size;
+        } else if (mode === 1) {
+            hintEl.textContent = "Veri grubunun Tepe Değeri (Mod) kaçtır?";
+            data[0] = data[1]; // Mod oluşmasını garanti et
+            setEl.children[0].textContent = data[0];
+            let counts = {};
+            data.forEach(x => counts[x] = (counts[x] || 0) + 1);
+            let maxCount = Math.max(...Object.values(counts));
+            correct = parseInt(Object.keys(counts).find(key => counts[key] === maxCount));
+        } else if (mode === 2) {
+            hintEl.textContent = "Veri grubunun Ortancası (Medyan) kaçtır?";
+            let sorted = [...data].sort((a, b) => a - b);
+            correct = sorted[Math.floor(size / 2)];
+        } else {
+            hintEl.textContent = "Veri grubunun Açıklığı (Aralık) kaçtır?";
+            let max = Math.max(...data);
+            let min = Math.min(...data);
+            correct = max - min;
+        }
+
+        // Şıkları oluştur
+        let opts = new Set([correct]);
+        while (opts.size < 4) {
+            let fake = correct + (Math.floor(Math.random() * 10) - 5);
+            if (fake >= 0 && fake !== correct) opts.add(fake);
+        }
+
+        let optArr = Array.from(opts).sort(() => Math.random() - 0.5);
+        ansContainer.innerHTML = '';
+
+        optArr.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.textContent = opt;
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#data-answers button').forEach(b => b.disabled = true);
+                if (opt === correct) {
+                    btn.classList.add('correct');
+                    score += 30;
+                } else {
+                    btn.classList.add('wrong');
+                }
+                scoreEl.textContent = score;
+                setTimeout(gen, 1000);
+            };
+            ansContainer.appendChild(btn);
+        });
+    }
+    gen();
+},
+  
 
   integerGame: function() {
     let score = 0;
