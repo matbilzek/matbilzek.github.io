@@ -1502,7 +1502,7 @@ parallelLinesGame: function() {
             hintEl.innerHTML = `<b>İç Ters (Z) Kuralı:</b><br>m(EKB) = ${angleValue}° ise <b>m(KLC) = ?</b>`;
             svgEl.innerHTML += `<text x="175" y="65" fill="#27ae60" font-weight="bold">${angleValue}°</text>`;
             svgEl.innerHTML += `<text x="180" y="165" fill="#e67e22" font-weight="bold">?</text>`;
-            correct = angleValue;
+            correct = 180 - angleValue;
         } 
         else if (type === 1) { // F KURALI (Yöndeş)
             // Örn: EKB açısı ile KLD açısı
