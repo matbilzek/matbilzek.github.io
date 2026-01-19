@@ -265,20 +265,19 @@
   </div>
 </section>
 
-
 <section id="parallelLinesGame" class="panel hidden">
-  <h2>Düzlemde Üç Doğrunun Açılarının Belirlenmesi</h2>
+  <h2>Açı İlişkileri Atölyesi</h2>
   <div class="game-area">
     <div class="status-row">
       <span>Skor: <span id="par-score">0</span></span>
       <span>Süre: <span>Sınırsız</span></span>
     </div>
     
-    <div class="question-container" style="background: #fdfdfd; padding: 15px; border-radius: 20px; margin-bottom: 20px; text-align: center; border: 3px solid #e67e22;">
-        <div id="par-hint" style="font-size: 18px; color: #2c3e50; margin-bottom: 10px; font-weight: bold;">? ile gösterilen açının değeri kaç derecedir?</div>
+    <div class="question-container" style="background: #fdfdfd; padding: 15px; border-radius: 20px; margin-bottom: 20px; text-align: center; border: 3px solid #2980b9;">
+        <div id="par-hint" style="font-size: 17px; color: #2c3e50; margin-bottom: 10px; min-height: 45px; font-weight: bold;">Soru yükleniyor...</div>
         
-        <div style="background: white; border-radius: 10px; margin: 10px 0; display: flex; justify-content: center; align-items: center; padding: 10px;">
-            <svg id="par-svg" width="320" height="240" viewBox="0 0 320 240">
+        <div style="background: white; border-radius: 10px; margin: 10px 0; display: flex; justify-content: center; align-items: center; padding: 10px; border: 1px inset #eee;">
+            <svg id="par-svg" width="350" height="250" viewBox="0 0 350 250">
                 </svg>
         </div>
     </div>
@@ -286,13 +285,7 @@
     <div class="answers" id="par-answers" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
         </div>
   </div>
-
-  <div class="game-header controls" style="margin-top:1rem;">
-    <button class="btn" onclick="window.renderLeaderboardForGame('parallelLinesGame')">En Yüksek Skorlar</button>
-    <button class="btn" onclick="window.submitScoreUI('parallelLinesGame')">Bitir ve Skor Gönder</button>
-    <button class="btn tab" data-target="ortaokul5">Geri</button>
-  </div>
-</section>  
+</section>
 
   
 <section id="triangleCircleGame" class="panel hidden">
@@ -1477,53 +1470,66 @@ parallelLinesGame: function() {
 
     const gen = () => {
         svgEl.innerHTML = '';
-        const angleValue = Math.floor(Math.random() * 80) + 40; // 40-120 derece arası
-        const type = Math.floor(Math.random() * 4); // 0:Yöndeş, 1:İç Ters (Z), 2:Karşı Durumlu (U), 3:Ters Açı
+        const gameType = Math.floor(Math.random() * 3); // 0: Paralel, 1: Tümler, 2: Bütünler
+        let correct, angleVal;
 
-        // Çizim Sabitleri
-        const y1 = 70, y2 = 170; // Paralel doğruların Y koordinatları
-        const xStart = 40, xEnd = 280;
+        if (gameType === 0) {
+            // --- PARALEL DOĞRULAR MODU ---
+            angleVal = Math.floor(Math.random() * 60) + 50;
+            const scenarios = [
+                { name: "Z Kuralı (İç Ters)", q: "AKB", a: "KLD", same: true },
+                { name: "F Kuralı (Yöndeş)", q: "GKB", a: "KLD", same: true },
+                { name: "U Kuralı (Karşı Durumlu)", q: "BKL", a: "KLD", same: false }
+            ];
+            const s = scenarios[Math.floor(Math.random() * scenarios.length)];
+            
+            // Çizim (Paralel d1, d2 ve Kesen t)
+            svgEl.innerHTML += `<line x1="50" y1="80" x2="300" y2="80" stroke="#2c3e50" stroke-width="3" />`;
+            svgEl.innerHTML += `<line x1="50" y1="180" x2="300" y2="180" stroke="#2c3e50" stroke-width="3" />`;
+            svgEl.innerHTML += `<line x1="120" y1="30" x2="250" y2="230" stroke="#c0392b" stroke-width="2" />`;
+            
+            // Etiketler
+            svgEl.innerHTML += `<text x="140" y="70" fill="#27ae60" font-weight="bold">${angleVal}°</text>`;
+            svgEl.innerHTML += `<text x="210" y="175" fill="#e67e22" font-weight="bold">?</text>`;
+            
+            hintEl.innerHTML = `<b>${s.name}</b> kuralına göre;<br>İşaretli açılardan biri ${angleVal}° ise <b>"?"</b> kaçtır?`;
+            correct = s.same ? angleVal : 180 - angleVal;
 
-        // Paralel Doğruları Çiz
-        svgEl.innerHTML += `<line x1="${xStart}" y1="${y1}" x2="${xEnd}" y2="${y1}" stroke="#2c3e50" stroke-width="3" />`;
-        svgEl.innerHTML += `<line x1="${xStart}" y1="${y2}" x2="${xEnd}" y2="${y2}" stroke="#2c3e50" stroke-width="3" />`;
-        svgEl.innerHTML += `<text x="${xEnd+5}" y="${y1}" font-size="12">d1</text>`;
-        svgEl.innerHTML += `<text x="${xEnd+5}" y="${y2}" font-size="12">d2</text>`;
+        } else if (gameType === 1) {
+            // --- TÜMLER AÇI MODU ---
+            angleVal = Math.floor(Math.random() * 50) + 20; // 20-70 arası
+            correct = 90 - angleVal;
+            
+            // Çizim (Dik Açı)
+            svgEl.innerHTML += `<line x1="100" y1="200" x2="250" y2="200" stroke="#2c3e50" stroke-width="4" />`;
+            svgEl.innerHTML += `<line x1="100" y1="200" x2="100" y2="50" stroke="#2c3e50" stroke-width="4" />`;
+            svgEl.innerHTML += `<line x1="100" y1="200" x2="220" y2="80" stroke="#c0392b" stroke-width="2" />`;
+            // Diklik sembolü
+            svgEl.innerHTML += `<rect x="100" y="190" width="10" height="10" fill="none" stroke="#2c3e50" />`;
+            svgEl.innerHTML += `<circle cx="105" cy="195" r="1" fill="#2c3e50" />`;
 
-        // Kesen Doğruyu Çiz
-        svgEl.innerHTML += `<line x1="100" y1="30" x2="220" y2="210" stroke="#c0392b" stroke-width="2" />`;
+            svgEl.innerHTML += `<text x="130" y="185" fill="#27ae60" font-weight="bold">${angleVal}°</text>`;
+            svgEl.innerHTML += `<text x="110" y="140" fill="#e67e22" font-weight="bold">?</text>`;
+            
+            hintEl.innerHTML = `Birbirini <b>90°'ye tamamlayan (Tümler)</b> iki açıdan biri ${angleVal}° ise diğeri (<b>?</b>) kaçtır?`;
 
-        let correct;
-        let qPos = {}, aPos = {};
+        } else {
+            // --- BÜTÜNLER AÇI MODU ---
+            angleVal = Math.floor(Math.random() * 100) + 40; // 40-140 arası
+            correct = 180 - angleVal;
 
-        // Soru Tiplerine Göre Açı Pozisyonları ve Değerleri
-        if (type === 0) { // Yöndeş (F Kuralı)
-            hintEl.textContent = "Yöndeş açı kuralına göre ? kaçtır?";
-            qPos = {x: 145, y: 65, val: angleValue};
-            aPos = {x: 210, y: 165};
-            correct = angleValue;
-        } else if (type === 1) { // İç Ters (Z Kuralı)
-            hintEl.textContent = "İç ters (Z) açı kuralına göre ? kaçtır?";
-            qPos = {x: 145, y: 65, val: angleValue};
-            aPos = {x: 160, y: 165};
-            correct = angleValue;
-        } else if (type === 2) { // Karşı Durumlu (U Kuralı)
-            hintEl.textContent = "Karşı durumlu (U) açı kuralına göre ? kaçtır?";
-            qPos = {x: 145, y: 65, val: angleValue};
-            aPos = {x: 210, y: 165};
-            correct = 180 - angleValue;
-        } else { // Ters Açılar
-            hintEl.textContent = "Ters açı kuralına göre ? kaçtır?";
-            qPos = {x: 145, y: 65, val: angleValue};
-            aPos = {x: 100, y: 85};
-            correct = angleValue;
+            // Çizim (Doğru Açı)
+            svgEl.innerHTML += `<line x1="50" y1="200" x2="300" y2="200" stroke="#2c3e50" stroke-width="4" />`;
+            svgEl.innerHTML += `<line x1="175" y1="200" x2="100" y2="80" stroke="#c0392b" stroke-width="2" />`;
+            
+            svgEl.innerHTML += `<text x="90" y="185" fill="#27ae60" font-weight="bold">${angleVal}°</text>`;
+            svgEl.innerHTML += `<text x="210" y="185" fill="#e67e22" font-weight="bold">?</text>`;
+            
+            hintEl.innerHTML = `Birbirini <b>180°'ye tamamlayan (Bütünler)</b> iki açıdan biri ${angleVal}° ise diğeri (<b>?</b>) kaçtır?`;
         }
 
-        // Değerleri Ekrana Yaz
-        svgEl.innerHTML += `<text x="${qPos.x}" y="${qPos.y}" fill="#27ae60" font-weight="bold">${angleValue}°</text>`;
-        svgEl.innerHTML += `<text x="${aPos.x}" y="${aPos.y}" fill="#e67e22" font-weight="bold">?</text>`;
-
-        let opts = [correct, 180 - correct, angleValue + 10, 180 - angleValue - 10];
+        // Şıkları Oluştur
+        let opts = [correct, Math.abs(90 - correct), Math.abs(180 - correct), angleVal + 10];
         opts = [...new Set(opts)].sort(() => Math.random() - 0.5);
 
         ansContainer.innerHTML = '';
@@ -1547,7 +1553,8 @@ parallelLinesGame: function() {
         });
     };
     gen();
-},
+},  
+
   
   
 triangleCircleGame: function() {
