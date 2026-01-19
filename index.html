@@ -1499,21 +1499,21 @@ parallelLinesGame: function() {
         // --- ÜÇ HARFLİ SENARYOLAR ---
         if (type === 0) { // Z KURALI (İç Ters)
             // Örn: EKB açısı ile KLC açısı
-            hintEl.innerHTML = `<b>İç Ters (Z) Kuralı:</b><br>m(EKB) = ${angleValue}° ise <b>m(KLC) = ?</b>`;
+            hintEl.innerHTML = `<b>.</b><br>m(EKB) = ${angleValue}° ise <b>m(KLC) = ?</b>`;
             svgEl.innerHTML += `<text x="175" y="65" fill="#27ae60" font-weight="bold">${angleValue}°</text>`;
             svgEl.innerHTML += `<text x="180" y="165" fill="#e67e22" font-weight="bold">?</text>`;
             correct = 180 - angleValue;
         } 
         else if (type === 1) { // F KURALI (Yöndeş)
             // Örn: EKB açısı ile KLD açısı
-            hintEl.innerHTML = `<b>Yöndeş (F) Kuralı:</b><br>m(EKB) = ${angleValue}° ise <b>m(KLD) = ?</b>`;
+            hintEl.innerHTML = `<b>.</b><br>m(EKB) = ${angleValue}° ise <b>m(KLD) = ?</b>`;
             svgEl.innerHTML += `<text x="175" y="65" fill="#27ae60" font-weight="bold">${angleValue}°</text>`;
             svgEl.innerHTML += `<text x="230" y="165" fill="#e67e22" font-weight="bold">?</text>`;
             correct = angleValue;
         } 
         else { // U KURALI (Karşı Durumlu)
             // Örn: AKF açısı ile KLC açısı (İç tarafa bakanlar)
-            hintEl.innerHTML = `<b>Karşı Durumlu (U) Kuralı:</b><br>m(AKF) = ${angleValue}° ise <b>m(KLC) = ?</b>`;
+            hintEl.innerHTML = `<b>.</b><br>m(AKF) = ${angleValue}° ise <b>m(KLC) = ?</b>`;
             svgEl.innerHTML += `<text x="130" y="90" fill="#27ae60" font-weight="bold">${angleValue}°</text>`;
             svgEl.innerHTML += `<text x="180" y="165" fill="#e67e22" font-weight="bold">?</text>`;
             correct = 180 - angleValue;
