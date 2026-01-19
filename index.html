@@ -69,6 +69,7 @@
 <div class="cards">
 <article class="card"><h3>Geometri Oyunu</h3><div class="card-actions"><button class="btn go" data-target="geometryGame">Oyna</button></div></article>
 <article class="card"><h3>Açı Tahmin Oyunu</h3><div class="card-actions"><button class="btn go" data-target="angleGame">Oyna</button></div></article>
+<article class="card"><h3>Düzlemde İki veya Üç Doğrunun Birbirine Göre Durumu</h3><div class="card-actions"><button class="btn go" data-target="angleNamingGame">Oyna</button></div></article>
 <article class="card"><h3>Çemberden Üçgene </h3><div class="card-actions"><button class="btn go" data-target="triangleCircleGame">Oyna</button></div></article>
 <article class="card"><h3>Çok Basamaklı Sayılar</h3><div class="card-actions"><button class="btn go" data-target="numberGame">Oyna</button></div></article>
 <article class="card"><h3>Doğal Sayılarla Problemler</h3><div class="card-actions"><button class="btn go" data-target="problemGame">Oyna</button></div></article>
@@ -235,6 +236,35 @@
   </div>
 </section>
 
+<section id="angleNamingGame" class="panel hidden">
+  <h2>Düzlemde İki veya Üç Doğrunun Birbirine Göre Durumu</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="ang-score">0</span></span>
+      <span>Süre: <span>Sınırsız</span></span>
+    </div>
+    
+    <div class="question-container" style="background: #fdfdfd; padding: 15px; border-radius: 20px; margin-bottom: 20px; text-align: center; border: 3px solid #34495e;">
+        <div id="ang-hint" style="font-size: 18px; color: #2c3e50; margin-bottom: 10px; font-weight: bold;">Kırmızı ile gösterilen açının ismi hangisidir?</div>
+        
+        <div style="background: white; border-radius: 10px; margin: 10px 0; display: flex; justify-content: center; align-items: center; padding: 10px;">
+            <svg id="ang-svg" width="300" height="250" viewBox="0 0 350 300">
+                </svg>
+        </div>
+    </div>
+
+    <div class="answers" id="ang-answers" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        </div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('angleNamingGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('angleNamingGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul5">Geri</button>
+  </div>
+</section>
+
+  
 <section id="triangleCircleGame" class="panel hidden">
   <h2>Çember ve Üçgen İlişkisi</h2>
   <div class="game-area">
@@ -1326,6 +1356,89 @@ division: function() {
 },
 
 
+angleNamingGame: function() {
+    let score = 0;
+    const scoreEl = document.getElementById('ang-score');
+    const svgEl = document.getElementById('ang-svg');
+    const ansContainer = document.getElementById('ang-answers');
+
+    const gen = () => {
+        svgEl.innerHTML = '';
+        // Sabit noktalar (Kesişen iki doğru modeli)
+        // Doğru 1: (50, 150) - (300, 150) -> Noktalar: A, B(Merkez), C
+        // Doğru 2: (100, 50) - (250, 250) -> Noktalar: D, B(Merkez), E
+        const pts = {
+            A: {x: 50, y: 150},
+            B: {x: 175, y: 150}, // Kesişim noktası
+            C: {x: 300, y: 150},
+            D: {x: 100, y: 60},
+            E: {x: 250, y: 240}
+        };
+
+        // Doğruları Çiz
+        const line1 = `<line x1="${pts.A.x}" y1="${pts.A.y}" x2="${pts.C.x}" y2="${pts.C.y}" stroke="#34495e" stroke-width="3" />`;
+        const line2 = `<line x1="${pts.D.x}" y1="${pts.D.y}" x2="${pts.E.x}" y2="${pts.E.y}" stroke="#34495e" stroke-width="3" />`;
+        svgEl.innerHTML += line1 + line2;
+
+        // Noktaları ve İsimlerini Çiz
+        Object.keys(pts).forEach(key => {
+            svgEl.innerHTML += `<circle cx="${pts[key].x}" cy="${pts[key].y}" r="4" fill="#2c3e50" />`;
+            svgEl.innerHTML += `<text x="${pts[key].x + 5}" y="${pts[key].y - 10}" font-weight="bold" font-size="16">${key}</text>`;
+        });
+
+        // Soru tipleri (Açı kombinasyonları)
+        const angles = [
+            { id: "ABD", points: [pts.A, pts.B, pts.D], name: "ABD" },
+            { id: "DBC", points: [pts.D, pts.B, pts.C], name: "DBC" },
+            { id: "CBE", points: [pts.C, pts.B, pts.E], name: "CBE" },
+            { id: "EBA", points: [pts.E, pts.B, pts.A], name: "EBA" }
+        ];
+
+        const target = angles[Math.floor(Math.random() * angles.length)];
+        
+        // Açıyı Vurgula (Kırmızı yay çizimi)
+        // Basitlik adına vurgulanacak açının noktalarını birleştiren bir path ekliyoruz
+        const highlight = `<polyline points="${target.points[0].x},${target.points[0].y} ${target.points[1].x},${target.points[1].y} ${target.points[2].x},${target.points[2].y}" 
+                            fill="none" stroke="red" stroke-width="5" stroke-opacity="0.5" />`;
+        svgEl.innerHTML += highlight;
+
+        const correctAns = target.name;
+        // Şıklar (Doğru, Ters okunuş (DBA gibi), Yanlış köşe (ADB gibi))
+        let opts = [
+            correctAns,
+            correctAns.split('').reverse().join(''), // DBA
+            "ADB",
+            "BDE"
+        ];
+
+        opts = [...new Set(opts)].sort(() => Math.random() - 0.5);
+        ansContainer.innerHTML = '';
+
+        opts.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.innerHTML = `${opt} açısı ( $\\widehat{${opt}}$ )`;
+            
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#ang-answers button').forEach(b => b.disabled = true);
+                if (opt === correctAns || opt === correctAns.split('').reverse().join('')) {
+                    btn.classList.add('correct');
+                    score += 20;
+                } else {
+                    btn.classList.add('wrong');
+                }
+                scoreEl.textContent = score;
+                setTimeout(gen, 1000);
+            };
+            ansContainer.appendChild(btn);
+        });
+    };
+    gen();
+},
+
+
+  
 triangleCircleGame: function() {
     let score = 0, combo = 0;
     const scoreEl = document.getElementById('tri-score');
