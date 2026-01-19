@@ -70,6 +70,7 @@
 <article class="card"><h3>Geometri Oyunu</h3><div class="card-actions"><button class="btn go" data-target="geometryGame">Oyna</button></div></article>
 <article class="card"><h3>Açı Tahmin Oyunu</h3><div class="card-actions"><button class="btn go" data-target="angleGame">Oyna</button></div></article>
 <article class="card"><h3>Düzlemde İki Doğrunun Açılarının İsimlendirilmesi</h3><div class="card-actions"><button class="btn go" data-target="angleNamingGame">Oyna</button></div></article>
+<article class="card"><h3>Düzlemde Üç Doğrunun Açılarının Belirlenmesi</h3><div class="card-actions"><button class="btn go" data-target="parallelLinesGame">Oyna</button></div></article>
 <article class="card"><h3>Çemberden Üçgene </h3><div class="card-actions"><button class="btn go" data-target="triangleCircleGame">Oyna</button></div></article>
 <article class="card"><h3>Çok Basamaklı Sayılar</h3><div class="card-actions"><button class="btn go" data-target="numberGame">Oyna</button></div></article>
 <article class="card"><h3>Doğal Sayılarla Problemler</h3><div class="card-actions"><button class="btn go" data-target="problemGame">Oyna</button></div></article>
@@ -263,6 +264,35 @@
     <button class="btn tab" data-target="ortaokul5">Geri</button>
   </div>
 </section>
+
+
+<section id="parallelLinesGame" class="panel hidden">
+  <h2>Düzlemde Üç Doğrunun Açılarının Belirlenmesi</h2>
+  <div class="game-area">
+    <div class="status-row">
+      <span>Skor: <span id="par-score">0</span></span>
+      <span>Süre: <span>Sınırsız</span></span>
+    </div>
+    
+    <div class="question-container" style="background: #fdfdfd; padding: 15px; border-radius: 20px; margin-bottom: 20px; text-align: center; border: 3px solid #e67e22;">
+        <div id="par-hint" style="font-size: 18px; color: #2c3e50; margin-bottom: 10px; font-weight: bold;">? ile gösterilen açının değeri kaç derecedir?</div>
+        
+        <div style="background: white; border-radius: 10px; margin: 10px 0; display: flex; justify-content: center; align-items: center; padding: 10px;">
+            <svg id="par-svg" width="320" height="240" viewBox="0 0 320 240">
+                </svg>
+        </div>
+    </div>
+
+    <div class="answers" id="par-answers" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        </div>
+  </div>
+
+  <div class="game-header controls" style="margin-top:1rem;">
+    <button class="btn" onclick="window.renderLeaderboardForGame('parallelLinesGame')">En Yüksek Skorlar</button>
+    <button class="btn" onclick="window.submitScoreUI('parallelLinesGame')">Bitir ve Skor Gönder</button>
+    <button class="btn tab" data-target="ortaokul5">Geri</button>
+  </div>
+</section>  
 
   
 <section id="triangleCircleGame" class="panel hidden">
@@ -1438,6 +1468,87 @@ angleNamingGame: function() {
 },
 
 
+parallelLinesGame: function() {
+    let score = 0;
+    const scoreEl = document.getElementById('par-score');
+    const svgEl = document.getElementById('par-svg');
+    const ansContainer = document.getElementById('par-answers');
+    const hintEl = document.getElementById('par-hint');
+
+    const gen = () => {
+        svgEl.innerHTML = '';
+        const angleValue = Math.floor(Math.random() * 80) + 40; // 40-120 derece arası
+        const type = Math.floor(Math.random() * 4); // 0:Yöndeş, 1:İç Ters (Z), 2:Karşı Durumlu (U), 3:Ters Açı
+
+        // Çizim Sabitleri
+        const y1 = 70, y2 = 170; // Paralel doğruların Y koordinatları
+        const xStart = 40, xEnd = 280;
+
+        // Paralel Doğruları Çiz
+        svgEl.innerHTML += `<line x1="${xStart}" y1="${y1}" x2="${xEnd}" y2="${y1}" stroke="#2c3e50" stroke-width="3" />`;
+        svgEl.innerHTML += `<line x1="${xStart}" y1="${y2}" x2="${xEnd}" y2="${y2}" stroke="#2c3e50" stroke-width="3" />`;
+        svgEl.innerHTML += `<text x="${xEnd+5}" y="${y1}" font-size="12">d1</text>`;
+        svgEl.innerHTML += `<text x="${xEnd+5}" y="${y2}" font-size="12">d2</text>`;
+
+        // Kesen Doğruyu Çiz
+        svgEl.innerHTML += `<line x1="100" y1="30" x2="220" y2="210" stroke="#c0392b" stroke-width="2" />`;
+
+        let correct;
+        let qPos = {}, aPos = {};
+
+        // Soru Tiplerine Göre Açı Pozisyonları ve Değerleri
+        if (type === 0) { // Yöndeş (F Kuralı)
+            hintEl.textContent = "Yöndeş açı kuralına göre ? kaçtır?";
+            qPos = {x: 145, y: 65, val: angleValue};
+            aPos = {x: 210, y: 165};
+            correct = angleValue;
+        } else if (type === 1) { // İç Ters (Z Kuralı)
+            hintEl.textContent = "İç ters (Z) açı kuralına göre ? kaçtır?";
+            qPos = {x: 145, y: 65, val: angleValue};
+            aPos = {x: 160, y: 165};
+            correct = angleValue;
+        } else if (type === 2) { // Karşı Durumlu (U Kuralı)
+            hintEl.textContent = "Karşı durumlu (U) açı kuralına göre ? kaçtır?";
+            qPos = {x: 145, y: 65, val: angleValue};
+            aPos = {x: 210, y: 165};
+            correct = 180 - angleValue;
+        } else { // Ters Açılar
+            hintEl.textContent = "Ters açı kuralına göre ? kaçtır?";
+            qPos = {x: 145, y: 65, val: angleValue};
+            aPos = {x: 100, y: 85};
+            correct = angleValue;
+        }
+
+        // Değerleri Ekrana Yaz
+        svgEl.innerHTML += `<text x="${qPos.x}" y="${qPos.y}" fill="#27ae60" font-weight="bold">${angleValue}°</text>`;
+        svgEl.innerHTML += `<text x="${aPos.x}" y="${aPos.y}" fill="#e67e22" font-weight="bold">?</text>`;
+
+        let opts = [correct, 180 - correct, angleValue + 10, 180 - angleValue - 10];
+        opts = [...new Set(opts)].sort(() => Math.random() - 0.5);
+
+        ansContainer.innerHTML = '';
+        opts.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.textContent = opt + "°";
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                document.querySelectorAll('#par-answers button').forEach(b => b.disabled = true);
+                if (opt === correct) {
+                    btn.classList.add('correct');
+                    score += 25;
+                } else {
+                    btn.classList.add('wrong');
+                }
+                scoreEl.textContent = score;
+                setTimeout(gen, 1200);
+            };
+            ansContainer.appendChild(btn);
+        });
+    };
+    gen();
+},
+  
   
 triangleCircleGame: function() {
     let score = 0, combo = 0;
