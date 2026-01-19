@@ -1460,7 +1460,7 @@ angleNamingGame: function() {
 },
 
 
-  parallelLinesGame: function() {
+parallelLinesGame: function() {
     let score = 0;
     const scoreEl = document.getElementById('par-score');
     const svgEl = document.getElementById('par-svg');
@@ -1471,67 +1471,57 @@ angleNamingGame: function() {
         if (!svgEl) return;
         svgEl.innerHTML = '';
         
-        const mode = Math.floor(Math.random() * 3); // 0: Paralel, 1: Tümler, 2: Bütünler
-        let correct, angleValue;
+        const angleValue = Math.floor(Math.random() * 60) + 50;
+        const type = Math.floor(Math.random() * 3); // 0:Z, 1:F, 2:U
+        let correct;
 
-        if (mode === 0) {
-            // --- PARALEL DOĞRULAR MODU ---
-            angleValue = Math.floor(Math.random() * 50) + 50;
-            const type = Math.floor(Math.random() * 3); // 0:Z, 1:F, 2:U
-            
-            // Çizim Sabitleri
-            const y1 = 70, y2 = 170;
-            svgEl.innerHTML += `<line x1="40" y1="${y1}" x2="280" y2="${y1}" stroke="#2c3e50" stroke-width="3" />`;
-            svgEl.innerHTML += `<line x1="40" y1="${y2}" x2="280" y2="${y2}" stroke="#2c3e50" stroke-width="3" />`;
-            svgEl.innerHTML += `<line x1="100" y1="30" x2="220" y2="210" stroke="#c0392b" stroke-width="2" />`;
-            
-            // Harf Etiketleri
-            svgEl.innerHTML += `<text x="135" y="65" font-size="12" font-weight="bold">A</text>`;
-            svgEl.innerHTML += `<text x="165" y="85" font-size="12" font-weight="bold">B</text>`;
-            svgEl.innerHTML += `<text x="210" y="165" font-size="12" font-weight="bold">C</text>`;
-            svgEl.innerHTML += `<text x="175" y="185" font-size="12" font-weight="bold">D</text>`;
+        // --- NOKTA KOORDİNATLARI ---
+        const pts = {
+            A: { x: 60, y: 70 },  K: { x: 150, y: 70 },  B: { x: 260, y: 70 }, // Üst doğru (d1)
+            C: { x: 60, y: 170 }, L: { x: 215, y: 170 }, D: { x: 260, y: 170 }, // Alt doğru (d2)
+            E: { x: 120, y: 30 }, F: { x: 245, y: 220 }                       // Kesen doğru (t)
+        };
 
-            if (type === 0) { // Z Kuralı
-                hintEl.innerHTML = `<b>Z Kuralı:</b> m(A) = ${angleValue}° ise <b>m(C) = ?</b>`;
-                svgEl.innerHTML += `<text x="145" y="65" fill="#27ae60" font-weight="bold">${angleValue}°</text>`;
-                svgEl.innerHTML += `<text x="185" y="165" fill="#e67e22" font-weight="bold">?</text>`;
-                correct = angleValue;
-            } else if (type === 1) { // F Kuralı
-                hintEl.innerHTML = `<b>F Kuralı:</b> m(B) = ${angleValue}° ise <b>m(C) = ?</b>`;
-                svgEl.innerHTML += `<text x="175" y="65" fill="#27ae60" font-weight="bold">${angleValue}°</text>`;
-                svgEl.innerHTML += `<text x="220" y="165" fill="#e67e22" font-weight="bold">?</text>`;
-                correct = angleValue;
-            } else { // U Kuralı
-                hintEl.innerHTML = `<b>U Kuralı:</b> m(B) = ${angleValue}° ise <b>m(D) = ?</b>`;
-                svgEl.innerHTML += `<text x="175" y="65" fill="#27ae60" font-weight="bold">${angleValue}°</text>`;
-                svgEl.innerHTML += `<text x="185" y="165" fill="#e67e22" font-weight="bold">?</text>`;
-                correct = 180 - angleValue;
-            }
-        } else if (mode === 1) {
-            // --- TÜMLER MODU ---
-            angleValue = Math.floor(Math.random() * 50) + 20;
-            correct = 90 - angleValue;
-            hintEl.innerHTML = `<b>Tümler Açı:</b> m(A) = ${angleValue}° ise tümleri <b>?</b> kaçtır?`;
-            svgEl.innerHTML += `<line x1="100" y1="200" x2="250" y2="200" stroke="#2c3e50" stroke-width="4" />`;
-            svgEl.innerHTML += `<line x1="100" y1="200" x2="100" y2="50" stroke="#2c3e50" stroke-width="4" />`;
-            svgEl.innerHTML += `<line x1="100" y1="200" x2="220" y2="80" stroke="#c0392b" stroke-width="2" />`;
-            svgEl.innerHTML += `<rect x="100" y="190" width="10" height="10" fill="none" stroke="#2c3e50" />`;
-            svgEl.innerHTML += `<text x="135" y="190" fill="#27ae60" font-weight="bold">${angleValue}°</text>`;
-            svgEl.innerHTML += `<text x="110" y="150" fill="#e67e22" font-weight="bold">?</text>`;
-        } else {
-            // --- BÜTÜNLER MODU ---
-            angleValue = Math.floor(Math.random() * 80) + 50;
+        // --- ÇİZİM ---
+        // Paralel ve Kesen Doğrular
+        svgEl.innerHTML += `<line x1="40" y1="70" x2="280" y2="70" stroke="#2c3e50" stroke-width="3" />`; // d1
+        svgEl.innerHTML += `<line x1="40" y1="170" x2="280" y2="170" stroke="#2c3e50" stroke-width="3" />`; // d2
+        svgEl.innerHTML += `<line x1="${pts.E.x}" y1="${pts.E.y}" x2="${pts.F.x}" y2="${pts.F.y}" stroke="#c0392b" stroke-width="2" />`; // t
+
+        // Noktaları ve Harfleri Çiz
+        const labels = ['A', 'K', 'B', 'C', 'L', 'D', 'E', 'F'];
+        labels.forEach(lbl => {
+            const p = pts[lbl];
+            svgEl.innerHTML += `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#34495e" />`;
+            svgEl.innerHTML += `<text x="${p.x - 5}" y="${p.y - 10}" font-size="12" font-weight="bold">${lbl}</text>`;
+        });
+
+        // --- ÜÇ HARFLİ SENARYOLAR ---
+        if (type === 0) { // Z KURALI (İç Ters)
+            // Örn: EKB açısı ile KLC açısı
+            hintEl.innerHTML = `<b>İç Ters (Z) Kuralı:</b><br>m(EKB) = ${angleValue}° ise <b>m(KLC) = ?</b>`;
+            svgEl.innerHTML += `<text x="175" y="65" fill="#27ae60" font-weight="bold">${angleValue}°</text>`;
+            svgEl.innerHTML += `<text x="180" y="165" fill="#e67e22" font-weight="bold">?</text>`;
+            correct = angleValue;
+        } 
+        else if (type === 1) { // F KURALI (Yöndeş)
+            // Örn: EKB açısı ile KLD açısı
+            hintEl.innerHTML = `<b>Yöndeş (F) Kuralı:</b><br>m(EKB) = ${angleValue}° ise <b>m(KLD) = ?</b>`;
+            svgEl.innerHTML += `<text x="175" y="65" fill="#27ae60" font-weight="bold">${angleValue}°</text>`;
+            svgEl.innerHTML += `<text x="230" y="165" fill="#e67e22" font-weight="bold">?</text>`;
+            correct = angleValue;
+        } 
+        else { // U KURALI (Karşı Durumlu)
+            // Örn: AKF açısı ile KLC açısı (İç tarafa bakanlar)
+            hintEl.innerHTML = `<b>Karşı Durumlu (U) Kuralı:</b><br>m(AKF) = ${angleValue}° ise <b>m(KLC) = ?</b>`;
+            svgEl.innerHTML += `<text x="130" y="90" fill="#27ae60" font-weight="bold">${angleValue}°</text>`;
+            svgEl.innerHTML += `<text x="180" y="165" fill="#e67e22" font-weight="bold">?</text>`;
             correct = 180 - angleValue;
-            hintEl.innerHTML = `<b>Bütünler Açı:</b> m(B) = ${angleValue}° ise bütünleri <b>?</b> kaçtır?`;
-            svgEl.innerHTML += `<line x1="50" y1="200" x2="300" y2="200" stroke="#2c3e50" stroke-width="4" />`;
-            svgEl.innerHTML += `<line x1="175" y1="200" x2="100" y2="80" stroke="#c0392b" stroke-width="2" />`;
-            svgEl.innerHTML += `<text x="80" y="190" fill="#27ae60" font-weight="bold">${angleValue}°</text>`;
-            svgEl.innerHTML += `<text x="220" y="190" fill="#e67e22" font-weight="bold">?</text>`;
         }
 
-        // Şıkları oluştur
-        let opts = [correct, 180 - angleValue, 90 - (angleValue % 90), angleValue + 15];
-        opts = [...new Set(opts.filter(v => v > 0))].sort(() => Math.random() - 0.5);
+        // --- ŞIKLAR ---
+        let opts = [correct, 180 - correct, angleValue + 15, Math.abs(angleValue - 15)];
+        opts = [...new Set(opts.filter(v => v > 0 && v < 180))].sort(() => Math.random() - 0.5);
 
         ansContainer.innerHTML = '';
         opts.forEach(opt => {
@@ -1543,18 +1533,18 @@ angleNamingGame: function() {
                 document.querySelectorAll('#par-answers button').forEach(b => b.disabled = true);
                 if (opt === correct) {
                     btn.classList.add('correct');
-                    score += 25;
+                    score += 30;
                 } else {
                     btn.classList.add('wrong');
                 }
                 if (scoreEl) scoreEl.textContent = score;
-                setTimeout(gen, 1200);
+                setTimeout(gen, 1500);
             };
             ansContainer.appendChild(btn);
         });
     };
     gen();
-},
+},  
 
 
   
